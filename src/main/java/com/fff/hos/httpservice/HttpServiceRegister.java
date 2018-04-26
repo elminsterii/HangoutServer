@@ -15,6 +15,8 @@ import java.io.IOException;
 @WebServlet(name = "HttpServiceRegister", value = "/register")
 public class HttpServiceRegister extends HttpServlet {
 
+    private static final String LOG_TAG = "[HttpServiceRegister]";
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -37,6 +39,12 @@ public class HttpServiceRegister extends HttpServlet {
             strJson = jsonObj.toString();
 
             response.getWriter().print(strJson);
+            response.flushBuffer();
+        } else {
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.addProperty("status", "fail");
+
+            response.getWriter().print(jsonObj.toString());
             response.flushBuffer();
         }
     }

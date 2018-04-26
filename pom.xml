@@ -14,6 +14,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <archiveClasses>true</archiveClasses>
+        <INSTANCE_CONNECTION_NAME>hangouttw-db-instance</INSTANCE_CONNECTION_NAME>
+        <user>root</user>
+        <password>22032201g</password>
+        <database>hosdb</database>
     </properties>
 
     <prerequisites>
@@ -49,6 +53,17 @@
             <artifactId>maven-deploy-plugin</artifactId>
             <version>2.8</version>
             <type>maven-plugin</type>
+        </dependency>
+        <dependency> <!-- Only used locally -->
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.42</version>  <!-- v5.x.x is for production, v6.x.x EAP X DevAPI -->
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <!-- If using MySQL 6.x driver, use mysql-socket-factory-connector-j-6 instead -->
+            <artifactId>mysql-socket-factory</artifactId>
+            <version>1.0.5</version>
         </dependency>
 
         <!-- Test Dependencies -->

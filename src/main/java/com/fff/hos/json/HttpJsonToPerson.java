@@ -1,5 +1,6 @@
 package com.fff.hos.json;
 
+import com.fff.hos.log.HoSLogger;
 import com.fff.hos.person.Person;
 import com.google.gson.Gson;
 
@@ -8,12 +9,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class HttpJsonToPerson {
+    private static final String LOG_TAG = "[HttpJsonToPerson]";
+
     public static Person parse(HttpServletRequest request) {
         String strBody;
         try {
             strBody = getBody(request);
         } catch (IOException e) {
-            e.printStackTrace();
+            HoSLogger.error(LOG_TAG, e.getMessage());
             return null;
         }
         return new Gson().fromJson(strBody, Person.class);
