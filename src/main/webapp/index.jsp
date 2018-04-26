@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.fff.hos.HelloAppEngine" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <link href='//fonts.googleapis.com/css?family=Marmelad' rel='stylesheet' type='text/css'>
-    <title>Hello App Engine Standard Java 8</title>
+    <title>Hangout Server</title>
 </head>
 <body>
-<h1>Hello App Engine -- Java 8!</h1>
+<h1>Hangout back-end system</h1>
 
-<p>This is <%= HelloAppEngine.getInfo() %>.</p>
+<p>This is a web-site testbed for verify functions</p>
 <table>
     <tr>
-        <td colspan="2" style="font-weight:bold;">Available Servlets:</td>
+        <td colspan="2" style="font-weight:bold;">Available functions:</td>
     </tr>
     <tr>
-        <td><a href='/hello'>Hello App Engine</a></td>
+        <td colspan="2">So far, Use http post with JSON format to verify functions</td>
+    </tr>
+    <tr>
+        <!-- <td><a href='/register'>Test register person</a></td> -->
     </tr>
 </table>
 
