@@ -11,11 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceRegister", value = "/register")
 public class HttpServiceRegister extends HttpServlet {
 
-    private static final String LOG_TAG = "[HttpServiceRegister]";
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceRegister.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,6 +31,9 @@ public class HttpServiceRegister extends HttpServlet {
         response.setContentType("application/json");
 
         if (person != null) {
+
+            //CloudSQLManager.getInstance().getAccounts();
+
             Gson gson = new Gson();
             JsonParser gsonParser = new JsonParser();
 

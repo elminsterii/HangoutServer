@@ -1,8 +1,5 @@
 package com.fff.hos.database;
 
-//TODO - multi-thread and thread-safe.
-
-import com.fff.hos.log.HoSLogger;
 import com.google.apphosting.api.ApiProxy;
 import com.google.common.base.Stopwatch;
 
@@ -10,10 +7,11 @@ import java.sql.*;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
+//TODO - multi-thread and thread-safe.
 public class CloudSQLManager {
-
-    private static final String LOG_TAG = "[CloudSQLManager]";
+    private static final Logger LOGGER = Logger.getLogger(CloudSQLManager.class.getName());
 
     private static CloudSQLManager m_instance = null;
     private Connection conn;
@@ -22,7 +20,7 @@ public class CloudSQLManager {
 
     }
 
-    public CloudSQLManager getInstance() {
+    public static CloudSQLManager getInstance() {
         if (m_instance == null) {
             m_instance = new CloudSQLManager();
             m_instance.initialize();
@@ -35,13 +33,26 @@ public class CloudSQLManager {
         Map<String, Object> attr = env.getAttributes();
         String hostname = (String) attr.get("com.google.appengine.runtime.default_version_hostname");
 
-        String url = hostname.contains("localhost:")
-                ? System.getProperty("cloudsql-local") : System.getProperty("cloudsql");
-        HoSLogger.info(LOG_TAG, "connecting to: " + url);
+        String strURL;
+        if (hostname.contains("localhost:")) {
+            strURL = System.getProperty("sqlLocal")
+                    + System.getProperty("sqlDBName") + "?"
+                    + "useSSL=false&"
+                    + "user=" + System.getProperty("sqlUserName")
+                    + "&password=" + System.getProperty("sqlUserPassword");
+        } else {
+            strURL = System.getProperty("sqlCloud")
+                    + System.getProperty("sqlInsConnName") + "/"
+                    + System.getProperty("sqlDBName")
+                    + "?user=" + System.getProperty("sqlUserName")
+                    + "&amp;password=" + System.getProperty("sqlUserPassword");
+        }
+
+        LOGGER.info("connecting to: " + strURL);
         try {
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(strURL);
         } catch (SQLException e) {
-            HoSLogger.error(LOG_TAG, "Unable to connect to Cloud SQL" + e.getMessage());
+            LOGGER.warning("Unable to connect to Cloud SQL, " + e.getMessage());
         }
     }
 
@@ -75,13 +86,13 @@ public class CloudSQLManager {
                 stopwatch.stop();
                 while (rs.next()) {
                     String strAccount = rs.getString("account");
-                    HoSLogger.info(LOG_TAG, "Account: " + strAccount);
+                    LOGGER.info("Account: " + strAccount);
                 }
             }
         } catch (SQLException e) {
-            HoSLogger.error(LOG_TAG, "SQL error" + e.getMessage());
+            LOGGER.warning("SQL erro, " + e.getMessage());
         }
-        HoSLogger.info(LOG_TAG, "Query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.warning("Query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     private void query() {

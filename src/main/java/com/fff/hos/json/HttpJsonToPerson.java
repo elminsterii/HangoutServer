@@ -1,22 +1,22 @@
 package com.fff.hos.json;
 
-import com.fff.hos.log.HoSLogger;
 import com.fff.hos.person.Person;
 import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class HttpJsonToPerson {
-    private static final String LOG_TAG = "[HttpJsonToPerson]";
+    private static final Logger LOGGER = Logger.getLogger(HttpJsonToPerson.class.getName());
 
     public static Person parse(HttpServletRequest request) {
         String strBody;
         try {
             strBody = getBody(request);
         } catch (IOException e) {
-            HoSLogger.error(LOG_TAG, e.getMessage());
+            LOGGER.warning(e.getMessage());
             return null;
         }
         return new Gson().fromJson(strBody, Person.class);
