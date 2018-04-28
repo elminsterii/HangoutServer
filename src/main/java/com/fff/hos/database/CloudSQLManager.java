@@ -1,5 +1,6 @@
 package com.fff.hos.database;
 
+import com.fff.hos.tools.SysRunTool;
 import com.google.apphosting.api.ApiProxy;
 import com.google.common.base.Stopwatch;
 
@@ -35,6 +36,8 @@ public class CloudSQLManager {
 
         String strURL;
         if (hostname.contains("localhost:")) {
+            SysRunTool.sysRunMySQL();
+
             strURL = System.getProperty("sqlLocal")
                     + System.getProperty("sqlDBName") + "?"
                     + "useSSL=false&"
@@ -70,9 +73,11 @@ public class CloudSQLManager {
 
     public void getAccounts() {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String createPersonSql = "INSERT INTO persons (ts,account) VALUES (?,Jimmy);";
+        String createPersonSql = "INSERT INTO persons (ts,account) VALUES (?,\"Jimmy\");";
         String createTableSql = "CREATE TABLE IF NOT EXISTS persons ( "
-                + "account SERIAL NOT NULL, ts timestamp NOT NULL, "
+                + "id SERIAL NOT NULL, "
+                + "ts timestamp NOT NULL, "
+                + "account VARCHAR(128) NOT NULL, "
                 + "PRIMARY KEY (account) );";
         String selectSql = "SELECT * FROM persons ORDER BY ts DESC "
                 + "LIMIT 10;";
@@ -92,7 +97,7 @@ public class CloudSQLManager {
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
         }
-        LOGGER.warning("Query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.info("Query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     private void query() {

@@ -1,5 +1,6 @@
 package com.fff.hos.httpservice;
 
+import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
 import com.fff.hos.person.Person;
 import com.google.gson.Gson;
@@ -32,7 +33,7 @@ public class HttpServiceRegister extends HttpServlet {
 
         if (person != null) {
 
-            //CloudSQLManager.getInstance().getAccounts();
+            CloudSQLManager.getInstance().getAccounts();
 
             Gson gson = new Gson();
             JsonParser gsonParser = new JsonParser();
