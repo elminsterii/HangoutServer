@@ -12,14 +12,18 @@ public class HttpJsonToPerson {
     private static final Logger LOGGER = Logger.getLogger(HttpJsonToPerson.class.getName());
 
     public static Person parse(HttpServletRequest request) {
-        String strBody;
+        Person person;
+        String strBody = "";
+
         try {
             strBody = getBody(request);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
-            return null;
         }
-        return new Gson().fromJson(strBody, Person.class);
+
+        person = new Gson().fromJson(strBody, Person.class);
+
+        return person;
     }
 
     private static String getBody(HttpServletRequest request) throws IOException {

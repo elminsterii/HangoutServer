@@ -3,6 +3,7 @@ package com.fff.hos.httpservice;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
 import com.fff.hos.person.Person;
+import com.fff.hos.tools.DBTool;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -12,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceRegister", value = "/register")
-public class HttpServiceRegister extends HttpServlet {
+@WebServlet(name = "HttpServiceUnregister", value = "/unregister")
+public class HttpServiceUnregister extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceRegister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,22 +31,21 @@ public class HttpServiceRegister extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            //check user already exist.
-            if (CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail()) != null) {
+        if (person != null || DBTool.checkStringNotNull(person.getEmail())) {
+            //check user exist.
+            if (CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail()) == null) {
                 jsonObj.addProperty("email", person.getEmail());
-                jsonObj.addProperty("status", "fail, user already exist");
+                jsonObj.addProperty("status", "fail, user not exist");
             } else {
-                CloudSQLManager.getInstance().insertPerson(person);
-                Person resPerson = CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail());
-
-                if (resPerson != null) {
-                    jsonObj.addProperty("email", resPerson.getEmail());
+                if (CloudSQLManager.getInstance().deletePersonByEmail(person.getEmail())) {
+                    jsonObj.addProperty("email", person.getEmail());
                     jsonObj.addProperty("status", "success");
                 } else {
-                    jsonObj.addProperty("status", "fail, register fail");
+                    jsonObj.addProperty("status", "fail, unregister fail");
                 }
             }
+        } else {
+            jsonObj.addProperty("status", "fail, unregister fail");
         }
 
         response.getWriter().print(jsonObj.toString());
