@@ -52,10 +52,10 @@ public class CloudSQLManager {
                     + System.getProperty("sqlInsConnName") + "/"
                     + System.getProperty("sqlDBName") + "?"
                     + "user=" + System.getProperty("sqlUserName")
-                    + "&amp;password=" + System.getProperty("sqlUserPassword");
+                    + "&password=" + System.getProperty("sqlUserPassword");
         }
 
-        LOGGER.info("connecting to: " + strURL);
+        LOGGER.warning("connecting to: " + strURL);
         try {
             conn = DriverManager.getConnection(strURL);
         } catch (SQLException e) {
@@ -63,8 +63,9 @@ public class CloudSQLManager {
         }
     }
 
-    public void createPersonsTable() {
-        String createTableSql = "CREATE TABLE IF NOT EXISTS persons ( "
+    public boolean createPersonsTable() {
+
+        String strCreateTableSQL = "CREATE TABLE IF NOT EXISTS persons ( "
                 + "id SERIAL NOT NULL, "
                 + "ts timestamp NOT NULL, "
                 + "email VARCHAR(128) NOT NULL, "
@@ -78,26 +79,40 @@ public class CloudSQLManager {
                 + "PRIMARY KEY (email) );";
 
         try {
-            conn.createStatement().executeUpdate(createTableSql);
+            conn.createStatement().execute(strCreateTableSQL);
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
+            return false;
         }
+        return true;
     }
 
     public void update() {
 
     }
 
-    public boolean insert(String strEmail, String strDisplayName, int iAge, String strInterests
+    public boolean insertPerson(Person person) {
+        if (person == null)
+            return false;
+
+        return insertPerson(person.getEmail(), person.getDisplayName(), person.getAge()
+                , person.getInterests(), person.getDescription(), person.getLocation()
+                , person.getActivities(), person.getInfluence());
+    }
+
+    public boolean insertPerson(String strEmail, String strDisplayName, int iAge, String strInterests
             , String strDescription, String strLocation, String strActivities, int iInfluence) {
 
         boolean bRes = false;
 
-        if (DBTool.checkStringNotNull(strEmail)
-                || DBTool.checkStringNotNull(strDisplayName))
+        if (!DBTool.checkStringNotNull(strEmail)
+                || !DBTool.checkStringNotNull(strDisplayName))
             return bRes;
 
-        String createPersonSql = "INSERT INTO persons (ts,email,displayname,age" +
+        if (!createPersonsTable())
+            return bRes;
+
+        String strCreatePersonSQL = "INSERT INTO persons (ts,email,displayname,age" +
                 ",interests,description,location,activities,influence) " +
                 "VALUES (?,\"" + strEmail + "\"" +
                 ",\"" + strDisplayName + "\"" +
@@ -110,7 +125,7 @@ public class CloudSQLManager {
                 ");";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementCreatePerson = conn.prepareStatement(createPersonSql)) {
+        try (PreparedStatement statementCreatePerson = conn.prepareStatement(strCreatePersonSQL)) {
             statementCreatePerson.setTimestamp(1, new Timestamp(new Date().getTime()));
             bRes = statementCreatePerson.executeUpdate() > 0;
 
@@ -122,21 +137,64 @@ public class CloudSQLManager {
         return bRes;
     }
 
-    public void delete() {
+    public boolean deletePersonByEmail(String strEmail) {
+        boolean bRes = false;
 
+        if (!DBTool.checkStringNotNull(strEmail))
+            return bRes;
+
+        String strDeletePersonSQL = "DELETE FROM persons WHERE email=\"" + strEmail + "\";";
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (PreparedStatement statementDeletePerson = conn.prepareStatement(strDeletePersonSQL)) {
+            bRes = statementDeletePerson.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("delete time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return bRes;
     }
 
     public List<Person> getAccounts() {
-        return queryPersonsOrderBy("id", 0);
+        return queryPersonsAndOrder("id", 0);
     }
 
-    private List<Person> queryPersonsOrderBy(String strOrderBy, int iLimit) {
-        List<Person> lsPersons = null;
-        String selectSql = "SELECT * FROM persons ORDER BY " + strOrderBy + "DESC "
-                + "LIMIT " + iLimit + ";";
+    public Person queryPersonsByEmail(String strEmail) {
+        Person person = null;
+        String strSelectSQL = "SELECT * FROM persons WHERE email=\"" + strEmail + "\";";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (ResultSet rs = conn.prepareStatement(selectSql).executeQuery()) {
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL).executeQuery()) {
+            stopwatch.stop();
+
+            while (rs.next()) {
+                person = new Person();
+                person.setEmail(rs.getString("email"));
+                person.setDisplayName(rs.getString("displayname"));
+                person.setAge(rs.getInt("age"));
+                person.setInterests(rs.getString("interests"));
+                person.setDescription(rs.getString("description"));
+                person.setLocation(rs.getString("location"));
+                person.setActivities(rs.getString("activities"));
+                person.setInfluence(rs.getInt("influence"));
+            }
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return person;
+    }
+
+    private List<Person> queryPersonsAndOrder(String strOrderBy, int iLimit) {
+        List<Person> lsPersons = null;
+        String strSelectSQL = "SELECT * FROM persons ORDER BY "
+                + strOrderBy + " DESC " + "LIMIT " + iLimit + ";";
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL).executeQuery()) {
             stopwatch.stop();
             lsPersons = new ArrayList<>();
 
