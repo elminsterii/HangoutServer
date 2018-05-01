@@ -1,11 +1,15 @@
 package com.fff.hos.database;
 
+import com.fff.hos.person.Person;
+import com.fff.hos.tools.DBTool;
 import com.fff.hos.tools.SysRunTool;
 import com.google.apphosting.api.ApiProxy;
 import com.google.common.base.Stopwatch;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -46,8 +50,8 @@ public class CloudSQLManager {
         } else {
             strURL = System.getProperty("sqlCloud")
                     + System.getProperty("sqlInsConnName") + "/"
-                    + System.getProperty("sqlDBName")
-                    + "?user=" + System.getProperty("sqlUserName")
+                    + System.getProperty("sqlDBName") + "?"
+                    + "user=" + System.getProperty("sqlUserName")
                     + "&amp;password=" + System.getProperty("sqlUserPassword");
         }
 
@@ -59,48 +63,100 @@ public class CloudSQLManager {
         }
     }
 
+    public void createPersonsTable() {
+        String createTableSql = "CREATE TABLE IF NOT EXISTS persons ( "
+                + "id SERIAL NOT NULL, "
+                + "ts timestamp NOT NULL, "
+                + "email VARCHAR(128) NOT NULL, "
+                + "displayname VARCHAR(64) NOT NULL, "
+                + "age INTEGER NOT NULL, "
+                + "interests VARCHAR(512), "
+                + "description VARCHAR(512), "
+                + "location VARCHAR(128), "
+                + "activities VARCHAR(512), "
+                + "influence INTEGER, "
+                + "PRIMARY KEY (email) );";
+
+        try {
+            conn.createStatement().executeUpdate(createTableSql);
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+    }
+
     public void update() {
 
     }
 
-    public void insert() {
+    public boolean insert(String strEmail, String strDisplayName, int iAge, String strInterests
+            , String strDescription, String strLocation, String strActivities, int iInfluence) {
 
+        boolean bRes = false;
+
+        if (DBTool.checkStringNotNull(strEmail)
+                || DBTool.checkStringNotNull(strDisplayName))
+            return bRes;
+
+        String createPersonSql = "INSERT INTO persons (ts,email,displayname,age" +
+                ",interests,description,location,activities,influence) " +
+                "VALUES (?,\"" + strEmail + "\"" +
+                ",\"" + strDisplayName + "\"" +
+                ",\"" + iAge + "\"" +
+                ",\"" + strInterests + "\"" +
+                ",\"" + strDescription + "\"" +
+                ",\"" + strLocation + "\"" +
+                ",\"" + strActivities + "\"" +
+                ",\"" + iInfluence + "\"" +
+                ");";
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (PreparedStatement statementCreatePerson = conn.prepareStatement(createPersonSql)) {
+            statementCreatePerson.setTimestamp(1, new Timestamp(new Date().getTime()));
+            bRes = statementCreatePerson.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("insert time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return bRes;
     }
 
     public void delete() {
 
     }
 
-    public void getAccounts() {
+    public List<Person> getAccounts() {
+        return queryPersonsOrderBy("id", 0);
+    }
+
+    private List<Person> queryPersonsOrderBy(String strOrderBy, int iLimit) {
+        List<Person> lsPersons = null;
+        String selectSql = "SELECT * FROM persons ORDER BY " + strOrderBy + "DESC "
+                + "LIMIT " + iLimit + ";";
+
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String createPersonSql = "INSERT INTO persons (ts,account) VALUES (?,\"Jimmy\");";
-        String createTableSql = "CREATE TABLE IF NOT EXISTS persons ( "
-                + "id SERIAL NOT NULL, "
-                + "ts timestamp NOT NULL, "
-                + "account VARCHAR(128) NOT NULL, "
-                + "PRIMARY KEY (account) );";
-        String selectSql = "SELECT * FROM persons ORDER BY ts DESC "
-                + "LIMIT 10;";
+        try (ResultSet rs = conn.prepareStatement(selectSql).executeQuery()) {
+            stopwatch.stop();
+            lsPersons = new ArrayList<>();
 
-        try (PreparedStatement statementCreatePerson = conn.prepareStatement(createPersonSql)) {
-            conn.createStatement().executeUpdate(createTableSql);
-            statementCreatePerson.setTimestamp(1, new Timestamp(new Date().getTime()));
-            statementCreatePerson.executeUpdate();
-
-            try (ResultSet rs = conn.prepareStatement(selectSql).executeQuery()) {
-                stopwatch.stop();
-                while (rs.next()) {
-                    String strAccount = rs.getString("account");
-                    LOGGER.info("Account: " + strAccount);
-                }
+            while (rs.next()) {
+                Person person = new Person();
+                person.setEmail(rs.getString("email"));
+                person.setDisplayName(rs.getString("displayname"));
+                person.setAge(rs.getInt("age"));
+                person.setInterests(rs.getString("interests"));
+                person.setDescription(rs.getString("description"));
+                person.setLocation(rs.getString("location"));
+                person.setActivities(rs.getString("activities"));
+                person.setInfluence(rs.getInt("influence"));
+                lsPersons.add(person);
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
         }
-        LOGGER.info("Query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    }
 
-    private void query() {
-
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return lsPersons;
     }
 }

@@ -12,10 +12,8 @@ public class SysRunTool {
         String strDBPath = System.getProperty("sysDBPath");
         strDBPath += EXE_SQLD;
 
-        String[] arrParameter = {"-d"};
-
         try {
-            Runtime.getRuntime().exec(strDBPath, arrParameter);
+            Runtime.getRuntime().exec(strDBPath);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
