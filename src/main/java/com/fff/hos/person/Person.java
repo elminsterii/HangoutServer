@@ -12,6 +12,9 @@ public class Person {
     @SerializedName("age")
     private int Age;
 
+    @SerializedName("gender")
+    private String Gender;
+
     @SerializedName("interests")
     private String Interests;
 
@@ -21,25 +24,39 @@ public class Person {
     @SerializedName("location")
     private String Location;
 
-    @SerializedName("activities")
-    private String Activities;
+    @SerializedName("joinactivities")
+    private String JoinActivities;
 
-    @SerializedName("influence")
-    private int Influence;
+    @SerializedName("holdactivities")
+    private String HoldActivities;
+
+    @SerializedName("goodmember")
+    private int GoodMember;
+
+    @SerializedName("goodleader")
+    private int GoodLeader;
+
+    @SerializedName("online")
+    private int Online;
 
     public Person() {
 
     }
 
-    public Person(String email, String displayName, int age, String interests, String description, String location, String activities, int influence) {
+    public Person(String email, String displayName, int age, String gender, String interests, String description
+            , String location, String joinActivities, String holdActivities, int goodMember, int goodLeader, int online) {
         Email = email;
         DisplayName = displayName;
         Age = age;
+        Gender = gender;
         Interests = interests;
         Description = description;
         Location = location;
-        Activities = activities;
-        Influence = influence;
+        JoinActivities = joinActivities;
+        HoldActivities = holdActivities;
+        GoodMember = goodMember;
+        GoodLeader = goodLeader;
+        Online = online;
     }
 
     public String getEmail() {
@@ -66,6 +83,14 @@ public class Person {
         Age = age;
     }
 
+    public String getGender() {
+        return Gender;
+    }
+
+    public void setGender(String gender) {
+        Gender = gender;
+    }
+
     public String getInterests() {
         return Interests;
     }
@@ -90,19 +115,43 @@ public class Person {
         Location = location;
     }
 
-    public String getActivities() {
-        return Activities;
+    public String getJoinActivities() {
+        return JoinActivities;
     }
 
-    public void setActivities(String activities) {
-        Activities = activities;
+    public void setJoinActivities(String joinActivities) {
+        JoinActivities = joinActivities;
     }
 
-    public int getInfluence() {
-        return Influence;
+    public String getHoldActivities() {
+        return HoldActivities;
     }
 
-    public void setInfluence(int influence) {
-        Influence = influence;
+    public void setHoldActivities(String holdActivities) {
+        HoldActivities = holdActivities;
+    }
+
+    public int getGoodMember() {
+        return GoodMember;
+    }
+
+    public void setGoodMember(int goodMember) {
+        GoodMember = goodMember;
+    }
+
+    public int getGoodLeader() {
+        return GoodLeader;
+    }
+
+    public void setGoodLeader(int goodLeader) {
+        GoodLeader = goodLeader;
+    }
+
+    public int getOnline() {
+        return Online;
+    }
+
+    public void setOnline(int online) {
+        Online = online;
     }
 }

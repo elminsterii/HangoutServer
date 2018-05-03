@@ -4,7 +4,9 @@ import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
 import com.fff.hos.person.Person;
 import com.fff.hos.tools.DBTool;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceUnregister", value = "/unregister")
-public class HttpServiceUnregister extends HttpServlet {
+@WebServlet(name = "HttpServiceQueryPerson", value = "/queryperson")
+public class HttpServiceQueryPerson extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryPerson.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,17 +34,16 @@ public class HttpServiceUnregister extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (person != null || DBTool.checkStringNotNull(person.getEmail())) {
-            //check user exist.
-            if (CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail()) == null) {
+            //check user already exist.
+            Person resPerson = CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail());
+
+            if (resPerson == null) {
                 jsonObj.addProperty("statuscode", 1);
                 jsonObj.addProperty("status", "fail, user not exist");
             } else {
-                if (CloudSQLManager.getInstance().deletePersonByEmail(person.getEmail())) {
-                    jsonObj.addProperty("statuscode", 0);
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "fail, unregister fail");
-                }
+                String strPersonJson = new Gson().toJson(resPerson);
+                strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
+                jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
             }
         } else {
             jsonObj.addProperty("statuscode", 1);

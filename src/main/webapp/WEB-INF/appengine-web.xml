@@ -7,7 +7,7 @@
     <use-google-connector-j>true</use-google-connector-j>
 
     <system-properties>
-        <property name="sysDBPath" value="D://mysql-5.7.22/bin/"/>
+        <property name="aqlLocalDBFolder" value="D://mysql-5.7.22/bin/"/>
 
         <property name="sqlInsConnName" value="hangouttw:asia-northeast1:hangouttw-db-instance"/>
         <property name="sqlLocal" value="jdbc:mysql://localhost:3306/"/>

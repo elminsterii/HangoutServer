@@ -9,7 +9,7 @@ public class SysRunTool {
 
     public static void sysRunMySQL() {
         final String EXE_SQLD = "mysqld.exe";
-        String strDBPath = System.getProperty("sysDBPath");
+        String strDBPath = System.getProperty("aqlLocalDBFolder");
         strDBPath += EXE_SQLD;
 
         try {
@@ -21,7 +21,7 @@ public class SysRunTool {
 
     public static void sysLoginMySQLWithRoot() {
         final String EXE_SQLD = "mysql.exe";
-        String strDBPath = System.getProperty("sysDBPath");
+        String strDBPath = System.getProperty("aqlLocalDBFolder");
         strDBPath += EXE_SQLD;
 
         String[] arrParameter = {"-u", System.getProperty("sqlUserName")

@@ -71,11 +71,15 @@ public class CloudSQLManager {
                 + "email VARCHAR(128) NOT NULL, "
                 + "displayname VARCHAR(64) NOT NULL, "
                 + "age INTEGER NOT NULL, "
+                + "gender VARCHAR(16) NOT NULL, "
                 + "interests VARCHAR(512), "
                 + "description VARCHAR(512), "
                 + "location VARCHAR(128), "
-                + "activities VARCHAR(512), "
-                + "influence INTEGER, "
+                + "joinactivities VARCHAR(1024), "
+                + "holdactivities VARCHAR(1024), "
+                + "goodmember INTEGER, "
+                + "goodleader INTEGER, "
+                + "online INTEGER, "
                 + "PRIMARY KEY (email) );";
 
         try {
@@ -95,13 +99,14 @@ public class CloudSQLManager {
         if (person == null)
             return false;
 
-        return insertPerson(person.getEmail(), person.getDisplayName(), person.getAge()
-                , person.getInterests(), person.getDescription(), person.getLocation()
-                , person.getActivities(), person.getInfluence());
+        return insertPerson(person.getEmail(), person.getDisplayName(), person.getAge(), person.getGender()
+                , person.getInterests(), person.getDescription(), person.getLocation(), person.getJoinActivities()
+                , person.getHoldActivities(), person.getGoodMember(), person.getGoodLeader(), person.getOnline());
     }
 
-    public boolean insertPerson(String strEmail, String strDisplayName, int iAge, String strInterests
-            , String strDescription, String strLocation, String strActivities, int iInfluence) {
+    public boolean insertPerson(String strEmail, String strDisplayName, int iAge, String strGender, String strInterests
+            , String strDescription, String strLocation, String strJoinActivities, String strHoldActivities
+            , int iGoodMember, int iGoodLeader, int bOnline) {
 
         boolean bRes = false;
 
@@ -112,16 +117,20 @@ public class CloudSQLManager {
         if (!createPersonsTable())
             return bRes;
 
-        String strCreatePersonSQL = "INSERT INTO persons (ts,email,displayname,age" +
-                ",interests,description,location,activities,influence) " +
+        String strCreatePersonSQL = "INSERT INTO persons (ts,email,displayname,age,gender" +
+                ",interests,description,location,joinactivities,holdactivities,goodmember,goodleader,online) " +
                 "VALUES (?,\"" + strEmail + "\"" +
                 ",\"" + strDisplayName + "\"" +
                 ",\"" + iAge + "\"" +
+                ",\"" + strGender + "\"" +
                 ",\"" + strInterests + "\"" +
                 ",\"" + strDescription + "\"" +
                 ",\"" + strLocation + "\"" +
-                ",\"" + strActivities + "\"" +
-                ",\"" + iInfluence + "\"" +
+                ",\"" + strJoinActivities + "\"" +
+                ",\"" + strHoldActivities + "\"" +
+                ",\"" + iGoodMember + "\"" +
+                ",\"" + iGoodLeader + "\"" +
+                ",\"" + bOnline + "\"" +
                 ");";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -174,11 +183,15 @@ public class CloudSQLManager {
                 person.setEmail(rs.getString("email"));
                 person.setDisplayName(rs.getString("displayname"));
                 person.setAge(rs.getInt("age"));
+                person.setGender(rs.getString("gender"));
                 person.setInterests(rs.getString("interests"));
                 person.setDescription(rs.getString("description"));
                 person.setLocation(rs.getString("location"));
-                person.setActivities(rs.getString("activities"));
-                person.setInfluence(rs.getInt("influence"));
+                person.setJoinActivities(rs.getString("joinactivities"));
+                person.setHoldActivities(rs.getString("holdactivities"));
+                person.setGoodMember(rs.getInt("goodmember"));
+                person.setGoodLeader(rs.getInt("goodleader"));
+                person.setOnline(rs.getInt("online"));
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
@@ -203,11 +216,15 @@ public class CloudSQLManager {
                 person.setEmail(rs.getString("email"));
                 person.setDisplayName(rs.getString("displayname"));
                 person.setAge(rs.getInt("age"));
+                person.setGender(rs.getString("gender"));
                 person.setInterests(rs.getString("interests"));
                 person.setDescription(rs.getString("description"));
                 person.setLocation(rs.getString("location"));
-                person.setActivities(rs.getString("activities"));
-                person.setInfluence(rs.getInt("influence"));
+                person.setJoinActivities(rs.getString("joinactivities"));
+                person.setHoldActivities(rs.getString("holdactivities"));
+                person.setGoodMember(rs.getInt("goodmember"));
+                person.setGoodLeader(rs.getInt("goodleader"));
+                person.setOnline(rs.getInt("online"));
                 lsPersons.add(person);
             }
         } catch (SQLException e) {
