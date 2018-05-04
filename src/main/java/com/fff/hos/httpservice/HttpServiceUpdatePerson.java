@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceUnregister", value = "/unregister")
-public class HttpServiceUnregister extends HttpServlet {
+@WebServlet(name = "HttpServiceUpdatePerson", value = "/updateperson")
+public class HttpServiceUpdatePerson extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceUpdatePerson.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,24 +32,22 @@ public class HttpServiceUnregister extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (person != null
-                || DBTool.checkStringNotNull(person.getEmail())
-                || DBTool.checkStringNotNull(person.getUserPassword())) {
+                || DBTool.checkStringNotNull(person.getEmail())) {
 
             if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().unregister(person)) {
+                if (CloudSQLManager.getInstance().updatePerson(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "unregister fail, email or password wrong?");
+                    jsonObj.addProperty("status", "update fail, ");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "unregister fail, user is not exist");
+                jsonObj.addProperty("status", "update fail, user is not exist");
             }
-
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "unregister fail, JSON format wrong");
+            jsonObj.addProperty("status", "update fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

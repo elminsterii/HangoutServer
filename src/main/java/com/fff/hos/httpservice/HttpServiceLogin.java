@@ -4,7 +4,9 @@ import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
 import com.fff.hos.person.Person;
 import com.fff.hos.tools.DBTool;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceUnregister", value = "/unregister")
-public class HttpServiceUnregister extends HttpServlet {
+@WebServlet(name = "HttpServiceLogin", value = "/login")
+public class HttpServiceLogin extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceLogin.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,20 +38,24 @@ public class HttpServiceUnregister extends HttpServlet {
                 || DBTool.checkStringNotNull(person.getUserPassword())) {
 
             if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().unregister(person)) {
-                    jsonObj.addProperty("statuscode", 0);
+                Person resPerson = CloudSQLManager.getInstance().login(person);
+
+                if (resPerson != null) {
+                    String strPersonJson = new Gson().toJson(resPerson);
+                    strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
+                    jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "unregister fail, email or password wrong?");
+                    jsonObj.addProperty("status", "login fail, email or password wrong?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "unregister fail, user is not exist");
+                jsonObj.addProperty("status", "login fail, user is not exist");
             }
 
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "unregister fail, JSON format wrong");
+            jsonObj.addProperty("status", "login fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

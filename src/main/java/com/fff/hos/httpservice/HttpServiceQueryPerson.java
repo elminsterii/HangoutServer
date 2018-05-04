@@ -33,22 +33,29 @@ public class HttpServiceQueryPerson extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null || DBTool.checkStringNotNull(person.getEmail())) {
-            //check user already exist.
-            Person resPerson = CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail());
+        if (person != null
+                || DBTool.checkStringNotNull(person.getEmail())) {
 
-            if (resPerson == null) {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "fail, user not exist");
+            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
+                Person resPerson = CloudSQLManager.getInstance().queryPerson(person);
+
+                if (resPerson != null) {
+                    String strPersonJson = new Gson().toJson(resPerson);
+                    strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
+                    jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
+                } else {
+                    jsonObj.addProperty("statuscode", 1);
+                    jsonObj.addProperty("status", "query fail, email or password wrong?");
+                }
             } else {
-                String strPersonJson = new Gson().toJson(resPerson);
-                strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
-                jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
+                jsonObj.addProperty("statuscode", 1);
+                jsonObj.addProperty("status", "query fail, user is not exist");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "fail, JSON format wrong");
+            jsonObj.addProperty("status", "query fail, JSON format wrong");
         }
+
 
         response.getWriter().print(jsonObj.toString());
         response.flushBuffer();

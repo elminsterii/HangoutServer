@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceUnregister", value = "/unregister")
-public class HttpServiceUnregister extends HttpServlet {
+@WebServlet(name = "HttpServiceLogout", value = "/logout")
+public class HttpServiceLogout extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceLogout.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,20 +36,22 @@ public class HttpServiceUnregister extends HttpServlet {
                 || DBTool.checkStringNotNull(person.getUserPassword())) {
 
             if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().unregister(person)) {
+                Person resPerson = CloudSQLManager.getInstance().logout(person);
+
+                if (resPerson != null) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "unregister fail, email or password wrong?");
+                    jsonObj.addProperty("status", "logout fail, email or password wrong?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "unregister fail, user is not exist");
+                jsonObj.addProperty("status", "logout fail, user is not exist");
             }
 
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "unregister fail, JSON format wrong");
+            jsonObj.addProperty("status", "logout fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

@@ -3,49 +3,65 @@ package com.fff.hos.person;
 import com.google.gson.annotations.SerializedName;
 
 public class Person {
+
     @SerializedName("email")
     private String Email;
+    public static String DB_EMAIL = "email";
+    public static String DB_USERPASSWORD = "userpassword";
+    public static String DB_DISPLAYNAME = "displayname";
 
     @SerializedName("displayname")
     private String DisplayName;
+    public static String DB_AGE = "age";
 
     @SerializedName("age")
     private int Age;
+    public static String DB_GENDER = "gender";
 
     @SerializedName("gender")
     private String Gender;
+    public static String DB_INTERESTS = "interests";
 
     @SerializedName("interests")
     private String Interests;
+    public static String DB_DESCRIPTION = "description";
 
     @SerializedName("description")
     private String Description;
+    public static String DB_LOCATION = "location";
 
     @SerializedName("location")
     private String Location;
+    public static String DB_JOINACTIVITIES = "joinactivities";
 
     @SerializedName("joinactivities")
     private String JoinActivities;
+    public static String DB_HOLDACTIVITIES = "holdactivities";
 
     @SerializedName("holdactivities")
     private String HoldActivities;
+    public static String DB_GOODMEMBER = "goodmember";
 
     @SerializedName("goodmember")
     private int GoodMember;
+    public static String DB_GOODLEADER = "goodleader";
 
     @SerializedName("goodleader")
     private int GoodLeader;
+    public static String DB_ONLINE = "online";
 
     @SerializedName("online")
     private int Online;
+    @SerializedName("userpassword")
+    private String UserPassword;
 
     public Person() {
 
     }
 
-    public Person(String email, String displayName, int age, String gender, String interests, String description
-            , String location, String joinActivities, String holdActivities, int goodMember, int goodLeader, int online) {
+    public Person(String email, String userPassword, String displayName, int age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, int goodMember, int goodLeader, int online) {
         Email = email;
+        UserPassword = userPassword;
         DisplayName = displayName;
         Age = age;
         Gender = gender;
@@ -65,6 +81,14 @@ public class Person {
 
     public void setEmail(String email) {
         Email = email;
+    }
+
+    public String getUserPassword() {
+        return UserPassword;
+    }
+
+    public void setUserPassword(String userPassword) {
+        UserPassword = userPassword;
     }
 
     public String getDisplayName() {

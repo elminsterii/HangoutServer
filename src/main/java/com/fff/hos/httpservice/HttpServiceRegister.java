@@ -31,25 +31,23 @@ public class HttpServiceRegister extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null || DBTool.checkStringNotNull(person.getEmail())) {
-            //check user already exist.
-            if (CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail()) != null) {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "fail, user already exist");
-            } else {
-                CloudSQLManager.getInstance().insertPerson(person);
-                Person resPerson = CloudSQLManager.getInstance().queryPersonsByEmail(person.getEmail());
+        if (person != null
+                || DBTool.checkStringNotNull(person.getEmail())) {
 
-                if (resPerson != null) {
+            if (!CloudSQLManager.getInstance().checkPersonExist(person)) {
+                if (CloudSQLManager.getInstance().register(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "fail, register fail");
+                    jsonObj.addProperty("status", "register fail, email or password wrong?");
                 }
+            } else {
+                jsonObj.addProperty("statuscode", 1);
+                jsonObj.addProperty("status", "register fail, user is exist");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "fail, JSON format wrong");
+            jsonObj.addProperty("status", "register fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());
