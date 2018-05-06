@@ -1,9 +1,8 @@
 package com.fff.hos.httpservice;
 
+import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.person.Person;
-import com.fff.hos.tools.DBTool;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -31,15 +30,13 @@ public class HttpServiceRegister extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null
-                || DBTool.checkStringNotNull(person.getEmail())) {
-
+        if (person != null) {
             if (!CloudSQLManager.getInstance().checkPersonExist(person)) {
                 if (CloudSQLManager.getInstance().register(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "register fail, email or password wrong?");
+                    jsonObj.addProperty("status", "register fail, missing necessary data?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);

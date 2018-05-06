@@ -1,6 +1,6 @@
 package com.fff.hos.json;
 
-import com.fff.hos.person.Person;
+import com.fff.hos.data.Person;
 import com.google.gson.Gson;
 
 import javax.servlet.http.HttpServletRequest;

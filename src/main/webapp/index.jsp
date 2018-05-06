@@ -16,7 +16,7 @@
         <td colspan="2">So far, Use http post with JSON format to verify functions</td>
     </tr>
     <tr>
-        <!-- <td><a href='/register'>Test register person</a></td> -->
+        <!-- <td><a href='/register'>Test register data</a></td> -->
     </tr>
 </table>
 

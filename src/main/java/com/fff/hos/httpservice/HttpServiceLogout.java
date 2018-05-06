@@ -1,8 +1,8 @@
 package com.fff.hos.httpservice;
 
+import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.person.Person;
 import com.fff.hos.tools.DBTool;
 import com.google.gson.JsonObject;
 
@@ -31,10 +31,7 @@ public class HttpServiceLogout extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null
-                || DBTool.checkStringNotNull(person.getEmail())
-                || DBTool.checkStringNotNull(person.getUserPassword())) {
-
+        if (person != null) {
             if (CloudSQLManager.getInstance().checkPersonExist(person)) {
                 Person resPerson = CloudSQLManager.getInstance().logout(person);
 

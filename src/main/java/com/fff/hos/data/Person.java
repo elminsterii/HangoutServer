@@ -1,4 +1,4 @@
-package com.fff.hos.person;
+package com.fff.hos.data;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -6,63 +6,55 @@ public class Person {
 
     @SerializedName("email")
     private String Email;
-    public static String DB_EMAIL = "email";
-    public static String DB_USERPASSWORD = "userpassword";
-    public static String DB_DISPLAYNAME = "displayname";
+
+    @SerializedName("userpassword")
+    private String UserPassword;
 
     @SerializedName("displayname")
     private String DisplayName;
-    public static String DB_AGE = "age";
+
+    @SerializedName("icon")
+    private String Icon;
 
     @SerializedName("age")
-    private int Age;
-    public static String DB_GENDER = "gender";
+    private Integer Age;
 
     @SerializedName("gender")
     private String Gender;
-    public static String DB_INTERESTS = "interests";
 
     @SerializedName("interests")
     private String Interests;
-    public static String DB_DESCRIPTION = "description";
 
     @SerializedName("description")
     private String Description;
-    public static String DB_LOCATION = "location";
 
     @SerializedName("location")
     private String Location;
-    public static String DB_JOINACTIVITIES = "joinactivities";
 
     @SerializedName("joinactivities")
     private String JoinActivities;
-    public static String DB_HOLDACTIVITIES = "holdactivities";
 
     @SerializedName("holdactivities")
     private String HoldActivities;
-    public static String DB_GOODMEMBER = "goodmember";
 
     @SerializedName("goodmember")
-    private int GoodMember;
-    public static String DB_GOODLEADER = "goodleader";
+    private Integer GoodMember;
 
     @SerializedName("goodleader")
-    private int GoodLeader;
-    public static String DB_ONLINE = "online";
+    private Integer GoodLeader;
 
     @SerializedName("online")
-    private int Online;
-    @SerializedName("userpassword")
-    private String UserPassword;
+    private Integer Online;
 
     public Person() {
 
     }
 
-    public Person(String email, String userPassword, String displayName, int age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, int goodMember, int goodLeader, int online) {
+    public Person(String email, String userPassword, String displayName, String icon, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online) {
         Email = email;
         UserPassword = userPassword;
         DisplayName = displayName;
+        Icon = icon;
         Age = age;
         Gender = gender;
         Interests = interests;
@@ -99,11 +91,19 @@ public class Person {
         DisplayName = displayName;
     }
 
-    public int getAge() {
+    public String getIcon() {
+        return Icon;
+    }
+
+    public void setIcon(String icon) {
+        Icon = icon;
+    }
+
+    public Integer getAge() {
         return Age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         Age = age;
     }
 
@@ -155,27 +155,27 @@ public class Person {
         HoldActivities = holdActivities;
     }
 
-    public int getGoodMember() {
+    public Integer getGoodMember() {
         return GoodMember;
     }
 
-    public void setGoodMember(int goodMember) {
+    public void setGoodMember(Integer goodMember) {
         GoodMember = goodMember;
     }
 
-    public int getGoodLeader() {
+    public Integer getGoodLeader() {
         return GoodLeader;
     }
 
-    public void setGoodLeader(int goodLeader) {
+    public void setGoodLeader(Integer goodLeader) {
         GoodLeader = goodLeader;
     }
 
-    public int getOnline() {
+    public Integer getOnline() {
         return Online;
     }
 
-    public void setOnline(int online) {
+    public void setOnline(Integer online) {
         Online = online;
     }
 }

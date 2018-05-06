@@ -1,8 +1,8 @@
 package com.fff.hos.httpservice;
 
+import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.person.Person;
 import com.fff.hos.tools.DBTool;
 import com.google.gson.JsonObject;
 
@@ -31,15 +31,13 @@ public class HttpServiceUpdatePerson extends HttpServlet {
         Person person = HttpJsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null
-                || DBTool.checkStringNotNull(person.getEmail())) {
-
+        if (person != null) {
             if (CloudSQLManager.getInstance().checkPersonExist(person)) {
                 if (CloudSQLManager.getInstance().updatePerson(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "update fail, ");
+                    jsonObj.addProperty("status", "update fail");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
@@ -47,7 +45,7 @@ public class HttpServiceUpdatePerson extends HttpServlet {
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "update fail, JSON format wrong");
+            jsonObj.addProperty("status", "update fail, JSON format wrong or missing email");
         }
 
         response.getWriter().print(jsonObj.toString());
