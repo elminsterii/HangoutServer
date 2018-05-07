@@ -15,7 +15,7 @@ public class CloudSQLManager {
     private static final Logger LOGGER = Logger.getLogger(CloudSQLManager.class.getName());
 
     private static CloudSQLManager m_instance = null;
-    private Connection conn;
+    private static Connection conn = null;
 
     private DBCtrlPerson m_dbCtrlPerson = null;
 
@@ -31,36 +31,46 @@ public class CloudSQLManager {
         return m_instance;
     }
 
-    private void initialize() {
-        ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
-        Map<String, Object> attr = env.getAttributes();
-        String hostname = (String) attr.get("com.google.appengine.runtime.default_version_hostname");
-
-        String strURL;
-        if (hostname.contains("localhost:")) {
-            SysRunTool.sysRunMySQL();
-
-            strURL = System.getProperty("sqlLocal")
-                    + System.getProperty("sqlDBName") + "?"
-                    + "useSSL=false&"
-                    + "user=" + System.getProperty("sqlUserName")
-                    + "&password=" + System.getProperty("sqlUserPassword");
-        } else {
-            strURL = System.getProperty("sqlCloud")
-                    + System.getProperty("sqlInsConnName") + "/"
-                    + System.getProperty("sqlDBName") + "?"
-                    + "user=" + System.getProperty("sqlUserName")
-                    + "&password=" + System.getProperty("sqlUserPassword");
-        }
-
-        LOGGER.warning("connecting to: " + strURL);
+    static Connection getConnection() {
         try {
-            conn = DriverManager.getConnection(strURL);
+            if (conn == null || conn.isClosed()) {
+                ApiProxy.Environment env = ApiProxy.getCurrentEnvironment();
+                Map<String, Object> attr = env.getAttributes();
+                String hostname = (String) attr.get("com.google.appengine.runtime.default_version_hostname");
+
+                String strURL;
+                if (hostname.contains("localhost:")) {
+                    SysRunTool.sysRunMySQL();
+
+                    strURL = System.getProperty("sqlLocal")
+                            + System.getProperty("sqlDBName") + "?"
+                            + "useSSL=false&"
+                            + "user=" + System.getProperty("sqlUserName")
+                            + "&password=" + System.getProperty("sqlUserPassword");
+                } else {
+                    strURL = System.getProperty("sqlCloud")
+                            + System.getProperty("sqlInsConnName") + "/"
+                            + System.getProperty("sqlDBName") + "?"
+                            + "user=" + System.getProperty("sqlUserName")
+                            + "&password=" + System.getProperty("sqlUserPassword");
+                }
+
+                LOGGER.warning("connecting to: " + strURL);
+                try {
+                    conn = DriverManager.getConnection(strURL);
+                } catch (SQLException e) {
+                    LOGGER.warning("Unable to connect to Cloud SQL, " + e.getMessage());
+                }
+            }
         } catch (SQLException e) {
             LOGGER.warning("Unable to connect to Cloud SQL, " + e.getMessage());
         }
 
-        m_dbCtrlPerson = new DBCtrlPerson(conn);
+        return conn;
+    }
+
+    private void initialize() {
+        m_dbCtrlPerson = new DBCtrlPerson();
     }
 
     // ---------------------------- Person control ----------------------------

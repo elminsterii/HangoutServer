@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 public class DBCtrlPerson {
     private static final Logger LOGGER = Logger.getLogger(DBCtrlPerson.class.getName());
 
-    private Connection conn;
-
     private final String DB_TABLE_NAME = "persons";
     private final static String DB_COL_TS = "ts";
     private final static String DB_COL_ID = "id";
@@ -34,12 +32,13 @@ public class DBCtrlPerson {
     private final static String DB_COL_GOODLEADER = "goodleader";
     private final static String DB_COL_ONLINE = "online";
 
-    DBCtrlPerson(Connection conn) {
-        this.conn = conn;
+    DBCtrlPerson() {
         createTable();
     }
 
     private void createTable() {
+        Connection conn = CloudSQLManager.getConnection();
+
         String strCreateTableSQL = "CREATE TABLE IF NOT EXISTS " + DB_TABLE_NAME + " ( "
                 + DB_COL_ID + " SERIAL NOT NULL, "
                 + DB_COL_TS + " timestamp NOT NULL, "
@@ -75,7 +74,7 @@ public class DBCtrlPerson {
                 , person.getHoldActivities(), person.getGoodMember(), person.getGoodLeader(), person.getOnline());
     }
 
-    boolean insert(String strEmail, String strUserPassword, String strDisplayName, String icon, Integer iAge, String strGender, String strInterests
+    private boolean insert(String strEmail, String strUserPassword, String strDisplayName, String icon, Integer iAge, String strGender, String strInterests
             , String strDescription, String strLocation, String strJoinActivities, String strHoldActivities
             , Integer iGoodMember, Integer iGoodLeader, Integer bOnline) {
 
@@ -88,6 +87,7 @@ public class DBCtrlPerson {
                 || !DBTool.checkStringNotNull(strGender))
             return bRes;
 
+        Connection conn = CloudSQLManager.getConnection();
         String strCreatePersonSQL = "INSERT INTO " + DB_TABLE_NAME +
                 " (" + DB_COL_TS +
                 "," + DB_COL_EMAIL +
@@ -147,6 +147,7 @@ public class DBCtrlPerson {
                 || !DBTool.checkStringNotNull(strUserPassword))
             return bRes;
 
+        Connection conn = CloudSQLManager.getConnection();
         String strDeletePersonSQL = "DELETE FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_EMAIL + "=\"" + strEmail
                 + "\" AND " + DB_COL_USERPASSWORD + "=\"" + strUserPassword + "\";";
 
@@ -168,6 +169,7 @@ public class DBCtrlPerson {
         if (!DBTool.checkStringNotNull(strEmail))
             return bRes;
 
+        Connection conn = CloudSQLManager.getConnection();
         String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_EMAIL + "=\"" + strEmail + "\";";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -188,6 +190,7 @@ public class DBCtrlPerson {
                 || !DBTool.checkStringNotNull(strUserPassword))
             return bRes;
 
+        Connection conn = CloudSQLManager.getConnection();
         String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_EMAIL + "=\"" + strEmail
                 + "\" AND " + DB_COL_USERPASSWORD + "=\"" + strUserPassword + "\";";
 
@@ -210,6 +213,11 @@ public class DBCtrlPerson {
 
     Person query(String strEmail) {
         Person person = null;
+
+        if (!DBTool.checkStringNotNull(strEmail))
+            return null;
+
+        Connection conn = CloudSQLManager.getConnection();
         String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_EMAIL + "=\"" + strEmail + "\";";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -243,6 +251,8 @@ public class DBCtrlPerson {
 
     List<Person> queryAll(String strOrderBy, int iLimit) {
         List<Person> lsPersons = null;
+
+        Connection conn = CloudSQLManager.getConnection();
         String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " ORDER BY "
                 + strOrderBy + " DESC " + "LIMIT " + iLimit + ";";
 
@@ -283,8 +293,13 @@ public class DBCtrlPerson {
             return bRes;
 
         Person oldPerson = query(person.getEmail());
+
+        if (oldPerson == null)
+            return bRes;
+
         fillUpdatePersonIfNull(oldPerson, person);
 
+        Connection conn = CloudSQLManager.getConnection();
         String strUpdateSQL = "UPDATE " + DB_TABLE_NAME + " SET "
                 + DB_COL_USERPASSWORD + "=\"" + person.getUserPassword() + "\","
                 + DB_COL_DISPLAYNAME + "=\"" + person.getDisplayName() + "\","
