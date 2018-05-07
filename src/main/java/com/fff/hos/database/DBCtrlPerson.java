@@ -305,7 +305,7 @@ public class DBCtrlPerson {
                 + DB_COL_DISPLAYNAME + "=\"" + person.getDisplayName() + "\","
                 + DB_COL_ICON + "=\"" + person.getIcon() + "\","
                 + DB_COL_AGE + "=\"" + person.getAge() + "\","
-                + DB_COL_GENDER + "=\"" + person.getDisplayName() + "\","
+                + DB_COL_GENDER + "=\"" + person.getGender() + "\","
                 + DB_COL_INTERESTS + "=\"" + person.getInterests() + "\","
                 + DB_COL_DESCRIPTION + "=\"" + person.getDescription() + "\","
                 + DB_COL_LOCATION + "=\"" + person.getLocation() + "\","
