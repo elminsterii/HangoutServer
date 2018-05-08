@@ -115,6 +115,10 @@ public class CloudSQLManager {
         return resPerson;
     }
 
+    public boolean checkPersonValid(Person person) {
+        return m_dbCtrlPerson.checkPersonValid(person.getEmail(), person.getUserPassword());
+    }
+
     public boolean checkPersonExist(Person person) {
         return m_dbCtrlPerson.checkPersonExist(person.getEmail());
     }

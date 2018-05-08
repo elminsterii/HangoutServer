@@ -23,6 +23,7 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         JsonElement jeGoodMember = jsonObject.get("goodmember");
         JsonElement jeGoodLeader = jsonObject.get("goodleader");
         JsonElement jeOnline = jsonObject.get("online");
+        JsonElement jeNewUserPassword = jsonObject.get("newuserpassword");
 
         Person person = new Person();
         person.setEmail(jeEmail.getAsString());
@@ -38,6 +39,7 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         person.setGoodMember(jeGoodMember == null ? null : jeGoodMember.getAsInt());
         person.setGoodLeader(jeGoodLeader == null ? null : jeGoodLeader.getAsInt());
         person.setOnline(jeOnline == null ? null : jeOnline.getAsInt());
+        person.setUserPassword(jeNewUserPassword == null ? null : jeNewUserPassword.getAsString());
 
         return person;
     }

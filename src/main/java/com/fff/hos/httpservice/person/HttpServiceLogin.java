@@ -34,22 +34,16 @@ public class HttpServiceLogin extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                Person resPerson = CloudSQLManager.getInstance().login(person);
+            Person resPerson = CloudSQLManager.getInstance().login(person);
 
-                if (resPerson != null) {
-                    String strPersonJson = new Gson().toJson(resPerson);
-                    strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
-                    jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "login fail, email or password wrong?");
-                }
+            if (resPerson != null) {
+                String strPersonJson = new Gson().toJson(resPerson);
+                strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
+                jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "login fail, user is not exist");
+                jsonObj.addProperty("status", "login fail, email or password wrong?");
             }
-
         } else {
             jsonObj.addProperty("statuscode", 1);
             jsonObj.addProperty("status", "login fail, JSON format wrong");

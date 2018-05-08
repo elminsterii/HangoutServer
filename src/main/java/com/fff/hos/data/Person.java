@@ -46,11 +46,14 @@ public class Person {
     @SerializedName("online")
     private Integer Online;
 
+    @SerializedName("newuserpassword")
+    private String NewUserPassword;
+
     public Person() {
 
     }
 
-    public Person(String email, String userPassword, String displayName, String icon, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online) {
+    public Person(String email, String userPassword, String displayName, String icon, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online, String newUserPassword) {
         Email = email;
         UserPassword = userPassword;
         DisplayName = displayName;
@@ -65,6 +68,7 @@ public class Person {
         GoodMember = goodMember;
         GoodLeader = goodLeader;
         Online = online;
+        NewUserPassword = newUserPassword;
     }
 
     public String getEmail() {
@@ -177,5 +181,13 @@ public class Person {
 
     public void setOnline(Integer online) {
         Online = online;
+    }
+
+    public String getNewUserPassword() {
+        return NewUserPassword;
+    }
+
+    public void setNewUserPassword(String newUserPassword) {
+        NewUserPassword = newUserPassword;
     }
 }

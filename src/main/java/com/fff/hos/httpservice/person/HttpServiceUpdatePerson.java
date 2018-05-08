@@ -3,6 +3,7 @@ package com.fff.hos.httpservice.person;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
+import com.fff.hos.tools.DBTool;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -31,7 +32,11 @@ public class HttpServiceUpdatePerson extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
+            if (CloudSQLManager.getInstance().checkPersonValid(person)) {
+                //change password?
+                if(DBTool.checkStringNotNull(person.getNewUserPassword()))
+                    person.setUserPassword(person.getNewUserPassword());
+
                 if (CloudSQLManager.getInstance().updatePerson(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
@@ -40,7 +45,7 @@ public class HttpServiceUpdatePerson extends HttpServlet {
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "update fail, user is not exist");
+                jsonObj.addProperty("status", "update fail, user is not exist or password wrong");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);

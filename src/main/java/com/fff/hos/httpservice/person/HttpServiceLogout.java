@@ -31,23 +31,17 @@ public class HttpServiceLogout extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                Person resPerson = CloudSQLManager.getInstance().logout(person);
+            Person resPerson = CloudSQLManager.getInstance().logout(person);
 
-                if (resPerson != null) {
-                    jsonObj.addProperty("statuscode", 0);
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "logout fail, email or password wrong?");
-                }
+            if (resPerson != null) {
+                jsonObj.addProperty("statuscode", 0);
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "logout fail, user is not exist");
+                jsonObj.addProperty("status", "logout fail, email or password wrong?");
             }
-
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "logout fail, JSON format wrong");
+            jsonObj.addProperty("status", "login fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

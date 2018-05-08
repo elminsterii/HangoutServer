@@ -38,6 +38,7 @@ public class HttpServiceQueryPerson extends HttpServlet {
                 Person resPerson = CloudSQLManager.getInstance().queryPerson(person);
 
                 if (resPerson != null) {
+                    resPerson.setUserPassword(null);
                     String strPersonJson = new Gson().toJson(resPerson);
                     strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
                     jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
