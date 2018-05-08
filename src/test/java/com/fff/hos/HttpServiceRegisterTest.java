@@ -1,6 +1,6 @@
 package com.fff.hos;
 
-import com.fff.hos.httpservice.HttpServiceRegister;
+import com.fff.hos.httpservice.person.HttpServiceRegister;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.junit.After;
 import org.junit.Before;

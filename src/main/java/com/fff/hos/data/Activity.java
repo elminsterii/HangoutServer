@@ -4,43 +4,52 @@ import com.google.gson.annotations.SerializedName;
 
 public class Activity {
 
-    public static String DB_ID = "id";
-    public static String DB_DISPLAYNAME = "displayname";
-    public static String DB_DATEBEGIN = "datebegin";
-    public static String DB_DATEEND = "dateend";
-    public static String DB_LOCATION = "location";
-    public static String DB_STATUS = "status";
-    public static String DB_IMAGE = "image";
-    public static String DB_DESCRIPTION = "description";
-    public static String DB_TAGS = "tags";
-    public static String DB_GOODACTIVITY = "goodactivity";
     @SerializedName("id")
     private String Id;
+
+    @SerializedName("publisheremail")
+    private String PublisherEmail;
+
     @SerializedName("displayname")
     private String DisplayName;
+
     @SerializedName("datebegin")
     private String DateBegin;
+
     @SerializedName("dateend")
     private String DateEnd;
+
     @SerializedName("location")
     private String Location;
+
     @SerializedName("status")
     private String Status;
+
     @SerializedName("image")
-    private byte[] Image;
+    private String Image;
+
     @SerializedName("description")
     private String Description;
+
     @SerializedName("tags")
     private String Tags;
+
     @SerializedName("goodactivity")
-    private String GoodActivity;
+    private Integer GoodActivity;
+
+    @SerializedName("attention")
+    private Integer Attention;
+
+    @SerializedName("attendees")
+    private String Attendees;
 
     public Activity() {
 
     }
 
-    public Activity(String id, String displayName, String dateBegin, String dateEnd, String location, String status, byte[] image, String description, String tags, String goodActivity) {
+    public Activity(String id, String publisherEmail, String displayName, String dateBegin, String dateEnd, String location, String status, String image, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
         Id = id;
+        PublisherEmail = publisherEmail;
         DisplayName = displayName;
         DateBegin = dateBegin;
         DateEnd = dateEnd;
@@ -50,6 +59,8 @@ public class Activity {
         Description = description;
         Tags = tags;
         GoodActivity = goodActivity;
+        Attention = attention;
+        Attendees = attendees;
     }
 
     public String getId() {
@@ -58,6 +69,14 @@ public class Activity {
 
     public void setId(String id) {
         Id = id;
+    }
+
+    public String getPublisherEmail() {
+        return PublisherEmail;
+    }
+
+    public void setPublisherEmail(String publisherEmail) {
+        PublisherEmail = publisherEmail;
     }
 
     public String getDisplayName() {
@@ -100,11 +119,11 @@ public class Activity {
         Status = status;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return Image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         Image = image;
     }
 
@@ -124,11 +143,27 @@ public class Activity {
         Tags = tags;
     }
 
-    public String getGoodActivity() {
+    public Integer getGoodActivity() {
         return GoodActivity;
     }
 
-    public void setGoodActivity(String goodActivity) {
+    public void setGoodActivity(Integer goodActivity) {
         GoodActivity = goodActivity;
+    }
+
+    public Integer getAttention() {
+        return Attention;
+    }
+
+    public void setAttention(Integer attention) {
+        Attention = attention;
+    }
+
+    public String getAttendees() {
+        return Attendees;
+    }
+
+    public void setAttendees(String attendees) {
+        Attendees = attendees;
     }
 }

@@ -1,9 +1,8 @@
-package com.fff.hos.httpservice;
+package com.fff.hos.httpservice.activity;
 
-import com.fff.hos.data.Person;
+import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.tools.DBTool;
+import com.fff.hos.json.HttpJsonToActivity;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceUpdatePerson", value = "/updateperson")
-public class HttpServiceUpdatePerson extends HttpServlet {
+@WebServlet(name = "HttpServiceDeleteActivity", value = "/deleteactivity")
+public class HttpServiceDeleteActivity extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUpdatePerson.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceDeleteActivity.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,24 +27,25 @@ public class HttpServiceUpdatePerson extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        Activity activity = HttpJsonToActivity.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().updatePerson(person)) {
+        if (activity != null) {
+            if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
+                if (CloudSQLManager.getInstance().deleteActivity(activity)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "update fail");
+                    jsonObj.addProperty("status", "delete fail, activity ID wrong?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "update fail, user is not exist");
+                jsonObj.addProperty("status", "delete fail, activity is not exist");
             }
+
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "update fail, JSON format wrong or missing email");
+            jsonObj.addProperty("status", "delete fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

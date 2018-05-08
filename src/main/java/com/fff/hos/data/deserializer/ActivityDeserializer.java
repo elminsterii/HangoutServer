@@ -1,0 +1,44 @@
+package com.fff.hos.data.deserializer;
+
+import com.fff.hos.data.Activity;
+import com.google.gson.*;
+
+import java.lang.reflect.Type;
+
+public class ActivityDeserializer implements JsonDeserializer<Activity> {
+    @Override
+    public Activity deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject jsonObject = (JsonObject) jsonElement;
+
+        JsonElement jeId = jsonObject.get("id");
+        JsonElement jePublisherEmail = jsonObject.get("publisheremail");
+        JsonElement jeDisplayName = jsonObject.get("displayname");
+        JsonElement jeDateBegin = jsonObject.get("datebegin");
+        JsonElement jeDateEnd = jsonObject.get("dateend");
+        JsonElement jeLocation = jsonObject.get("location");
+        JsonElement jeStatus = jsonObject.get("status");
+        JsonElement jeImage = jsonObject.get("image");
+        JsonElement jeDescription = jsonObject.get("description");
+        JsonElement jeTags = jsonObject.get("tags");
+        JsonElement jeGoodActivity = jsonObject.get("goodactivity");
+        JsonElement jeAttention = jsonObject.get("attention");
+        JsonElement jeAttendees = jsonObject.get("attendees");
+
+        Activity activity = new Activity();
+        activity.setId(jeId.getAsString());
+        activity.setPublisherEmail(jePublisherEmail == null ? null : jePublisherEmail.getAsString());
+        activity.setDisplayName(jeDisplayName == null ? null : jeDisplayName.getAsString());
+        activity.setDateBegin(jeDateBegin == null ? null : jeDateBegin.getAsString());
+        activity.setDateEnd(jeDateEnd == null ? null : jeDateEnd.getAsString());
+        activity.setLocation(jeLocation == null ? null : jeLocation.getAsString());
+        activity.setStatus(jeStatus == null ? null : jeStatus.getAsString());
+        activity.setImage(jeImage == null ? null : jeImage.getAsString());
+        activity.setDescription(jeDescription == null ? null : jeDescription.getAsString());
+        activity.setTags(jeTags == null ? null : jeTags.getAsString());
+        activity.setGoodActivity(jeGoodActivity == null ? null : jeGoodActivity.getAsInt());
+        activity.setAttention(jeAttention == null ? null : jeAttention.getAsInt());
+        activity.setAttendees(jeAttendees == null ? null : jeAttendees.getAsString());
+
+        return activity;
+    }
+}

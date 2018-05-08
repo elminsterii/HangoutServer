@@ -15,8 +15,8 @@ public class DBCtrlPerson {
     private static final Logger LOGGER = Logger.getLogger(DBCtrlPerson.class.getName());
 
     private final String DB_TABLE_NAME = "persons";
-    private final static String DB_COL_TS = "ts";
     private final static String DB_COL_ID = "id";
+    private final static String DB_COL_TS = "ts";
     private final static String DB_COL_EMAIL = "email";
     private final static String DB_COL_USERPASSWORD = "userpassword";
     private final static String DB_COL_DISPLAYNAME = "displayname";
@@ -49,14 +49,14 @@ public class DBCtrlPerson {
                 + DB_COL_AGE + " TINYINT UNSIGNED NOT NULL, "
                 + DB_COL_GENDER + " CHAR(8) NOT NULL, "
                 + DB_COL_INTERESTS + " VARCHAR(512), "
-                + DB_COL_DESCRIPTION + " VARCHAR(512), "
+                + DB_COL_DESCRIPTION + " VARCHAR(1024), "
                 + DB_COL_LOCATION + " VARCHAR(128), "
                 + DB_COL_JOINACTIVITIES + " VARCHAR(1024), "
                 + DB_COL_HOLDACTIVITIES + " VARCHAR(1024), "
                 + DB_COL_GOODMEMBER + " INT NOT NULL DEFAULT 0, "
                 + DB_COL_GOODLEADER + " INT NOT NULL DEFAULT 0, "
                 + DB_COL_ONLINE + " TINYINT UNSIGNED NOT NULL DEFAULT 0, "
-                + "PRIMARY KEY (email) );";
+                + "PRIMARY KEY (" + DB_COL_EMAIL + ") );";
 
         try {
             conn.createStatement().execute(strCreateTableSQL);
@@ -226,20 +226,20 @@ public class DBCtrlPerson {
 
             while (rs.next()) {
                 person = new Person();
-                person.setEmail(rs.getString("email"));
-                person.setUserPassword(rs.getString("userpassword"));
-                person.setDisplayName(rs.getString("displayname"));
-                person.setIcon(rs.getString("icon"));
-                person.setAge(rs.getInt("age"));
-                person.setGender(rs.getString("gender"));
-                person.setInterests(rs.getString("interests"));
-                person.setDescription(rs.getString("description"));
-                person.setLocation(rs.getString("location"));
-                person.setJoinActivities(rs.getString("joinactivities"));
-                person.setHoldActivities(rs.getString("holdactivities"));
-                person.setGoodMember(rs.getInt("goodmember"));
-                person.setGoodLeader(rs.getInt("goodleader"));
-                person.setOnline(rs.getInt("online"));
+                person.setEmail(rs.getString(DB_COL_EMAIL));
+                person.setUserPassword(rs.getString(DB_COL_USERPASSWORD));
+                person.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
+                person.setIcon(rs.getString(DB_COL_ICON));
+                person.setAge(rs.getInt(DB_COL_AGE));
+                person.setGender(rs.getString(DB_COL_GENDER));
+                person.setInterests(rs.getString(DB_COL_INTERESTS));
+                person.setDescription(rs.getString(DB_COL_DESCRIPTION));
+                person.setLocation(rs.getString(DB_COL_LOCATION));
+                person.setJoinActivities(rs.getString(DB_COL_JOINACTIVITIES));
+                person.setHoldActivities(rs.getString(DB_COL_HOLDACTIVITIES));
+                person.setGoodMember(rs.getInt(DB_COL_GOODMEMBER));
+                person.setGoodLeader(rs.getInt(DB_COL_GOODLEADER));
+                person.setOnline(rs.getInt(DB_COL_ONLINE));
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
@@ -263,19 +263,19 @@ public class DBCtrlPerson {
 
             while (rs.next()) {
                 Person person = new Person();
-                person.setEmail(rs.getString("email"));
-                person.setDisplayName(rs.getString("displayname"));
-                person.setIcon(rs.getString("icon"));
-                person.setAge(rs.getInt("age"));
-                person.setGender(rs.getString("gender"));
-                person.setInterests(rs.getString("interests"));
-                person.setDescription(rs.getString("description"));
-                person.setLocation(rs.getString("location"));
-                person.setJoinActivities(rs.getString("joinactivities"));
-                person.setHoldActivities(rs.getString("holdactivities"));
-                person.setGoodMember(rs.getInt("goodmember"));
-                person.setGoodLeader(rs.getInt("goodleader"));
-                person.setOnline(rs.getInt("online"));
+                person.setEmail(rs.getString(DB_COL_EMAIL));
+                person.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
+                person.setIcon(rs.getString(DB_COL_ICON));
+                person.setAge(rs.getInt(DB_COL_AGE));
+                person.setGender(rs.getString(DB_COL_GENDER));
+                person.setInterests(rs.getString(DB_COL_INTERESTS));
+                person.setDescription(rs.getString(DB_COL_DESCRIPTION));
+                person.setLocation(rs.getString(DB_COL_LOCATION));
+                person.setJoinActivities(rs.getString(DB_COL_JOINACTIVITIES));
+                person.setHoldActivities(rs.getString(DB_COL_HOLDACTIVITIES));
+                person.setGoodMember(rs.getInt(DB_COL_GOODMEMBER));
+                person.setGoodLeader(rs.getInt(DB_COL_GOODLEADER));
+                person.setOnline(rs.getInt(DB_COL_ONLINE));
                 lsPersons.add(person);
             }
         } catch (SQLException e) {

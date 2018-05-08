@@ -1,8 +1,8 @@
-package com.fff.hos.httpservice;
+package com.fff.hos.httpservice.activity;
 
-import com.fff.hos.data.Person;
+import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.json.HttpJsonToPerson;
+import com.fff.hos.json.HttpJsonToActivity;
 import com.fff.hos.tools.DBTool;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceQueryPerson", value = "/queryperson")
-public class HttpServiceQueryPerson extends HttpServlet {
+@WebServlet(name = "HttpServiceQueryActivity", value = "/queryactivity")
+public class HttpServiceQueryActivity extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryPerson.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryActivity.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,30 +30,29 @@ public class HttpServiceQueryPerson extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        Activity activity = HttpJsonToActivity.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                Person resPerson = CloudSQLManager.getInstance().queryPerson(person);
+        if (activity != null) {
+            if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
+                Activity resActivity = CloudSQLManager.getInstance().queryActivity(activity);
 
-                if (resPerson != null) {
-                    String strPersonJson = new Gson().toJson(resPerson);
-                    strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
-                    jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
+                if (resActivity != null) {
+                    String strActivityJson = new Gson().toJson(resActivity);
+                    strActivityJson = DBTool.addStatusCode(strActivityJson, 0);
+                    jsonObj = new JsonParser().parse(strActivityJson).getAsJsonObject();
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "query fail, email or password wrong?");
+                    jsonObj.addProperty("status", "query fail, activity ID wrong?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "query fail, user is not exist");
+                jsonObj.addProperty("status", "query fail, activity is not exist");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
             jsonObj.addProperty("status", "query fail, JSON format wrong");
         }
-
 
         response.getWriter().print(jsonObj.toString());
         response.flushBuffer();

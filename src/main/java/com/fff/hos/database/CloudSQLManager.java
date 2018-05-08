@@ -1,5 +1,6 @@
 package com.fff.hos.database;
 
+import com.fff.hos.data.Activity;
 import com.fff.hos.data.Person;
 import com.fff.hos.tools.SysRunTool;
 import com.google.apphosting.api.ApiProxy;
@@ -18,6 +19,7 @@ public class CloudSQLManager {
     private static Connection conn = null;
 
     private DBCtrlPerson m_dbCtrlPerson = null;
+    private DBCtrlActivity m_dbCtrlActivity = null;
 
     private CloudSQLManager() {
 
@@ -71,9 +73,10 @@ public class CloudSQLManager {
 
     private void initialize() {
         m_dbCtrlPerson = new DBCtrlPerson();
+        m_dbCtrlActivity = new DBCtrlActivity();
     }
 
-    // ---------------------------- Person control ----------------------------
+    // ---------------------------- person control ----------------------------
     public boolean register(Person person) {
         return m_dbCtrlPerson.insert(person);
     }
@@ -117,8 +120,23 @@ public class CloudSQLManager {
     }
 
     // ---------------------------- Activity control ----------------------------
+    public boolean createActivity(Activity activity) {
+        return m_dbCtrlActivity.insert(activity);
+    }
 
-    public boolean createActivity() {
-        return true;
+    public boolean deleteActivity(Activity activity) {
+        return m_dbCtrlActivity.delete(activity);
+    }
+
+    public Activity queryActivity(Activity activity) {
+        return m_dbCtrlActivity.query(activity);
+    }
+
+    public boolean updateActivity(Activity activity) {
+        return m_dbCtrlActivity.update(activity);
+    }
+
+    public boolean checkActivityExist(Activity activity) {
+        return m_dbCtrlActivity.checkActivityExist(activity.getId());
     }
 }

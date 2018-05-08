@@ -1,8 +1,8 @@
-package com.fff.hos.httpservice;
+package com.fff.hos.httpservice.activity;
 
-import com.fff.hos.data.Person;
+import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.json.HttpJsonToPerson;
+import com.fff.hos.json.HttpJsonToActivity;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceRegister", value = "/register")
-public class HttpServiceRegister extends HttpServlet {
+@WebServlet(name = "HttpServiceCreateActivity", value = "/createactivity")
+public class HttpServiceCreateActivity extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceRegister.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceCreateActivity.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,20 +27,15 @@ public class HttpServiceRegister extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        Activity activity = HttpJsonToActivity.parse(request);
         JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            if (!CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().register(person)) {
-                    jsonObj.addProperty("statuscode", 0);
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "register fail, missing necessary data?");
-                }
+        if (activity != null) {
+            if (CloudSQLManager.getInstance().createActivity(activity)) {
+                jsonObj.addProperty("statuscode", 0);
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "register fail, user is exist");
+                jsonObj.addProperty("status", "register fail, missing necessary data?");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
