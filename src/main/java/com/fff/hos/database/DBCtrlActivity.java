@@ -147,17 +147,19 @@ public class DBCtrlActivity {
         if (activity == null)
             return false;
 
-        return delete(activity.getId());
+        return delete(activity.getId(), activity.getPublisherEmail());
     }
 
-    boolean delete(String strId) {
+    boolean delete(String strId, String strPublisherEmail) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strId))
+        if (!DBTool.checkStringNotNull(strId)
+                || !DBTool.checkStringNotNull(strPublisherEmail))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
-        String strDeleteActivitySQL = "DELETE FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + "=\"" + strId + "\";";
+        String strDeleteActivitySQL = "DELETE FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + "=\"" + strId
+                + "\" AND " + DB_COL_PUBLISHEREMAIL + "=\"" + strPublisherEmail +"\";";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementDeleteActivity = conn.prepareStatement(strDeleteActivitySQL)) {
@@ -267,7 +269,8 @@ public class DBCtrlActivity {
                 + DB_COL_GOODACTIVITY + "=\"" + activity.getGoodActivity() + "\","
                 + DB_COL_ATTENTION + "=\"" + activity.getAttention() + "\","
                 + DB_COL_ATTENDEES + "=\"" + activity.getAttendees() + "\" "
-                + "WHERE " + DB_COL_ID + "=\"" + activity.getId() + "\";";
+                + " WHERE " + DB_COL_ID + "=\"" + activity.getId()
+                + "\" AND " + DB_COL_PUBLISHEREMAIL + "=\"" + activity.getPublisherEmail() +"\";";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementUpdateActivity = conn.prepareStatement(strUpdateSQL)) {

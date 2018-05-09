@@ -37,7 +37,7 @@ public class HttpServiceDeleteActivity extends HttpServlet {
                         jsonObj.addProperty("statuscode", 0);
                     } else {
                         jsonObj.addProperty("statuscode", 1);
-                        jsonObj.addProperty("status", "delete fail, activity ID wrong?");
+                        jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
                     }
                 } else {
                     jsonObj.addProperty("statuscode", 1);
