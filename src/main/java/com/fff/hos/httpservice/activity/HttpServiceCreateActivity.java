@@ -31,15 +31,20 @@ public class HttpServiceCreateActivity extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            if (CloudSQLManager.getInstance().createActivity(activity)) {
-                jsonObj.addProperty("statuscode", 0);
+            if(CloudSQLManager.getInstance().checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
+                if (CloudSQLManager.getInstance().createActivity(activity)) {
+                    jsonObj.addProperty("statuscode", 0);
+                } else {
+                    jsonObj.addProperty("statuscode", 1);
+                    jsonObj.addProperty("status", "create fail, missing necessary data?");
+                }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "register fail, missing necessary data?");
+                jsonObj.addProperty("status", "create fail, invalid user");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "register fail, JSON format wrong");
+            jsonObj.addProperty("status", "create fail, JSON format wrong");
         }
 
         response.getWriter().print(jsonObj.toString());

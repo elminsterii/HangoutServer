@@ -10,6 +10,21 @@ public class Activity {
     @SerializedName("publisheremail")
     private String PublisherEmail;
 
+    @SerializedName("publisheruserpassword")
+    private String PublisherUserPassword;
+
+    @SerializedName("publishbegin")
+    private String PublishBegin;
+
+    @SerializedName("publishend")
+    private String PublishEnd;
+
+    @SerializedName("largeactivity")
+    private Integer LargeActivity;
+
+    @SerializedName("earlybird")
+    private Integer EarlyBird;
+
     @SerializedName("displayname")
     private String DisplayName;
 
@@ -47,9 +62,14 @@ public class Activity {
 
     }
 
-    public Activity(String id, String publisherEmail, String displayName, String dateBegin, String dateEnd, String location, String status, String image, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
+    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String image, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
         Id = id;
         PublisherEmail = publisherEmail;
+        PublisherUserPassword = publisherUserPassword;
+        PublishBegin = publishBegin;
+        PublishEnd = publishEnd;
+        LargeActivity = largeActivity;
+        EarlyBird = earlyBird;
         DisplayName = displayName;
         DateBegin = dateBegin;
         DateEnd = dateEnd;
@@ -77,6 +97,46 @@ public class Activity {
 
     public void setPublisherEmail(String publisherEmail) {
         PublisherEmail = publisherEmail;
+    }
+
+    public String getPublisherUserPassword() {
+        return PublisherUserPassword;
+    }
+
+    public void setPublisherUserPassword(String publisherUserPassword) {
+        PublisherUserPassword = publisherUserPassword;
+    }
+
+    public String getPublishBegin() {
+        return PublishBegin;
+    }
+
+    public void setPublishBegin(String publishBegin) {
+        PublishBegin = publishBegin;
+    }
+
+    public String getPublishEnd() {
+        return PublishEnd;
+    }
+
+    public void setPublishEnd(String publishEnd) {
+        PublishEnd = publishEnd;
+    }
+
+    public Integer getLargeActivity() {
+        return LargeActivity;
+    }
+
+    public void setLargeActivity(Integer largeActivity) {
+        LargeActivity = largeActivity;
+    }
+
+    public Integer getEarlyBird() {
+        return EarlyBird;
+    }
+
+    public void setEarlyBird(Integer earlyBird) {
+        EarlyBird = earlyBird;
     }
 
     public String getDisplayName() {

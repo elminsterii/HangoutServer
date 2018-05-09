@@ -115,6 +115,10 @@ public class CloudSQLManager {
         return resPerson;
     }
 
+    public boolean checkPersonValid(String strEmail, String strUserPassword) {
+        return m_dbCtrlPerson.checkPersonValid(strEmail, strUserPassword);
+    }
+
     public boolean checkPersonValid(Person person) {
         return m_dbCtrlPerson.checkPersonValid(person.getEmail(), person.getUserPassword());
     }

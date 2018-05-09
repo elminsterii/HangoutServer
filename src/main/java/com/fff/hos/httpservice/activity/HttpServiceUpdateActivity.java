@@ -31,16 +31,21 @@ public class HttpServiceUpdateActivity extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
-                if (CloudSQLManager.getInstance().updateActivity(activity)) {
-                    jsonObj.addProperty("statuscode", 0);
+            if(CloudSQLManager.getInstance().checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
+                if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
+                    if (CloudSQLManager.getInstance().updateActivity(activity)) {
+                        jsonObj.addProperty("statuscode", 0);
+                    } else {
+                        jsonObj.addProperty("statuscode", 1);
+                        jsonObj.addProperty("status", "update fail");
+                    }
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "update fail");
+                    jsonObj.addProperty("status", "update fail, activity is not exist");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "update fail, activity is not exist");
+                jsonObj.addProperty("status", "update fail, invalid user");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);

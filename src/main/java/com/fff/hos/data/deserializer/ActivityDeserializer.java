@@ -12,6 +12,11 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
 
         JsonElement jeId = jsonObject.get("id");
         JsonElement jePublisherEmail = jsonObject.get("publisheremail");
+        JsonElement jePublisherUserPassword = jsonObject.get("publisheruserpassword");
+        JsonElement jePublishBegin = jsonObject.get("publishbegin");
+        JsonElement jePublishEnd = jsonObject.get("publishend");
+        JsonElement jeLargeActivity = jsonObject.get("largeactivity");
+        JsonElement jeEarlyBird = jsonObject.get("earlybird");
         JsonElement jeDisplayName = jsonObject.get("displayname");
         JsonElement jeDateBegin = jsonObject.get("datebegin");
         JsonElement jeDateEnd = jsonObject.get("dateend");
@@ -27,6 +32,11 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         Activity activity = new Activity();
         activity.setId(jeId.getAsString());
         activity.setPublisherEmail(jePublisherEmail == null ? null : jePublisherEmail.getAsString());
+        activity.setPublisherUserPassword(jePublisherUserPassword == null ? null : jePublisherUserPassword.getAsString());
+        activity.setPublishBegin(jePublishBegin == null ? null : jePublishBegin.getAsString());
+        activity.setPublishEnd(jePublishEnd == null ? null : jePublishEnd.getAsString());
+        activity.setLargeActivity(jeLargeActivity == null ? null : jeLargeActivity.getAsInt());
+        activity.setEarlyBird(jeEarlyBird == null ? null : jeEarlyBird.getAsInt());
         activity.setDisplayName(jeDisplayName == null ? null : jeDisplayName.getAsString());
         activity.setDateBegin(jeDateBegin == null ? null : jeDateBegin.getAsString());
         activity.setDateEnd(jeDateEnd == null ? null : jeDateEnd.getAsString());

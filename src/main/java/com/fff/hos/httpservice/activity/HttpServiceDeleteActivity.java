@@ -31,18 +31,22 @@ public class HttpServiceDeleteActivity extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
-                if (CloudSQLManager.getInstance().deleteActivity(activity)) {
-                    jsonObj.addProperty("statuscode", 0);
+            if(CloudSQLManager.getInstance().checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
+                if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
+                    if (CloudSQLManager.getInstance().deleteActivity(activity)) {
+                        jsonObj.addProperty("statuscode", 0);
+                    } else {
+                        jsonObj.addProperty("statuscode", 1);
+                        jsonObj.addProperty("status", "delete fail, activity ID wrong?");
+                    }
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "delete fail, activity ID wrong?");
+                    jsonObj.addProperty("status", "delete fail, activity is not exist");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "delete fail, activity is not exist");
+                jsonObj.addProperty("status", "delete fail, invalid user");
             }
-
         } else {
             jsonObj.addProperty("statuscode", 1);
             jsonObj.addProperty("status", "delete fail, JSON format wrong");

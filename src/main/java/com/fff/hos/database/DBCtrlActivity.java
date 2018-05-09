@@ -16,6 +16,10 @@ public class DBCtrlActivity {
     private final static String DB_COL_ID = "id";
     private final static String DB_COL_TS = "ts";
     private final static String DB_COL_PUBLISHEREMAIL = "publisheremail";
+    private final static String DB_COL_PUBLISHBEGIN = "publishbegin";
+    private final static String DB_COL_PUBLISHEND = "publishend";
+    private final static String DB_COL_LARGEACTIVITY = "largeactivity";
+    private final static String DB_COL_EARLYBIRD = "earlybird";
     private final static String DB_COL_DISPLAYNAME = "displayname";
     private final static String DB_COL_DATEBEGIN = "datebegin";
     private final static String DB_COL_DATEEND = "dateend";
@@ -39,6 +43,10 @@ public class DBCtrlActivity {
                 + DB_COL_ID + " SERIAL NOT NULL, "
                 + DB_COL_TS + " timestamp NOT NULL, "
                 + DB_COL_PUBLISHEREMAIL + " VARCHAR(128) NOT NULL, "
+                + DB_COL_PUBLISHBEGIN + " VARCHAR(32) NOT NULL, "
+                + DB_COL_PUBLISHEND + " VARCHAR(32) NOT NULL, "
+                + DB_COL_LARGEACTIVITY + " TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                + DB_COL_EARLYBIRD + " TINYINT UNSIGNED NOT NULL DEFAULT 0, "
                 + DB_COL_DISPLAYNAME + " VARCHAR(64) NOT NULL, "
                 + DB_COL_DATEBEGIN + " VARCHAR(32) NOT NULL, "
                 + DB_COL_DATEEND + " VARCHAR(32) NOT NULL, "
@@ -60,27 +68,39 @@ public class DBCtrlActivity {
     }
 
     boolean insert(Activity activity) {
-        return insert(activity.getPublisherEmail(), activity.getDisplayName(), activity.getDateBegin(), activity.getDateEnd()
-        , activity.getLocation(), activity.getStatus(), activity.getImage(), activity.getDescription(), activity.getTags()
-        , activity.getGoodActivity(), activity.getAttention(), activity.getAttendees());
+        return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
+                , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
+                , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getImage()
+                , activity.getDescription(), activity.getTags(), activity.getGoodActivity(), activity.getAttention()
+                , activity.getAttendees());
     }
 
-    private boolean insert(String strPublisherEmail, String strDisplayName, String strDateBegin, String strDateEnd
-            , String strLocation, String strStatus, String strImage, String strDescription, String strTags
-            , Integer iGoodActivity, Integer iAttention, String strAttendees) {
+    private boolean insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
+            , Integer iEarlyBird,String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
+            , String strStatus, String strImage, String strDescription, String strTags, Integer iGoodActivity
+            , Integer iAttention, String strAttendees) {
 
         boolean bRes = false;
 
         if (!DBTool.checkStringNotNull(strPublisherEmail)
+                || !DBTool.checkStringNotNull(strPublishBegin)
+                || !DBTool.checkStringNotNull(strPublishEnd)
+                || (iLargeActivity == null)
+                || (iEarlyBird == null)
                 || !DBTool.checkStringNotNull(strDisplayName)
                 || !DBTool.checkStringNotNull(strDateBegin)
-                || !DBTool.checkStringNotNull(strDateEnd))
+                || !DBTool.checkStringNotNull(strDateEnd)
+                || !DBTool.checkStringNotNull(strLocation))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
         String strCreateActivitySQL = "INSERT INTO " + DB_TABLE_NAME +
                 " (" + DB_COL_TS +
                 "," + DB_COL_PUBLISHEREMAIL +
+                "," + DB_COL_PUBLISHBEGIN +
+                "," + DB_COL_PUBLISHEND +
+                "," + DB_COL_LARGEACTIVITY +
+                "," + DB_COL_EARLYBIRD +
                 "," + DB_COL_DISPLAYNAME +
                 "," + DB_COL_DATEBEGIN +
                 "," + DB_COL_DATEEND +
@@ -93,6 +113,10 @@ public class DBCtrlActivity {
                 "," + DB_COL_ATTENTION +
                 "," + DB_COL_ATTENDEES + ") " +
                 "VALUES (?,\"" + strPublisherEmail + "\"" +
+                ",\"" + strPublishBegin + "\"" +
+                ",\"" + strPublishEnd + "\"" +
+                ",\"" + iLargeActivity + "\"" +
+                ",\"" + iEarlyBird + "\"" +
                 ",\"" + strDisplayName + "\"" +
                 ",\"" + strDateBegin + "\"" +
                 ",\"" + strDateEnd + "\"" +
@@ -188,6 +212,10 @@ public class DBCtrlActivity {
                 activity = new Activity();
                 activity.setId(rs.getString(DB_COL_ID));
                 activity.setPublisherEmail(rs.getString(DB_COL_PUBLISHEREMAIL));
+                activity.setPublishBegin(rs.getString(DB_COL_PUBLISHBEGIN));
+                activity.setPublishEnd(rs.getString(DB_COL_PUBLISHEND));
+                activity.setLargeActivity(rs.getInt(DB_COL_LARGEACTIVITY));
+                activity.setEarlyBird(rs.getInt(DB_COL_EARLYBIRD));
                 activity.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
                 activity.setDateBegin(rs.getString(DB_COL_DATEBEGIN));
                 activity.setDateEnd(rs.getString(DB_COL_DATEEND));
@@ -224,6 +252,10 @@ public class DBCtrlActivity {
         Connection conn = CloudSQLManager.getConnection();
         String strUpdateSQL = "UPDATE " + DB_TABLE_NAME + " SET "
                 + DB_COL_PUBLISHEREMAIL + "=\"" + activity.getPublisherEmail() + "\","
+                + DB_COL_PUBLISHBEGIN + "=\"" + activity.getPublishBegin() + "\","
+                + DB_COL_PUBLISHEND + "=\"" + activity.getPublishEnd() + "\","
+                + DB_COL_LARGEACTIVITY + "=\"" + activity.getLargeActivity() + "\","
+                + DB_COL_EARLYBIRD + "=\"" + activity.getEarlyBird() + "\","
                 + DB_COL_DISPLAYNAME + "=\"" + activity.getDisplayName() + "\","
                 + DB_COL_DATEBEGIN + "=\"" + activity.getDateBegin() + "\","
                 + DB_COL_DATEEND + "=\"" + activity.getDateEnd() + "\","
@@ -252,6 +284,14 @@ public class DBCtrlActivity {
     private void fillUpdateActivityIfNull(Activity oldActivity, Activity updateActivity) {
         if (updateActivity.getPublisherEmail() == null)
             updateActivity.setPublisherEmail(oldActivity.getPublisherEmail());
+        if (updateActivity.getPublishBegin() == null)
+            updateActivity.setPublishBegin(oldActivity.getPublishBegin());
+        if (updateActivity.getPublishEnd() == null)
+            updateActivity.setPublishEnd(oldActivity.getPublishEnd());
+        if (updateActivity.getLargeActivity() == null)
+            updateActivity.setLargeActivity(oldActivity.getLargeActivity());
+        if (updateActivity.getEarlyBird() == null)
+            updateActivity.setEarlyBird(oldActivity.getEarlyBird());
         if (updateActivity.getDisplayName() == null)
             updateActivity.setDisplayName(oldActivity.getDisplayName());
         if (updateActivity.getDateBegin() == null)

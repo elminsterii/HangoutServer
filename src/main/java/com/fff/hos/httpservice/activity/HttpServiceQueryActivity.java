@@ -34,20 +34,15 @@ public class HttpServiceQueryActivity extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
-                Activity resActivity = CloudSQLManager.getInstance().queryActivity(activity);
+            Activity resActivity = CloudSQLManager.getInstance().queryActivity(activity);
 
-                if (resActivity != null) {
-                    String strActivityJson = new Gson().toJson(resActivity);
-                    strActivityJson = DBTool.addStatusCode(strActivityJson, 0);
-                    jsonObj = new JsonParser().parse(strActivityJson).getAsJsonObject();
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "query fail, activity ID wrong?");
-                }
+            if (resActivity != null) {
+                String strActivityJson = new Gson().toJson(resActivity);
+                strActivityJson = DBTool.addStatusCode(strActivityJson, 0);
+                jsonObj = new JsonParser().parse(strActivityJson).getAsJsonObject();
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "query fail, activity is not exist");
+                jsonObj.addProperty("status", "query fail, activity ID is wrong or not exist");
             }
         } else {
             jsonObj.addProperty("statuscode", 1);
