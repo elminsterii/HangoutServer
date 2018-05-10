@@ -128,12 +128,16 @@ public class CloudSQLManager {
     }
 
     // ---------------------------- Activity control ----------------------------
-    public boolean createActivity(Activity activity) {
+    public Activity createActivity(Activity activity) {
         return m_dbCtrlActivity.insert(activity);
     }
 
     public boolean deleteActivity(Activity activity) {
         return m_dbCtrlActivity.delete(activity);
+    }
+
+    public Activity queryActivity(String strId) {
+        return m_dbCtrlActivity.query(strId);
     }
 
     public Activity queryActivity(Activity activity) {

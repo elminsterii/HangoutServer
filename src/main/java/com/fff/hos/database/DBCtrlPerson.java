@@ -328,32 +328,32 @@ public class DBCtrlPerson {
         return bRes;
     }
 
-    private void fillUpdatePersonIfNull(Person oldPerson, Person updatePerson) {
-        if (updatePerson.getUserPassword() == null)
-            updatePerson.setUserPassword(oldPerson.getUserPassword());
-        if (updatePerson.getDisplayName() == null)
-            updatePerson.setDisplayName(oldPerson.getDisplayName());
-        if (updatePerson.getIcon() == null)
-            updatePerson.setIcon(oldPerson.getIcon());
-        if (updatePerson.getAge() == null)
-            updatePerson.setAge(oldPerson.getAge());
-        if (updatePerson.getGender() == null)
-            updatePerson.setGender(oldPerson.getGender());
-        if (updatePerson.getInterests() == null)
-            updatePerson.setInterests(oldPerson.getInterests());
-        if (updatePerson.getDescription() == null)
-            updatePerson.setDescription(oldPerson.getDescription());
-        if (updatePerson.getLocation() == null)
-            updatePerson.setLocation(oldPerson.getLocation());
-        if (updatePerson.getJoinActivities() == null)
-            updatePerson.setJoinActivities(oldPerson.getJoinActivities());
-        if (updatePerson.getHoldActivities() == null)
-            updatePerson.setHoldActivities(oldPerson.getHoldActivities());
-        if (updatePerson.getGoodMember() == null)
-            updatePerson.setGoodMember(oldPerson.getGoodMember());
-        if (updatePerson.getGoodLeader() == null)
-            updatePerson.setGoodLeader(oldPerson.getGoodLeader());
-        if (updatePerson.getOnline() == null)
-            updatePerson.setOnline(oldPerson.getOnline());
+    private void fillUpdatePersonIfNull(Person oldPerson, Person newPerson) {
+        if (newPerson.getUserPassword() == null)
+            newPerson.setUserPassword(oldPerson.getUserPassword());
+        if (newPerson.getDisplayName() == null)
+            newPerson.setDisplayName(oldPerson.getDisplayName());
+        if (newPerson.getIcon() == null)
+            newPerson.setIcon(oldPerson.getIcon());
+        if (newPerson.getAge() == null)
+            newPerson.setAge(oldPerson.getAge());
+        if (newPerson.getGender() == null)
+            newPerson.setGender(oldPerson.getGender());
+        if (newPerson.getInterests() == null)
+            newPerson.setInterests(oldPerson.getInterests());
+        if (newPerson.getDescription() == null)
+            newPerson.setDescription(oldPerson.getDescription());
+        if (newPerson.getLocation() == null)
+            newPerson.setLocation(oldPerson.getLocation());
+        if (newPerson.getJoinActivities() == null)
+            newPerson.setJoinActivities(oldPerson.getJoinActivities());
+        if (newPerson.getHoldActivities() == null)
+            newPerson.setHoldActivities(oldPerson.getHoldActivities());
+        if (newPerson.getGoodMember() == null)
+            newPerson.setGoodMember(oldPerson.getGoodMember());
+        if (newPerson.getGoodLeader() == null)
+            newPerson.setGoodLeader(oldPerson.getGoodLeader());
+        if (newPerson.getOnline() == null)
+            newPerson.setOnline(oldPerson.getOnline());
     }
 }

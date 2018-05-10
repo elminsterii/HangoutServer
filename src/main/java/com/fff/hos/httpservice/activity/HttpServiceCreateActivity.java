@@ -3,7 +3,10 @@ package com.fff.hos.httpservice.activity;
 import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToActivity;
+import com.fff.hos.tools.StringTool;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +35,13 @@ public class HttpServiceCreateActivity extends HttpServlet {
 
         if (activity != null) {
             if(CloudSQLManager.getInstance().checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                if (CloudSQLManager.getInstance().createActivity(activity)) {
+                Activity newActivity = CloudSQLManager.getInstance().createActivity(activity);
+
+                if (newActivity != null) {
                     jsonObj.addProperty("statuscode", 0);
+                    String strNewActivityJson = new Gson().toJson(newActivity);
+                    strNewActivityJson = StringTool.addStatusCode(strNewActivityJson, 0);
+                    jsonObj = new JsonParser().parse(strNewActivityJson).getAsJsonObject();
                 } else {
                     jsonObj.addProperty("statuscode", 1);
                     jsonObj.addProperty("status", "create fail, missing necessary data?");

@@ -3,7 +3,7 @@ package com.fff.hos.httpservice.person;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.tools.DBTool;
+import com.fff.hos.tools.StringTool;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -39,7 +39,7 @@ public class HttpServiceLogin extends HttpServlet {
             if (resPerson != null) {
                 resPerson.setUserPassword(null);
                 String strPersonJson = new Gson().toJson(resPerson);
-                strPersonJson = DBTool.addStatusCode(strPersonJson, 0);
+                strPersonJson = StringTool.addStatusCode(strPersonJson, 0);
                 jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
             } else {
                 jsonObj.addProperty("statuscode", 1);

@@ -67,20 +67,25 @@ public class DBCtrlActivity {
         }
     }
 
-    boolean insert(Activity activity) {
-        return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
+    Activity insert(Activity activity) {
+        Activity newActivity = insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
                 , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
                 , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getImage()
                 , activity.getDescription(), activity.getTags(), activity.getGoodActivity(), activity.getAttention()
                 , activity.getAttendees());
+
+        if(newActivity != null)
+            fillUpdateActivityIfNull(activity, newActivity);
+
+        return newActivity;
     }
 
-    private boolean insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
+    private Activity insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
             , Integer iEarlyBird,String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
             , String strStatus, String strImage, String strDescription, String strTags, Integer iGoodActivity
             , Integer iAttention, String strAttendees) {
 
-        boolean bRes = false;
+        Activity resActivity = null;
 
         if (!DBTool.checkStringNotNull(strPublisherEmail)
                 || !DBTool.checkStringNotNull(strPublishBegin)
@@ -91,7 +96,7 @@ public class DBCtrlActivity {
                 || !DBTool.checkStringNotNull(strDateBegin)
                 || !DBTool.checkStringNotNull(strDateEnd)
                 || !DBTool.checkStringNotNull(strLocation))
-            return bRes;
+            return resActivity;
 
         Connection conn = CloudSQLManager.getConnection();
         String strCreateActivitySQL = "INSERT INTO " + DB_TABLE_NAME +
@@ -131,16 +136,24 @@ public class DBCtrlActivity {
                 ");";
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL)) {
+        try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL, new String[]{DB_COL_ID})) {
             statementCreateActivity.setTimestamp(1, new Timestamp(new Date().getTime()));
-            bRes = statementCreateActivity.executeUpdate() > 0;
 
+            if(statementCreateActivity.executeUpdate() > 0) {
+                ResultSet rs = statementCreateActivity.getGeneratedKeys();
+                String strNewActivityID = "";
+                if(rs.next())
+                    strNewActivityID = rs.getString(1);
+
+                resActivity = new Activity();
+                resActivity.setId(strNewActivityID);
+            }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
         }
 
         LOGGER.info("insert time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-        return bRes;
+        return resActivity;
     }
 
     boolean delete(Activity activity) {
@@ -284,38 +297,40 @@ public class DBCtrlActivity {
         return bRes;
     }
 
-    private void fillUpdateActivityIfNull(Activity oldActivity, Activity updateActivity) {
-        if (updateActivity.getPublisherEmail() == null)
-            updateActivity.setPublisherEmail(oldActivity.getPublisherEmail());
-        if (updateActivity.getPublishBegin() == null)
-            updateActivity.setPublishBegin(oldActivity.getPublishBegin());
-        if (updateActivity.getPublishEnd() == null)
-            updateActivity.setPublishEnd(oldActivity.getPublishEnd());
-        if (updateActivity.getLargeActivity() == null)
-            updateActivity.setLargeActivity(oldActivity.getLargeActivity());
-        if (updateActivity.getEarlyBird() == null)
-            updateActivity.setEarlyBird(oldActivity.getEarlyBird());
-        if (updateActivity.getDisplayName() == null)
-            updateActivity.setDisplayName(oldActivity.getDisplayName());
-        if (updateActivity.getDateBegin() == null)
-            updateActivity.setDateBegin(oldActivity.getDateBegin());
-        if (updateActivity.getDateEnd() == null)
-            updateActivity.setDateEnd(oldActivity.getDateEnd());
-        if (updateActivity.getLocation() == null)
-            updateActivity.setLocation(oldActivity.getLocation());
-        if (updateActivity.getStatus() == null)
-            updateActivity.setStatus(oldActivity.getStatus());
-        if (updateActivity.getImage() == null)
-            updateActivity.setImage(oldActivity.getImage());
-        if (updateActivity.getDescription() == null)
-            updateActivity.setDescription(oldActivity.getDescription());
-        if (updateActivity.getTags() == null)
-            updateActivity.setTags(oldActivity.getTags());
-        if (updateActivity.getGoodActivity() == null)
-            updateActivity.setGoodActivity(oldActivity.getGoodActivity());
-        if (updateActivity.getAttention() == null)
-            updateActivity.setAttention(oldActivity.getAttention());
-        if (updateActivity.getAttendees() == null)
-            updateActivity.setAttendees(oldActivity.getAttendees());
+    private void fillUpdateActivityIfNull(Activity oldActivity, Activity newActivity) {
+        if (newActivity.getId() == null)
+            newActivity.setId(oldActivity.getId());
+        if (newActivity.getPublisherEmail() == null)
+            newActivity.setPublisherEmail(oldActivity.getPublisherEmail());
+        if (newActivity.getPublishBegin() == null)
+            newActivity.setPublishBegin(oldActivity.getPublishBegin());
+        if (newActivity.getPublishEnd() == null)
+            newActivity.setPublishEnd(oldActivity.getPublishEnd());
+        if (newActivity.getLargeActivity() == null)
+            newActivity.setLargeActivity(oldActivity.getLargeActivity());
+        if (newActivity.getEarlyBird() == null)
+            newActivity.setEarlyBird(oldActivity.getEarlyBird());
+        if (newActivity.getDisplayName() == null)
+            newActivity.setDisplayName(oldActivity.getDisplayName());
+        if (newActivity.getDateBegin() == null)
+            newActivity.setDateBegin(oldActivity.getDateBegin());
+        if (newActivity.getDateEnd() == null)
+            newActivity.setDateEnd(oldActivity.getDateEnd());
+        if (newActivity.getLocation() == null)
+            newActivity.setLocation(oldActivity.getLocation());
+        if (newActivity.getStatus() == null)
+            newActivity.setStatus(oldActivity.getStatus());
+        if (newActivity.getImage() == null)
+            newActivity.setImage(oldActivity.getImage());
+        if (newActivity.getDescription() == null)
+            newActivity.setDescription(oldActivity.getDescription());
+        if (newActivity.getTags() == null)
+            newActivity.setTags(oldActivity.getTags());
+        if (newActivity.getGoodActivity() == null)
+            newActivity.setGoodActivity(oldActivity.getGoodActivity());
+        if (newActivity.getAttention() == null)
+            newActivity.setAttention(oldActivity.getAttention());
+        if (newActivity.getAttendees() == null)
+            newActivity.setAttendees(oldActivity.getAttendees());
     }
 }
