@@ -1,7 +1,7 @@
 package com.fff.hos.database;
 
 import com.fff.hos.data.Person;
-import com.fff.hos.tools.DBTool;
+import com.fff.hos.tools.StringTool;
 import com.google.common.base.Stopwatch;
 
 import java.sql.*;
@@ -80,11 +80,11 @@ public class DBCtrlPerson {
 
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strEmail)
-                || !DBTool.checkStringNotNull(strUserPassword)
-                || !DBTool.checkStringNotNull(strDisplayName)
+        if (!StringTool.checkStringNotNull(strEmail)
+                || !StringTool.checkStringNotNull(strUserPassword)
+                || !StringTool.checkStringNotNull(strDisplayName)
                 || (iAge == null)
-                || !DBTool.checkStringNotNull(strGender))
+                || !StringTool.checkStringNotNull(strGender))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -143,8 +143,8 @@ public class DBCtrlPerson {
     boolean delete(String strEmail, String strUserPassword) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strEmail)
-                || !DBTool.checkStringNotNull(strUserPassword))
+        if (!StringTool.checkStringNotNull(strEmail)
+                || !StringTool.checkStringNotNull(strUserPassword))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -166,7 +166,7 @@ public class DBCtrlPerson {
     boolean checkPersonExist(String strEmail) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strEmail))
+        if (!StringTool.checkStringNotNull(strEmail))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -186,8 +186,8 @@ public class DBCtrlPerson {
     boolean checkPersonValid(String strEmail, String strUserPassword) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strEmail)
-                || !DBTool.checkStringNotNull(strUserPassword))
+        if (!StringTool.checkStringNotNull(strEmail)
+                || !StringTool.checkStringNotNull(strUserPassword))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -214,7 +214,7 @@ public class DBCtrlPerson {
     Person query(String strEmail) {
         Person person = null;
 
-        if (!DBTool.checkStringNotNull(strEmail))
+        if (!StringTool.checkStringNotNull(strEmail))
             return null;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -289,7 +289,7 @@ public class DBCtrlPerson {
     boolean update(Person person) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(person.getEmail()))
+        if (!StringTool.checkStringNotNull(person.getEmail()))
             return bRes;
 
         Person oldPerson = query(person.getEmail());

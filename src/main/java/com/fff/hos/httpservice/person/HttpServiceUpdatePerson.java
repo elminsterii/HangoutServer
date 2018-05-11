@@ -3,7 +3,7 @@ package com.fff.hos.httpservice.person;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.tools.DBTool;
+import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +34,7 @@ public class HttpServiceUpdatePerson extends HttpServlet {
         if (person != null) {
             if (CloudSQLManager.getInstance().checkPersonValid(person)) {
                 //change password?
-                if(DBTool.checkStringNotNull(person.getNewUserPassword()))
+                if(StringTool.checkStringNotNull(person.getNewUserPassword()))
                     person.setUserPassword(person.getNewUserPassword());
 
                 if (CloudSQLManager.getInstance().updatePerson(person)) {

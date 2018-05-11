@@ -1,7 +1,7 @@
 package com.fff.hos.database;
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.tools.DBTool;
+import com.fff.hos.tools.StringTool;
 import com.google.common.base.Stopwatch;
 
 import java.sql.*;
@@ -89,15 +89,15 @@ public class DBCtrlActivity {
 
         Activity resActivity = null;
 
-        if (!DBTool.checkStringNotNull(strPublisherEmail)
-                || !DBTool.checkStringNotNull(strPublishBegin)
-                || !DBTool.checkStringNotNull(strPublishEnd)
+        if (!StringTool.checkStringNotNull(strPublisherEmail)
+                || !StringTool.checkStringNotNull(strPublishBegin)
+                || !StringTool.checkStringNotNull(strPublishEnd)
                 || (iLargeActivity == null)
                 || (iEarlyBird == null)
-                || !DBTool.checkStringNotNull(strDisplayName)
-                || !DBTool.checkStringNotNull(strDateBegin)
-                || !DBTool.checkStringNotNull(strDateEnd)
-                || !DBTool.checkStringNotNull(strLocation))
+                || !StringTool.checkStringNotNull(strDisplayName)
+                || !StringTool.checkStringNotNull(strDateBegin)
+                || !StringTool.checkStringNotNull(strDateEnd)
+                || !StringTool.checkStringNotNull(strLocation))
             return resActivity;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -168,8 +168,8 @@ public class DBCtrlActivity {
     boolean delete(String strId, String strPublisherEmail) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strId)
-                || !DBTool.checkStringNotNull(strPublisherEmail))
+        if (!StringTool.checkStringNotNull(strId)
+                || !StringTool.checkStringNotNull(strPublisherEmail))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -191,7 +191,7 @@ public class DBCtrlActivity {
     boolean checkActivityExist(String strId) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(strId))
+        if (!StringTool.checkStringNotNull(strId))
             return bRes;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -217,7 +217,7 @@ public class DBCtrlActivity {
         Connection conn = CloudSQLManager.getConnection();
         StringBuffer strSelectSQL = new StringBuffer("SELECT * FROM " + DB_TABLE_NAME + " WHERE ");
 
-        if(DBTool.checkStringNotNull(activity.getPublisherEmail()))
+        if(StringTool.checkStringNotNull(activity.getPublisherEmail()))
             strSelectSQL.append(DB_COL_PUBLISHEREMAIL + "=\"").append(activity.getPublisherEmail()).append("\"");
 
         if(activity.getLargeActivity() != null)
@@ -226,11 +226,11 @@ public class DBCtrlActivity {
         if(activity.getEarlyBird() != null)
             strSelectSQL.append(" AND " + DB_COL_EARLYBIRD + "=").append(activity.getEarlyBird());
 
-        if(DBTool.checkStringNotNull(activity.getDisplayName()))
+        if(StringTool.checkStringNotNull(activity.getDisplayName()))
             strSelectSQL.append(" AND " + DB_COL_DISPLAYNAME + "=").append(activity.getDisplayName());
 
-        if(DBTool.checkStringNotNull(activity.getTags())) {
-            String strRegExp = activity.getTags().replace(',','|');
+        if(StringTool.checkStringNotNull(activity.getTags())) {
+            String strRegExp = StringTool.strTagsToRegExp(activity.getTags());
             strSelectSQL.append(" AND " + DB_COL_TAGS + " REGEXP \'").append(strRegExp).append("\'");
         }
 
@@ -255,7 +255,7 @@ public class DBCtrlActivity {
     List<Activity> queryByIds(String strIds) {
         List<Activity> lsActivities = new ArrayList<>();
 
-        if (!DBTool.checkStringNotNull(strIds))
+        if (!StringTool.checkStringNotNull(strIds))
             return lsActivities;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -297,7 +297,7 @@ public class DBCtrlActivity {
     private Activity queryById(String strId) {
         Activity activity = null;
 
-        if (!DBTool.checkStringNotNull(strId))
+        if (!StringTool.checkStringNotNull(strId))
             return null;
 
         Connection conn = CloudSQLManager.getConnection();
@@ -338,7 +338,7 @@ public class DBCtrlActivity {
     boolean update(Activity activity) {
         boolean bRes = false;
 
-        if (!DBTool.checkStringNotNull(activity.getId()))
+        if (!StringTool.checkStringNotNull(activity.getId()))
             return bRes;
 
         Activity oldActivity = queryById(activity.getId());
