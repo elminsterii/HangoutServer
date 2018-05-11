@@ -5,7 +5,9 @@ import com.fff.hos.tools.DBTool;
 import com.google.common.base.Stopwatch;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -207,10 +209,52 @@ public class DBCtrlActivity {
     }
 
     Activity query(Activity activity) {
-        return query(activity.getId());
+        return queryById(activity.getId());
     }
 
-    Activity query(String strId) {
+    List<Activity> queryByIds(String strIds) {
+        List<Activity> lsActivities = new ArrayList<>();
+
+        if (!DBTool.checkStringNotNull(strIds))
+            return null;
+
+        Connection conn = CloudSQLManager.getConnection();
+        String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + " IN (" + strIds + ");";
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL).executeQuery()) {
+            stopwatch.stop();
+
+            while (rs.next()) {
+                Activity activity = new Activity();
+                activity.setId(rs.getString(DB_COL_ID));
+                activity.setPublisherEmail(rs.getString(DB_COL_PUBLISHEREMAIL));
+                activity.setPublishBegin(rs.getString(DB_COL_PUBLISHBEGIN));
+                activity.setPublishEnd(rs.getString(DB_COL_PUBLISHEND));
+                activity.setLargeActivity(rs.getInt(DB_COL_LARGEACTIVITY));
+                activity.setEarlyBird(rs.getInt(DB_COL_EARLYBIRD));
+                activity.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
+                activity.setDateBegin(rs.getString(DB_COL_DATEBEGIN));
+                activity.setDateEnd(rs.getString(DB_COL_DATEEND));
+                activity.setLocation(rs.getString(DB_COL_LOCATION));
+                activity.setStatus(rs.getString(DB_COL_STATUS));
+                activity.setImage(rs.getString(DB_COL_IMAGE));
+                activity.setDescription(rs.getString(DB_COL_DESCRIPTION));
+                activity.setTags(rs.getString(DB_COL_TAGS));
+                activity.setGoodActivity(rs.getInt(DB_COL_GOODACTIVITY));
+                activity.setAttention(rs.getInt(DB_COL_ATTENTION));
+                activity.setAttendees(rs.getString(DB_COL_ATTENDEES));
+                lsActivities.add(activity);
+            }
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return lsActivities;
+    }
+
+    Activity queryById(String strId) {
         Activity activity = null;
 
         if (!DBTool.checkStringNotNull(strId))
@@ -257,7 +301,7 @@ public class DBCtrlActivity {
         if (!DBTool.checkStringNotNull(activity.getId()))
             return bRes;
 
-        Activity oldActivity = query(activity.getId());
+        Activity oldActivity = queryById(activity.getId());
 
         if (oldActivity == null)
             return bRes;

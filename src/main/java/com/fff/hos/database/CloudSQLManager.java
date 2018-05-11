@@ -8,6 +8,7 @@ import com.google.apphosting.api.ApiProxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -136,13 +137,17 @@ public class CloudSQLManager {
         return m_dbCtrlActivity.delete(activity);
     }
 
-    public Activity queryActivity(String strId) {
-        return m_dbCtrlActivity.query(strId);
+    public Activity queryActivityById(String strId) {
+        return m_dbCtrlActivity.queryById(strId);
     }
 
-    public Activity queryActivity(Activity activity) {
-        return m_dbCtrlActivity.query(activity);
+    public List<Activity> queryActivityByIds(String strIds) {
+        return m_dbCtrlActivity.queryByIds(strIds);
     }
+
+//    public Activity queryActivity(Activity activity) {
+//        return m_dbCtrlActivity.query(activity);
+//    }
 
     public boolean updateActivity(Activity activity) {
         return m_dbCtrlActivity.update(activity);

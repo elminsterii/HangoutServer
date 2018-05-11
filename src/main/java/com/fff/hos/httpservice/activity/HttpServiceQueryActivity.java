@@ -3,7 +3,6 @@ package com.fff.hos.httpservice.activity;
 import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToJsonObj;
-import com.fff.hos.tools.StringTool;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceQueryActivity", value = "/queryactivity")
@@ -21,7 +21,6 @@ public class HttpServiceQueryActivity extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryActivity.class.getName());
     private static final String TAG_QUERY = "ids";
-    private static final String SYMBOL_SPLIT = ",";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,31 +41,20 @@ public class HttpServiceQueryActivity extends HttpServlet {
 
             if(jsElement != null) {
                 String strIDs = jsElement.getAsString();
-                String[] arrIDs = StringTool.splitStringBySymbol(strIDs, SYMBOL_SPLIT);
+                List<Activity> lsActicities = CloudSQLManager.getInstance().queryActivityByIds(strIDs);
 
-                if(arrIDs != null && arrIDs.length > 0) {
-                    ArrayList<Activity> lsActicities = new ArrayList<>();
+                if(lsActicities.size() <= 0) {
+                    resJsonObj.addProperty("statuscode", 1);
+                    resJsonObj.addProperty("status", "query fail, no any activities found");
+                } else {
+                    Gson gson = new GsonBuilder().setLenient().create();
+                    Type listType = new TypeToken<ArrayList<Activity>>() {}.getType();
+                    String strRes = gson.toJson(lsActicities, listType);
 
-                    for(String strId : arrIDs) {
-                        Activity resActivity = CloudSQLManager.getInstance().queryActivity(strId);
-
-                        if (resActivity != null)
-                            lsActicities.add(resActivity);
-                    }
-
-                    if(lsActicities.size() <= 0) {
-                        resJsonObj.addProperty("statuscode", 1);
-                        resJsonObj.addProperty("status", "query fail, no any activities found");
-                    } else {
-                        Gson gson = new GsonBuilder().setLenient().create();
-                        Type listType = new TypeToken<ArrayList<Activity>>() {}.getType();
-                        String strRes = gson.toJson(lsActicities, listType);
-
-                        resJsonArray = new JsonArray();
-                        resJsonObj.addProperty("statuscode", 0);
-                        resJsonArray.add(resJsonObj);
-                        resJsonArray.addAll(new JsonParser().parse(strRes).getAsJsonArray());
-                    }
+                    resJsonArray = new JsonArray();
+                    resJsonObj.addProperty("statuscode", 0);
+                    resJsonArray.add(resJsonObj);
+                    resJsonArray.addAll(new JsonParser().parse(strRes).getAsJsonArray());
                 }
             } else {
                 resJsonObj.addProperty("statuscode", 1);
