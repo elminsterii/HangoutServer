@@ -141,9 +141,9 @@ public class CloudSQLManager {
         return m_dbCtrlActivity.queryByIds(strIds);
     }
 
-//    public Activity queryActivity(Activity activity) {
-//        return m_dbCtrlActivity.query(activity);
-//    }
+    public List<String> queryActivity(Activity activity) {
+        return m_dbCtrlActivity.query(activity);
+    }
 
     public boolean updateActivity(Activity activity) {
         return m_dbCtrlActivity.update(activity);

@@ -208,6 +208,50 @@ public class DBCtrlActivity {
         return bRes;
     }
 
+    List<String> query(Activity activity) {
+        List<String> lsIds = new ArrayList<>();
+
+        if (activity == null)
+            return lsIds;
+
+        Connection conn = CloudSQLManager.getConnection();
+        StringBuffer strSelectSQL = new StringBuffer("SELECT * FROM " + DB_TABLE_NAME + " WHERE ");
+
+        if(DBTool.checkStringNotNull(activity.getPublisherEmail()))
+            strSelectSQL.append(DB_COL_PUBLISHEREMAIL + "=\"").append(activity.getPublisherEmail()).append("\"");
+
+        if(activity.getLargeActivity() != null)
+            strSelectSQL.append(" AND " + DB_COL_LARGEACTIVITY + "=").append(activity.getLargeActivity());
+
+        if(activity.getEarlyBird() != null)
+            strSelectSQL.append(" AND " + DB_COL_EARLYBIRD + "=").append(activity.getEarlyBird());
+
+        if(DBTool.checkStringNotNull(activity.getDisplayName()))
+            strSelectSQL.append(" AND " + DB_COL_DISPLAYNAME + "=").append(activity.getDisplayName());
+
+        if(DBTool.checkStringNotNull(activity.getTags())) {
+            String strRegExp = activity.getTags().replace(',','|');
+            strSelectSQL.append(" AND " + DB_COL_TAGS + " REGEXP \'").append(strRegExp).append("\'");
+        }
+
+        strSelectSQL.append(";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
+            stopwatch.stop();
+
+            while (rs.next()) {
+                lsIds.add(rs.getString(DB_COL_ID));
+            }
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        return lsIds;
+    }
+
     List<Activity> queryByIds(String strIds) {
         List<Activity> lsActivities = new ArrayList<>();
 
