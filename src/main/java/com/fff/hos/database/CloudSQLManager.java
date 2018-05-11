@@ -137,10 +137,6 @@ public class CloudSQLManager {
         return m_dbCtrlActivity.delete(activity);
     }
 
-    public Activity queryActivityById(String strId) {
-        return m_dbCtrlActivity.queryById(strId);
-    }
-
     public List<Activity> queryActivityByIds(String strIds) {
         return m_dbCtrlActivity.queryByIds(strIds);
     }

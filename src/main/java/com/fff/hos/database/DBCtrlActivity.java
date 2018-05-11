@@ -208,15 +208,11 @@ public class DBCtrlActivity {
         return bRes;
     }
 
-    Activity query(Activity activity) {
-        return queryById(activity.getId());
-    }
-
     List<Activity> queryByIds(String strIds) {
         List<Activity> lsActivities = new ArrayList<>();
 
         if (!DBTool.checkStringNotNull(strIds))
-            return null;
+            return lsActivities;
 
         Connection conn = CloudSQLManager.getConnection();
         String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + " IN (" + strIds + ");";
@@ -254,7 +250,7 @@ public class DBCtrlActivity {
         return lsActivities;
     }
 
-    Activity queryById(String strId) {
+    private Activity queryById(String strId) {
         Activity activity = null;
 
         if (!DBTool.checkStringNotNull(strId))

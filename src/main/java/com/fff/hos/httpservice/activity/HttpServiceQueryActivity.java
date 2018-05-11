@@ -43,7 +43,7 @@ public class HttpServiceQueryActivity extends HttpServlet {
                 String strIDs = jsElement.getAsString();
                 List<Activity> lsActicities = CloudSQLManager.getInstance().queryActivityByIds(strIDs);
 
-                if(lsActicities.size() <= 0) {
+                if(lsActicities == null || lsActicities.size() <= 0) {
                     resJsonObj.addProperty("statuscode", 1);
                     resJsonObj.addProperty("status", "query fail, no any activities found");
                 } else {
