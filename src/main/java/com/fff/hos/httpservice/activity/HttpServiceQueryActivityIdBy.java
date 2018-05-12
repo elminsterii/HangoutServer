@@ -13,12 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceQueryActivityIdBy", value = "/queryactivityidby")
 public class HttpServiceQueryActivityIdBy extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryActivityIdBy.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,18 +27,21 @@ public class HttpServiceQueryActivityIdBy extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Activity activity = HttpJsonToActivity.parse(request);
+        HttpJsonToActivity jsonToActivity = new HttpJsonToActivity();
+        Activity activity = jsonToActivity.parse(request);
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            List<String> lsIds = CloudSQLManager.getInstance().queryActivity(activity);
+            CloudSQLManager sqlManager = new CloudSQLManager();
+            List<String> lsIds = sqlManager.queryActivity(activity);
 
             if(lsIds == null || lsIds.size() <= 0) {
                 jsonObj.addProperty("statuscode", 1);
                 jsonObj.addProperty("status", "query fail, no any activities found");
             } else {
+                StringTool stringTool = new StringTool();
                 jsonObj.addProperty("statuscode", 0);
-                String strIds = StringTool.strListToJsonString(lsIds);
+                String strIds = stringTool.strListToJsonString(lsIds);
                 jsonObj.addProperty("ids", strIds);
             }
 

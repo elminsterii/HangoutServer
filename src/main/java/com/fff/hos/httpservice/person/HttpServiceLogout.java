@@ -10,12 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceLogout", value = "/logout")
 public class HttpServiceLogout extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceLogout.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,11 +24,13 @@ public class HttpServiceLogout extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
+        Person person = jsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            Person resPerson = CloudSQLManager.getInstance().logout(person);
+            CloudSQLManager sqlManager = new CloudSQLManager();
+            Person resPerson = sqlManager.logout(person);
 
             if (resPerson != null) {
                 jsonObj.addProperty("statuscode", 0);

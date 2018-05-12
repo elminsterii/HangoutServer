@@ -13,12 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceQueryPerson", value = "/queryperson")
 public class HttpServiceQueryPerson extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryPerson.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,16 +27,19 @@ public class HttpServiceQueryPerson extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
+        Person person = jsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            Person resPerson = CloudSQLManager.getInstance().queryPerson(person);
+            CloudSQLManager sqlManager = new CloudSQLManager();
+            Person resPerson = sqlManager.queryPerson(person);
 
             if (resPerson != null) {
+                StringTool stringTool = new StringTool();
                 resPerson.setUserPassword(null);
                 String strPersonJson = new Gson().toJson(resPerson);
-                strPersonJson = StringTool.addStatusCode(strPersonJson, 0);
+                strPersonJson = stringTool.addStatusCode(strPersonJson, 0);
                 jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
             } else {
                 jsonObj.addProperty("statuscode", 1);

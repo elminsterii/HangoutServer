@@ -11,13 +11,14 @@ import java.util.logging.Logger;
 public class HttpJsonToJsonObj {
     private static final Logger LOGGER = Logger.getLogger(HttpJsonToJsonObj.class.getName());
 
-    public static JsonObject parse(HttpServletRequest request) {
+    public JsonObject parse(HttpServletRequest request) {
         JsonObject jsonObj;
         JsonParser parser = new JsonParser();
 
         String strBody = "";
+        HttpTool httpTool = new HttpTool();
         try {
-            strBody = HttpTool.getBody(request);
+            strBody = httpTool.getBody(request);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }

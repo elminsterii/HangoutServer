@@ -14,12 +14,10 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceQueryActivity", value = "/queryactivity")
 public class HttpServiceQueryActivity extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceQueryActivity.class.getName());
     private static final String TAG_QUERY = "ids";
 
     @Override
@@ -32,7 +30,8 @@ public class HttpServiceQueryActivity extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        JsonObject jsonObj = HttpJsonToJsonObj.parse(request);
+        HttpJsonToJsonObj jsonToJsonObj = new HttpJsonToJsonObj();
+        JsonObject jsonObj = jsonToJsonObj.parse(request);
         JsonObject resJsonObj = new JsonObject();
         JsonArray resJsonArray = null;
 
@@ -40,8 +39,10 @@ public class HttpServiceQueryActivity extends HttpServlet {
             JsonElement jsElement = jsonObj.get(TAG_QUERY);
 
             if(jsElement != null) {
+                CloudSQLManager sqlManager = new CloudSQLManager();
+
                 String strIDs = jsElement.getAsString();
-                List<Activity> lsActicities = CloudSQLManager.getInstance().queryActivityByIds(strIDs);
+                List<Activity> lsActicities = sqlManager.queryActivityByIds(strIDs);
 
                 if(lsActicities == null || lsActicities.size() <= 0) {
                     resJsonObj.addProperty("statuscode", 1);

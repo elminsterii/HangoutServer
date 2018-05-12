@@ -10,12 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
+
+//TODO - remove all atvivities belong the register.
 
 @WebServlet(name = "HttpServiceUnregister", value = "/unregister")
 public class HttpServiceUnregister extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUnregister.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,12 +26,15 @@ public class HttpServiceUnregister extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Person person = HttpJsonToPerson.parse(request);
+        HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
+        Person person = jsonToPerson.parse(request);
         JsonObject jsonObj = new JsonObject();
 
         if (person != null) {
-            if (CloudSQLManager.getInstance().checkPersonExist(person)) {
-                if (CloudSQLManager.getInstance().unregister(person)) {
+            CloudSQLManager sqlManager = new CloudSQLManager();
+
+            if (sqlManager.checkPersonExist(person)) {
+                if (sqlManager.unregister(person)) {
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);

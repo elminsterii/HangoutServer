@@ -11,62 +11,61 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class DBCtrlActivity {
+class DBCtrlActivity {
     private static final Logger LOGGER = Logger.getLogger(DBCtrlActivity.class.getName());
-
-    private final static String DB_TABLE_NAME = "activities";
-    private final static String DB_COL_ID = "id";
-    private final static String DB_COL_TS = "ts";
-    private final static String DB_COL_PUBLISHEREMAIL = "publisheremail";
-    private final static String DB_COL_PUBLISHBEGIN = "publishbegin";
-    private final static String DB_COL_PUBLISHEND = "publishend";
-    private final static String DB_COL_LARGEACTIVITY = "largeactivity";
-    private final static String DB_COL_EARLYBIRD = "earlybird";
-    private final static String DB_COL_DISPLAYNAME = "displayname";
-    private final static String DB_COL_DATEBEGIN = "datebegin";
-    private final static String DB_COL_DATEEND = "dateend";
-    private final static String DB_COL_LOCATION = "location";
-    private final static String DB_COL_STATUS = "status";
-    private final static String DB_COL_IMAGE = "image";
-    private final static String DB_COL_DESCRIPTION = "description";
-    private final static String DB_COL_TAGS = "tags";
-    private final static String DB_COL_GOODACTIVITY = "goodactivity";
-    private final static String DB_COL_ATTENTION = "attention";
-    private final static String DB_COL_ATTENDEES = "attendees";
 
     DBCtrlActivity() {
         createTable();
     }
 
     private void createTable() {
-        Connection conn = CloudSQLManager.getConnection();
 
-        String strCreateTableSQL = "CREATE TABLE IF NOT EXISTS " + DB_TABLE_NAME + " ( "
-                + DB_COL_ID + " SERIAL NOT NULL, "
-                + DB_COL_TS + " timestamp NOT NULL, "
-                + DB_COL_PUBLISHEREMAIL + " VARCHAR(128) NOT NULL, "
-                + DB_COL_PUBLISHBEGIN + " VARCHAR(32) NOT NULL, "
-                + DB_COL_PUBLISHEND + " VARCHAR(32) NOT NULL, "
-                + DB_COL_LARGEACTIVITY + " TINYINT UNSIGNED NOT NULL DEFAULT 0, "
-                + DB_COL_EARLYBIRD + " TINYINT UNSIGNED NOT NULL DEFAULT 0, "
-                + DB_COL_DISPLAYNAME + " VARCHAR(64) NOT NULL, "
-                + DB_COL_DATEBEGIN + " VARCHAR(32) NOT NULL, "
-                + DB_COL_DATEEND + " VARCHAR(32) NOT NULL, "
-                + DB_COL_LOCATION + " VARCHAR(128), "
-                + DB_COL_STATUS + " CHAR(8), "
-                + DB_COL_IMAGE + " VARCHAR(4096), "
-                + DB_COL_DESCRIPTION + " VARCHAR(1024), "
-                + DB_COL_TAGS + " VARCHAR(128), "
-                + DB_COL_GOODACTIVITY + " INT NOT NULL DEFAULT 0, "
-                + DB_COL_ATTENTION + " INT UNSIGNED NOT NULL DEFAULT 0, "
-                + DB_COL_ATTENDEES + " VARCHAR(4096), "
-                + "PRIMARY KEY (" + DB_COL_ID + ") );";
+        if(!checkTableExist()) {
+            Connection conn = DBConnection.getConnection();
 
-        try {
-            conn.createStatement().execute(strCreateTableSQL);
-        } catch (SQLException e) {
-            LOGGER.warning("SQL erro, " + e.getMessage());
+            StringBuilder strCreateTableSQL = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+            strCreateTableSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" ( ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ID).append(" SERIAL NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_TS).append(" timestamp NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append(" VARCHAR(128) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_PUBLISHBEGIN).append(" VARCHAR(32) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEND).append(" VARCHAR(32) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append(" VARCHAR(64) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append(" VARCHAR(32) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(" VARCHAR(32) NOT NULL, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(" VARCHAR(128), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" CHAR(8), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_IMAGE).append(" VARCHAR(4096), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(" VARCHAR(1024), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_TAGS).append(" VARCHAR(128), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append(" INT NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(" VARCHAR(4096), ");
+            strCreateTableSQL.append("PRIMARY KEY (").append(DBConstants.ACTIVITY_COL_ID).append(") );");
+
+            try {
+                conn.createStatement().execute(strCreateTableSQL.toString());
+            } catch (SQLException e) {
+                LOGGER.warning("SQL erro, " + e.getMessage());
+            }
         }
+    }
+
+    private boolean checkTableExist() {
+        boolean bIsExist = false;
+
+        Connection conn = DBConnection.getConnection();
+        try {
+            DatabaseMetaData metaData = conn.getMetaData();
+            ResultSet rs = metaData.getTables(null, null, DBConstants.TABLE_NAME_ACTIVITY,
+                    new String[]{"TABLE"});
+            bIsExist = rs.first();
+        } catch (SQLException e) {
+            LOGGER.warning(e.getMessage());
+        }
+        return bIsExist;
     }
 
     Activity insert(Activity activity) {
@@ -88,57 +87,59 @@ public class DBCtrlActivity {
             , Integer iAttention, String strAttendees) {
 
         Activity resActivity = null;
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(strPublisherEmail)
-                || !StringTool.checkStringNotNull(strPublishBegin)
-                || !StringTool.checkStringNotNull(strPublishEnd)
+        if (!stringTool.checkStringNotNull(strPublisherEmail)
+                || !stringTool.checkStringNotNull(strPublishBegin)
+                || !stringTool.checkStringNotNull(strPublishEnd)
                 || (iLargeActivity == null)
                 || (iEarlyBird == null)
-                || !StringTool.checkStringNotNull(strDisplayName)
-                || !StringTool.checkStringNotNull(strDateBegin)
-                || !StringTool.checkStringNotNull(strDateEnd)
-                || !StringTool.checkStringNotNull(strLocation))
-            return resActivity;
+                || !stringTool.checkStringNotNull(strDisplayName)
+                || !stringTool.checkStringNotNull(strDateBegin)
+                || !stringTool.checkStringNotNull(strDateEnd)
+                || !stringTool.checkStringNotNull(strLocation))
+            return null;
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strCreateActivitySQL = "INSERT INTO " + DB_TABLE_NAME +
-                " (" + DB_COL_TS +
-                "," + DB_COL_PUBLISHEREMAIL +
-                "," + DB_COL_PUBLISHBEGIN +
-                "," + DB_COL_PUBLISHEND +
-                "," + DB_COL_LARGEACTIVITY +
-                "," + DB_COL_EARLYBIRD +
-                "," + DB_COL_DISPLAYNAME +
-                "," + DB_COL_DATEBEGIN +
-                "," + DB_COL_DATEEND +
-                "," + DB_COL_LOCATION +
-                "," + DB_COL_STATUS +
-                "," + DB_COL_IMAGE +
-                "," + DB_COL_DESCRIPTION +
-                "," + DB_COL_TAGS +
-                "," + DB_COL_GOODACTIVITY +
-                "," + DB_COL_ATTENTION +
-                "," + DB_COL_ATTENDEES + ") " +
-                "VALUES (?,\"" + strPublisherEmail + "\"" +
-                ",\"" + strPublishBegin + "\"" +
-                ",\"" + strPublishEnd + "\"" +
-                ",\"" + iLargeActivity + "\"" +
-                ",\"" + iEarlyBird + "\"" +
-                ",\"" + strDisplayName + "\"" +
-                ",\"" + strDateBegin + "\"" +
-                ",\"" + strDateEnd + "\"" +
-                ",\"" + strLocation + "\"" +
-                ",\"" + strStatus + "\"" +
-                ",\"" + strImage + "\"" +
-                ",\"" + strDescription + "\"" +
-                ",\"" + strTags + "\"" +
-                ",\"" + (iGoodActivity == null ? 0 : iGoodActivity) + "\"" +
-                ",\"" + (iAttention == null ? 0 : iAttention) + "\"" +
-                ",\"" + strAttendees + "\"" +
-                ");";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strCreateActivitySQL = new StringBuilder( "INSERT INTO ");
+        strCreateActivitySQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" (");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_TS).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHBEGIN).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEND).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_STATUS).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_IMAGE).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_TAGS).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append(",");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(") VALUES (?,");
+        strCreateActivitySQL.append("\"").append(strPublisherEmail).append("\",");
+        strCreateActivitySQL.append("\"").append(strPublishBegin).append("\",");
+        strCreateActivitySQL.append("\"").append(strPublishEnd).append("\",");
+        strCreateActivitySQL.append(iLargeActivity).append(",");
+        strCreateActivitySQL.append(iEarlyBird).append(",");
+        strCreateActivitySQL.append("\"").append(strDisplayName).append("\",");
+        strCreateActivitySQL.append("\"").append(strDateBegin).append("\",");
+        strCreateActivitySQL.append("\"").append(strDateEnd).append("\",");
+        strCreateActivitySQL.append("\"").append(strLocation).append("\",");
+        strCreateActivitySQL.append("\"").append(strStatus).append("\",");
+        strCreateActivitySQL.append("\"").append(strImage).append("\",");
+        strCreateActivitySQL.append("\"").append(strDescription).append("\",");
+        strCreateActivitySQL.append("\"").append(strTags).append("\",");
+        strCreateActivitySQL.append(iGoodActivity == null ? 0 : iGoodActivity).append(",");
+        strCreateActivitySQL.append(iAttention == null ? 0 : iAttention).append(",");
+        strCreateActivitySQL.append("\"").append(strAttendees).append("\");");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL, new String[]{DB_COL_ID})) {
+        try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL.toString()
+                , new String[]{DBConstants.ACTIVITY_COL_ID})) {
             statementCreateActivity.setTimestamp(1, new Timestamp(new Date().getTime()));
 
             if(statementCreateActivity.executeUpdate() > 0) {
@@ -165,19 +166,22 @@ public class DBCtrlActivity {
         return delete(activity.getId(), activity.getPublisherEmail());
     }
 
-    boolean delete(String strId, String strPublisherEmail) {
+    private boolean delete(String strId, String strPublisherEmail) {
         boolean bRes = false;
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(strId)
-                || !StringTool.checkStringNotNull(strPublisherEmail))
-            return bRes;
+        if (!stringTool.checkStringNotNull(strId)
+                || !stringTool.checkStringNotNull(strPublisherEmail))
+            return false;
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strDeleteActivitySQL = "DELETE FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + "=\"" + strId
-                + "\" AND " + DB_COL_PUBLISHEREMAIL + "=\"" + strPublisherEmail +"\";";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strDeleteActivitySQL = new StringBuilder("DELETE FROM ");
+        strDeleteActivitySQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+        strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\" AND ");
+        strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(strPublisherEmail).append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementDeleteActivity = conn.prepareStatement(strDeleteActivitySQL)) {
+        try (PreparedStatement statementDeleteActivity = conn.prepareStatement(strDeleteActivitySQL.toString())) {
             bRes = statementDeleteActivity.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -190,16 +194,19 @@ public class DBCtrlActivity {
 
     boolean checkActivityExist(String strId) {
         boolean bRes = false;
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(strId))
-            return bRes;
+        if (!stringTool.checkStringNotNull(strId))
+            return false;
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + "=\"" + strId + "\";";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder("SELECT * FROM ");
+        strSelectSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+        strSelectSQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementSelectPerson = conn.prepareStatement(strSelectSQL)) {
-            bRes = statementSelectPerson.executeQuery().first();
+        try (PreparedStatement statementSelectActivity = conn.prepareStatement(strSelectSQL.toString())) {
+            bRes = statementSelectActivity.executeQuery().first();
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
         }
@@ -214,24 +221,27 @@ public class DBCtrlActivity {
         if (activity == null)
             return lsIds;
 
-        Connection conn = CloudSQLManager.getConnection();
-        StringBuffer strSelectSQL = new StringBuffer("SELECT * FROM " + DB_TABLE_NAME + " WHERE ");
+        StringTool stringTool = new StringTool();
 
-        if(StringTool.checkStringNotNull(activity.getPublisherEmail()))
-            strSelectSQL.append(DB_COL_PUBLISHEREMAIL + "=\"").append(activity.getPublisherEmail()).append("\"");
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder();
+        strSelectSQL.append("SELECT * FROM ").append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+
+        if(stringTool.checkStringNotNull(activity.getPublisherEmail()))
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL ).append("=\"").append(activity.getPublisherEmail()).append("\"");
 
         if(activity.getLargeActivity() != null)
-            strSelectSQL.append(" AND " + DB_COL_LARGEACTIVITY + "=").append(activity.getLargeActivity());
+            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=").append(activity.getLargeActivity());
 
         if(activity.getEarlyBird() != null)
-            strSelectSQL.append(" AND " + DB_COL_EARLYBIRD + "=").append(activity.getEarlyBird());
+            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=").append(activity.getEarlyBird());
 
-        if(StringTool.checkStringNotNull(activity.getDisplayName()))
-            strSelectSQL.append(" AND " + DB_COL_DISPLAYNAME + "=").append(activity.getDisplayName());
+        if(stringTool.checkStringNotNull(activity.getDisplayName()))
+            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\"");
 
-        if(StringTool.checkStringNotNull(activity.getTags())) {
-            String strRegExp = StringTool.strTagsToRegExp(activity.getTags());
-            strSelectSQL.append(" AND " + DB_COL_TAGS + " REGEXP \'").append(strRegExp).append("\'");
+        if(stringTool.checkStringNotNull(activity.getTags())) {
+            String strRegExp = stringTool.strTagsToRegExp(activity.getTags());
+            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_TAGS).append(" REGEXP \'").append(strRegExp).append("\'");
         }
 
         strSelectSQL.append(";");
@@ -241,7 +251,7 @@ public class DBCtrlActivity {
             stopwatch.stop();
 
             while (rs.next()) {
-                lsIds.add(rs.getString(DB_COL_ID));
+                lsIds.add(rs.getString(DBConstants.ACTIVITY_COL_ID));
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
@@ -254,36 +264,39 @@ public class DBCtrlActivity {
 
     List<Activity> queryByIds(String strIds) {
         List<Activity> lsActivities = new ArrayList<>();
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(strIds))
+        if (!stringTool.checkStringNotNull(strIds))
             return lsActivities;
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + " IN (" + strIds + ");";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder("SELECT * FROM ");
+        strSelectSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+        strSelectSQL.append(DBConstants.ACTIVITY_COL_ID).append(" IN (").append(strIds).append(");");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (ResultSet rs = conn.prepareStatement(strSelectSQL).executeQuery()) {
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
             stopwatch.stop();
 
             while (rs.next()) {
                 Activity activity = new Activity();
-                activity.setId(rs.getString(DB_COL_ID));
-                activity.setPublisherEmail(rs.getString(DB_COL_PUBLISHEREMAIL));
-                activity.setPublishBegin(rs.getString(DB_COL_PUBLISHBEGIN));
-                activity.setPublishEnd(rs.getString(DB_COL_PUBLISHEND));
-                activity.setLargeActivity(rs.getInt(DB_COL_LARGEACTIVITY));
-                activity.setEarlyBird(rs.getInt(DB_COL_EARLYBIRD));
-                activity.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
-                activity.setDateBegin(rs.getString(DB_COL_DATEBEGIN));
-                activity.setDateEnd(rs.getString(DB_COL_DATEEND));
-                activity.setLocation(rs.getString(DB_COL_LOCATION));
-                activity.setStatus(rs.getString(DB_COL_STATUS));
-                activity.setImage(rs.getString(DB_COL_IMAGE));
-                activity.setDescription(rs.getString(DB_COL_DESCRIPTION));
-                activity.setTags(rs.getString(DB_COL_TAGS));
-                activity.setGoodActivity(rs.getInt(DB_COL_GOODACTIVITY));
-                activity.setAttention(rs.getInt(DB_COL_ATTENTION));
-                activity.setAttendees(rs.getString(DB_COL_ATTENDEES));
+                activity.setId(rs.getString(DBConstants.ACTIVITY_COL_ID));
+                activity.setPublisherEmail(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL));
+                activity.setPublishBegin(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHBEGIN));
+                activity.setPublishEnd(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEND));
+                activity.setLargeActivity(rs.getInt(DBConstants.ACTIVITY_COL_LARGEACTIVITY));
+                activity.setEarlyBird(rs.getInt(DBConstants.ACTIVITY_COL_EARLYBIRD));
+                activity.setDisplayName(rs.getString(DBConstants.ACTIVITY_COL_DISPLAYNAME));
+                activity.setDateBegin(rs.getString(DBConstants.ACTIVITY_COL_DATEBEGIN));
+                activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
+                activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
+                activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
+                activity.setImage(rs.getString(DBConstants.ACTIVITY_COL_IMAGE));
+                activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
+                activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
+                activity.setGoodActivity(rs.getInt(DBConstants.ACTIVITY_COL_GOODACTIVITY));
+                activity.setAttention(rs.getInt(DBConstants.ACTIVITY_COL_ATTENTION));
+                activity.setAttendees(rs.getString(DBConstants.ACTIVITY_COL_ATTENDEES));
                 lsActivities.add(activity);
             }
         } catch (SQLException e) {
@@ -296,36 +309,39 @@ public class DBCtrlActivity {
 
     private Activity queryById(String strId) {
         Activity activity = null;
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(strId))
+        if (!stringTool.checkStringNotNull(strId))
             return null;
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strSelectSQL = "SELECT * FROM " + DB_TABLE_NAME + " WHERE " + DB_COL_ID + "=\"" + strId + "\";";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder("SELECT * FROM ");
+        strSelectSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+        strSelectSQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (ResultSet rs = conn.prepareStatement(strSelectSQL).executeQuery()) {
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
             stopwatch.stop();
 
             while (rs.next()) {
                 activity = new Activity();
-                activity.setId(rs.getString(DB_COL_ID));
-                activity.setPublisherEmail(rs.getString(DB_COL_PUBLISHEREMAIL));
-                activity.setPublishBegin(rs.getString(DB_COL_PUBLISHBEGIN));
-                activity.setPublishEnd(rs.getString(DB_COL_PUBLISHEND));
-                activity.setLargeActivity(rs.getInt(DB_COL_LARGEACTIVITY));
-                activity.setEarlyBird(rs.getInt(DB_COL_EARLYBIRD));
-                activity.setDisplayName(rs.getString(DB_COL_DISPLAYNAME));
-                activity.setDateBegin(rs.getString(DB_COL_DATEBEGIN));
-                activity.setDateEnd(rs.getString(DB_COL_DATEEND));
-                activity.setLocation(rs.getString(DB_COL_LOCATION));
-                activity.setStatus(rs.getString(DB_COL_STATUS));
-                activity.setImage(rs.getString(DB_COL_IMAGE));
-                activity.setDescription(rs.getString(DB_COL_DESCRIPTION));
-                activity.setTags(rs.getString(DB_COL_TAGS));
-                activity.setGoodActivity(rs.getInt(DB_COL_GOODACTIVITY));
-                activity.setAttention(rs.getInt(DB_COL_ATTENTION));
-                activity.setAttendees(rs.getString(DB_COL_ATTENDEES));
+                activity.setId(rs.getString(DBConstants.ACTIVITY_COL_ID));
+                activity.setPublisherEmail(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL));
+                activity.setPublishBegin(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHBEGIN));
+                activity.setPublishEnd(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEND));
+                activity.setLargeActivity(rs.getInt(DBConstants.ACTIVITY_COL_LARGEACTIVITY));
+                activity.setEarlyBird(rs.getInt(DBConstants.ACTIVITY_COL_EARLYBIRD));
+                activity.setDisplayName(rs.getString(DBConstants.ACTIVITY_COL_DISPLAYNAME));
+                activity.setDateBegin(rs.getString(DBConstants.ACTIVITY_COL_DATEBEGIN));
+                activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
+                activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
+                activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
+                activity.setImage(rs.getString(DBConstants.ACTIVITY_COL_IMAGE));
+                activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
+                activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
+                activity.setGoodActivity(rs.getInt(DBConstants.ACTIVITY_COL_GOODACTIVITY));
+                activity.setAttention(rs.getInt(DBConstants.ACTIVITY_COL_ATTENTION));
+                activity.setAttendees(rs.getString(DBConstants.ACTIVITY_COL_ATTENDEES));
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
@@ -337,40 +353,43 @@ public class DBCtrlActivity {
 
     boolean update(Activity activity) {
         boolean bRes = false;
+        StringTool stringTool = new StringTool();
 
-        if (!StringTool.checkStringNotNull(activity.getId()))
-            return bRes;
+        if (!stringTool.checkStringNotNull(activity.getId()))
+            return false;
 
         Activity oldActivity = queryById(activity.getId());
 
         if (oldActivity == null)
-            return bRes;
+            return false;
 
         fillUpdateActivityIfNull(oldActivity, activity);
 
-        Connection conn = CloudSQLManager.getConnection();
-        String strUpdateSQL = "UPDATE " + DB_TABLE_NAME + " SET "
-                + DB_COL_PUBLISHEREMAIL + "=\"" + activity.getPublisherEmail() + "\","
-                + DB_COL_PUBLISHBEGIN + "=\"" + activity.getPublishBegin() + "\","
-                + DB_COL_PUBLISHEND + "=\"" + activity.getPublishEnd() + "\","
-                + DB_COL_LARGEACTIVITY + "=\"" + activity.getLargeActivity() + "\","
-                + DB_COL_EARLYBIRD + "=\"" + activity.getEarlyBird() + "\","
-                + DB_COL_DISPLAYNAME + "=\"" + activity.getDisplayName() + "\","
-                + DB_COL_DATEBEGIN + "=\"" + activity.getDateBegin() + "\","
-                + DB_COL_DATEEND + "=\"" + activity.getDateEnd() + "\","
-                + DB_COL_LOCATION + "=\"" + activity.getLocation() + "\","
-                + DB_COL_STATUS + "=\"" + activity.getStatus() + "\","
-                + DB_COL_IMAGE + "=\"" + activity.getImage() + "\","
-                + DB_COL_DESCRIPTION + "=\"" + activity.getDescription() + "\","
-                + DB_COL_TAGS + "=\"" + activity.getTags() + "\","
-                + DB_COL_GOODACTIVITY + "=\"" + activity.getGoodActivity() + "\","
-                + DB_COL_ATTENTION + "=\"" + activity.getAttention() + "\","
-                + DB_COL_ATTENDEES + "=\"" + activity.getAttendees() + "\" "
-                + " WHERE " + DB_COL_ID + "=\"" + activity.getId()
-                + "\" AND " + DB_COL_PUBLISHEREMAIL + "=\"" + activity.getPublisherEmail() +"\";";
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strUpdateSQL = new StringBuilder("UPDATE ");
+        strUpdateSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" SET ");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(activity.getPublisherEmail()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHBEGIN).append("=\"").append(activity.getPublishBegin()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEND).append("=\"").append(activity.getPublishEnd()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=\"").append(activity.getLargeActivity()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=\"").append(activity.getEarlyBird()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append("=\"").append(activity.getDateBegin()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append("=\"").append(activity.getDateEnd()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append("=\"").append(activity.getLocation()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_STATUS).append("=\"").append(activity.getStatus()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_IMAGE).append("=\"").append(activity.getImage()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append("=\"").append(activity.getDescription()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_TAGS).append("=\"").append(activity.getTags()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append("=\"").append(activity.getGoodActivity()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append("=\"").append(activity.getAttention()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append("=\"").append(activity.getAttendees()).append("\"");
+        strUpdateSQL.append(" WHERE ").append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(activity.getId());
+        strUpdateSQL.append("\" AND ").append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(activity.getPublisherEmail());
+        strUpdateSQL.append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        try (PreparedStatement statementUpdateActivity = conn.prepareStatement(strUpdateSQL)) {
+        try (PreparedStatement statementUpdateActivity = conn.prepareStatement(strUpdateSQL.toString())) {
             bRes = statementUpdateActivity.executeUpdate() > 0;
 
         } catch (SQLException e) {

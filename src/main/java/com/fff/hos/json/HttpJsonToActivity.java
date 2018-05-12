@@ -11,12 +11,13 @@ import java.util.logging.Logger;
 public class HttpJsonToActivity {
     private static final Logger LOGGER = Logger.getLogger(HttpJsonToActivity.class.getName());
 
-    public static Activity parse(HttpServletRequest request) {
+    public Activity parse(HttpServletRequest request) {
         Activity activity;
         String strBody = "";
 
+        HttpTool httpTool = new HttpTool();
         try {
-            strBody = HttpTool.getBody(request);
+            strBody = httpTool.getBody(request);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }

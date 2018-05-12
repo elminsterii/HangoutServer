@@ -10,12 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @WebServlet(name = "HttpServiceUpdateActivity", value = "/updateactivity")
 public class HttpServiceUpdateActivity extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceUpdateActivity.class.getName());
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,13 +24,16 @@ public class HttpServiceUpdateActivity extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        Activity activity = HttpJsonToActivity.parse(request);
+        HttpJsonToActivity jsonToActivity = new HttpJsonToActivity();
+        Activity activity = jsonToActivity.parse(request);
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            if(CloudSQLManager.getInstance().checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                if (CloudSQLManager.getInstance().checkActivityExist(activity)) {
-                    if (CloudSQLManager.getInstance().updateActivity(activity)) {
+            CloudSQLManager sqlManager = new CloudSQLManager();
+
+            if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
+                if (sqlManager.checkActivityExist(activity)) {
+                    if (sqlManager.updateActivity(activity)) {
                         jsonObj.addProperty("statuscode", 0);
                     } else {
                         jsonObj.addProperty("statuscode", 1);
