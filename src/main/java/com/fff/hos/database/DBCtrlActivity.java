@@ -69,16 +69,11 @@ class DBCtrlActivity {
     }
 
     Activity insert(Activity activity) {
-        Activity newActivity = insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
+        return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
                 , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
                 , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getImage()
                 , activity.getDescription(), activity.getTags(), activity.getGoodActivity(), activity.getAttention()
                 , activity.getAttendees());
-
-        if(newActivity != null)
-            fillUpdateActivityIfNull(activity, newActivity);
-
-        return newActivity;
     }
 
     private Activity insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
@@ -129,13 +124,13 @@ class DBCtrlActivity {
         strCreateActivitySQL.append("\"").append(strDateBegin).append("\",");
         strCreateActivitySQL.append("\"").append(strDateEnd).append("\",");
         strCreateActivitySQL.append("\"").append(strLocation).append("\",");
-        strCreateActivitySQL.append("\"").append(strStatus).append("\",");
-        strCreateActivitySQL.append("\"").append(strImage).append("\",");
-        strCreateActivitySQL.append("\"").append(strDescription).append("\",");
-        strCreateActivitySQL.append("\"").append(strTags).append("\",");
+        strCreateActivitySQL.append("\"").append(strStatus == null ? "" : strStatus).append("\",");
+        strCreateActivitySQL.append("\"").append(strImage == null ? "" : strImage).append("\",");
+        strCreateActivitySQL.append("\"").append(strDescription == null ? "" : strDescription).append("\",");
+        strCreateActivitySQL.append("\"").append(strTags == null ? "" : strTags).append("\",");
         strCreateActivitySQL.append(iGoodActivity == null ? 0 : iGoodActivity).append(",");
         strCreateActivitySQL.append(iAttention == null ? 0 : iAttention).append(",");
-        strCreateActivitySQL.append("\"").append(strAttendees).append("\");");
+        strCreateActivitySQL.append("\"").append(strAttendees == null ? "" : strAttendees).append("\");");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL.toString()
@@ -171,14 +166,18 @@ class DBCtrlActivity {
         StringTool stringTool = new StringTool();
 
         if (!stringTool.checkStringNotNull(strId)
-                || !stringTool.checkStringNotNull(strPublisherEmail))
+                && !stringTool.checkStringNotNull(strPublisherEmail))
             return false;
 
         Connection conn = DBConnection.getConnection();
         StringBuilder strDeleteActivitySQL = new StringBuilder("DELETE FROM ");
         strDeleteActivitySQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
-        strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\" AND ");
-        strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(strPublisherEmail).append("\";");
+
+        if(stringTool.checkStringNotNull(strId))
+            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\" AND ");
+
+        if(stringTool.checkStringNotNull(strPublisherEmail))
+            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(strPublisherEmail).append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementDeleteActivity = conn.prepareStatement(strDeleteActivitySQL.toString())) {

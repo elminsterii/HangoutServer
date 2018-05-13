@@ -75,7 +75,7 @@ class DBCtrlPerson {
                 , person.getHoldActivities(), person.getGoodMember(), person.getGoodLeader(), person.getOnline());
     }
 
-    private boolean insert(String strEmail, String strUserPassword, String strDisplayName, String icon, Integer iAge, String strGender, String strInterests
+    private boolean insert(String strEmail, String strUserPassword, String strDisplayName, String strIcon, Integer iAge, String strGender, String strInterests
             , String strDescription, String strLocation, String strJoinActivities, String strHoldActivities
             , Integer iGoodMember, Integer iGoodLeader, Integer bOnline) {
 
@@ -111,14 +111,14 @@ class DBCtrlPerson {
         strCreatePersonSQL.append(",\"").append(strEmail).append("\"");
         strCreatePersonSQL.append(",\"").append(strUserPassword).append("\"");
         strCreatePersonSQL.append(",\"").append(strDisplayName).append("\"");
-        strCreatePersonSQL.append(",\"").append(icon).append("\"");
+        strCreatePersonSQL.append(",\"").append(strIcon == null ? "" : strIcon).append("\"");
         strCreatePersonSQL.append(",\"").append(iAge).append("\"");
         strCreatePersonSQL.append(",\"").append(strGender).append("\"");
-        strCreatePersonSQL.append(",\"").append(strInterests).append("\"");
-        strCreatePersonSQL.append(",\"").append(strDescription).append("\"");
-        strCreatePersonSQL.append(",\"").append(strLocation).append("\"");
-        strCreatePersonSQL.append(",\"").append(strJoinActivities).append("\"");
-        strCreatePersonSQL.append(",\"").append(strHoldActivities).append("\"");
+        strCreatePersonSQL.append(",\"").append(strInterests == null ? "" : strInterests).append("\"");
+        strCreatePersonSQL.append(",\"").append(strDescription == null ? "" : strDescription).append("\"");
+        strCreatePersonSQL.append(",\"").append(strLocation == null ? "" : strLocation).append("\"");
+        strCreatePersonSQL.append(",\"").append(strJoinActivities == null ? "" : strJoinActivities).append("\"");
+        strCreatePersonSQL.append(",\"").append(strHoldActivities == null ? "" : strHoldActivities).append("\"");
         strCreatePersonSQL.append(",\"").append(iGoodMember == null ? 0 : iGoodMember).append("\"");
         strCreatePersonSQL.append(",\"").append(iGoodLeader == null ? 0 : iGoodLeader).append("\"");
         strCreatePersonSQL.append(",\"").append(bOnline == null ? 0 : bOnline).append("\"");

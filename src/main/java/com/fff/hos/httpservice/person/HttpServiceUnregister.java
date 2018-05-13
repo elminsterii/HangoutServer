@@ -1,5 +1,6 @@
 package com.fff.hos.httpservice.person;
 
+import com.fff.hos.data.Activity;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
@@ -10,8 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-//TODO - remove all atvivities belong the register.
 
 @WebServlet(name = "HttpServiceUnregister", value = "/unregister")
 public class HttpServiceUnregister extends HttpServlet {
@@ -33,9 +32,18 @@ public class HttpServiceUnregister extends HttpServlet {
         if (person != null) {
             CloudSQLManager sqlManager = new CloudSQLManager();
 
-            if (sqlManager.checkPersonExist(person)) {
+            if (sqlManager.checkPersonValid(person)) {
                 if (sqlManager.unregister(person)) {
-                    jsonObj.addProperty("statuscode", 0);
+                    //delete all activities belong the user after unregister success.
+                    Activity activity = new Activity();
+                    activity.setPublisherEmail(person.getEmail());
+
+                    if(sqlManager.deleteActivity(activity)) {
+                        jsonObj.addProperty("statuscode", 0);
+                    } else {
+                        jsonObj.addProperty("statuscode", 1);
+                        jsonObj.addProperty("status", "unregister fail, delete activities belong the user fail");
+                    }
                 } else {
                     jsonObj.addProperty("statuscode", 1);
                     jsonObj.addProperty("status", "unregister fail, email or password wrong?");
