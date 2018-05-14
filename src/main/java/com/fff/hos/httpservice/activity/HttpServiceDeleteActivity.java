@@ -32,16 +32,11 @@ public class HttpServiceDeleteActivity extends HttpServlet {
             CloudSQLManager sqlManager = new CloudSQLManager();
 
             if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                if (sqlManager.checkActivityExist(activity)) {
-                    if (sqlManager.deleteActivity(activity)) {
-                        jsonObj.addProperty("statuscode", 0);
-                    } else {
-                        jsonObj.addProperty("statuscode", 1);
-                        jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
-                    }
+                if (sqlManager.deleteActivity(activity)) {
+                    jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "delete fail, activity is not exist");
+                    jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);

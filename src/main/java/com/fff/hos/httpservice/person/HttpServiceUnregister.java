@@ -4,6 +4,7 @@ import com.fff.hos.data.Activity;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
+import com.fff.hos.tools.StringTool;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
@@ -55,26 +56,26 @@ public class HttpServiceUnregister extends HttpServlet {
                     //delete all icons belong the user after unregister success.
                     String strBucketName = getInitParameter("gcsBucketName");
                     String[] arrFileNames = oldPerson.getIcon().split(",");
-                    for(String strIcon : arrFileNames)
-                        gcsService.delete(new GcsFilename(strBucketName, strIcon));
+                    StringTool stringTool = new StringTool();
+                    for(String strIcon : arrFileNames) {
+                        if(stringTool.checkStringNotNull(strIcon))
+                            gcsService.delete(new GcsFilename(strBucketName, strIcon));
+                    }
 
                     //delete all activities belong the user after unregister success.
                     Activity activity = new Activity();
                     activity.setPublisherEmail(person.getEmail());
+                    sqlManager.deleteActivity(activity);
 
-                    if(sqlManager.deleteActivity(activity)) {
-                        jsonObj.addProperty("statuscode", 0);
-                    } else {
-                        jsonObj.addProperty("statuscode", 1);
-                        jsonObj.addProperty("status", "unregister fail, delete activities belong the user fail");
-                    }
+                    jsonObj.addProperty("statuscode", 0);
+
                 } else {
                     jsonObj.addProperty("statuscode", 1);
                     jsonObj.addProperty("status", "unregister fail, email or password wrong?");
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "unregister fail, user is not exist");
+                jsonObj.addProperty("status", "unregister fail, invalid user or user is not exist");
             }
 
         } else {
