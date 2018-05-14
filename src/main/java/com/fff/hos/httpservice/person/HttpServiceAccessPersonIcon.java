@@ -1,5 +1,6 @@
 package com.fff.hos.httpservice.person;
 
+import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
@@ -78,12 +79,19 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
 
         CloudSQLManager sqlManager = new CloudSQLManager();
 
+        //TODO - There has a concern that is no verify user password
         if(sqlManager.checkPersonExist(strOwnerName)) {
             GcsFileOptions instance = GcsFileOptions.getDefaultInstance();
             GcsFilename fileName = new GcsFilename(strBucketName, strFileName);
             GcsOutputChannel outputChannel;
             outputChannel = gcsService.createOrReplace(fileName, instance);
-            copy(request.getInputStream(), Channels.newOutputStream(outputChannel));
+
+            if(copy(request.getInputStream(), Channels.newOutputStream(outputChannel))) {
+                Person person = new Person();
+                person.setEmail(strOwnerName);
+                person.setIcon(strFileName);
+                sqlManager.updatePerson(person);
+            }
 
             jsonObj.addProperty("statuscode", 0);
         } else {
