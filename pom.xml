@@ -70,6 +70,12 @@
             <artifactId>mysql-socket-factory</artifactId>
             <version>1.0.5</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.appengine.tools/appengine-gcs-client -->
+        <dependency>
+            <groupId>com.google.appengine.tools</groupId>
+            <artifactId>appengine-gcs-client</artifactId>
+            <version>0.7</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>

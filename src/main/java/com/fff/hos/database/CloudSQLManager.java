@@ -65,7 +65,9 @@ public class CloudSQLManager {
         return getDBCtrlPerson().checkPersonExist(person.getEmail());
     }
 
-
+    public boolean checkPersonExist(String strEmail) {
+        return getDBCtrlPerson().checkPersonExist(strEmail);
+    }
 
     // ---------------------------- Activity control ----------------------------
     public Activity createActivity(Activity activity) {
