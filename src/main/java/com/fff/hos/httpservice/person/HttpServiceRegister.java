@@ -2,6 +2,7 @@ package com.fff.hos.httpservice.person;
 
 import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
+import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToPerson;
 import com.google.gson.JsonObject;
 
@@ -33,6 +34,11 @@ public class HttpServiceRegister extends HttpServlet {
 
             if (!sqlManager.checkPersonExist(person)) {
                 if (sqlManager.register(person)) {
+
+                    //create storage on GCS for store user's icons.
+                    CloudStorageManager csManager = new CloudStorageManager();
+                    csManager.createPersonStorage(person.getEmail());
+
                     jsonObj.addProperty("statuscode", 0);
                 } else {
                     jsonObj.addProperty("statuscode", 1);
