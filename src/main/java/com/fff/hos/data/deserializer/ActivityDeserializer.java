@@ -22,7 +22,6 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         JsonElement jeDateEnd = jsonObject.get("dateend");
         JsonElement jeLocation = jsonObject.get("location");
         JsonElement jeStatus = jsonObject.get("status");
-        JsonElement jeImage = jsonObject.get("image");
         JsonElement jeDescription = jsonObject.get("description");
         JsonElement jeTags = jsonObject.get("tags");
         JsonElement jeGoodActivity = jsonObject.get("goodactivity");
@@ -42,7 +41,6 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         activity.setDateEnd(jeDateEnd == null ? null : jeDateEnd.getAsString());
         activity.setLocation(jeLocation == null ? null : jeLocation.getAsString());
         activity.setStatus(jeStatus == null ? null : jeStatus.getAsString());
-        activity.setImage(jeImage == null ? null : jeImage.getAsString());
         activity.setDescription(jeDescription == null ? null : jeDescription.getAsString());
         activity.setTags(jeTags == null ? null : jeTags.getAsString());
         activity.setGoodActivity(jeGoodActivity == null ? null : jeGoodActivity.getAsInt());

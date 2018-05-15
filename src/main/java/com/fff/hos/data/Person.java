@@ -13,9 +13,6 @@ public class Person {
     @SerializedName("displayname")
     private String DisplayName;
 
-    @SerializedName("icon")
-    private String Icon;
-
     @SerializedName("age")
     private Integer Age;
 
@@ -53,11 +50,10 @@ public class Person {
 
     }
 
-    public Person(String email, String userPassword, String displayName, String icon, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online, String newUserPassword) {
+    public Person(String email, String userPassword, String displayName, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online, String newUserPassword) {
         Email = email;
         UserPassword = userPassword;
         DisplayName = displayName;
-        Icon = icon;
         Age = age;
         Gender = gender;
         Interests = interests;
@@ -93,14 +89,6 @@ public class Person {
 
     public void setDisplayName(String displayName) {
         DisplayName = displayName;
-    }
-
-    public String getIcon() {
-        return Icon;
-    }
-
-    public void setIcon(String icon) {
-        Icon = icon;
     }
 
     public Integer getAge() {

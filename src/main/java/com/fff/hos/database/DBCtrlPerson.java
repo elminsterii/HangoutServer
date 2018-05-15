@@ -30,7 +30,6 @@ class DBCtrlPerson {
             strCreateTableSQL.append(DBConstants.PERSON_COL_EMAIL).append(" VARCHAR(128) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_USERPASSWORD).append(" VARCHAR(64) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_DISPLAYNAME).append(" VARCHAR(64) NOT NULL, ");
-            strCreateTableSQL.append(DBConstants.PERSON_COL_ICON).append(" VARCHAR(4096), ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_AGE).append(" TINYINT UNSIGNED NOT NULL, ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_GENDER).append(" CHAR(8) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_INTERESTS).append(" VARCHAR(512), ");
@@ -70,12 +69,12 @@ class DBCtrlPerson {
         if (person == null)
             return false;
 
-        return insert(person.getEmail(), person.getUserPassword(), person.getDisplayName(), person.getIcon(), person.getAge(), person.getGender()
+        return insert(person.getEmail(), person.getUserPassword(), person.getDisplayName(), person.getAge(), person.getGender()
                 , person.getInterests(), person.getDescription(), person.getLocation(), person.getJoinActivities()
                 , person.getHoldActivities(), person.getGoodMember(), person.getGoodLeader(), person.getOnline());
     }
 
-    private boolean insert(String strEmail, String strUserPassword, String strDisplayName, String strIcon, Integer iAge, String strGender, String strInterests
+    private boolean insert(String strEmail, String strUserPassword, String strDisplayName, Integer iAge, String strGender, String strInterests
             , String strDescription, String strLocation, String strJoinActivities, String strHoldActivities
             , Integer iGoodMember, Integer iGoodLeader, Integer bOnline) {
 
@@ -96,7 +95,6 @@ class DBCtrlPerson {
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_EMAIL);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_USERPASSWORD);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_DISPLAYNAME);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_ICON);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_AGE);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_GENDER);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_INTERESTS);
@@ -111,7 +109,6 @@ class DBCtrlPerson {
         strCreatePersonSQL.append(",\"").append(strEmail).append("\"");
         strCreatePersonSQL.append(",\"").append(strUserPassword).append("\"");
         strCreatePersonSQL.append(",\"").append(strDisplayName).append("\"");
-        strCreatePersonSQL.append(",\"").append(strIcon == null ? "" : strIcon).append("\"");
         strCreatePersonSQL.append(",\"").append(iAge).append("\"");
         strCreatePersonSQL.append(",\"").append(strGender).append("\"");
         strCreatePersonSQL.append(",\"").append(strInterests == null ? "" : strInterests).append("\"");
@@ -245,7 +242,6 @@ class DBCtrlPerson {
                 person.setEmail(rs.getString(DBConstants.PERSON_COL_EMAIL));
                 person.setUserPassword(rs.getString(DBConstants.PERSON_COL_USERPASSWORD));
                 person.setDisplayName(rs.getString(DBConstants.PERSON_COL_DISPLAYNAME));
-                person.setIcon(rs.getString(DBConstants.PERSON_COL_ICON));
                 person.setAge(rs.getInt(DBConstants.PERSON_COL_AGE));
                 person.setGender(rs.getString(DBConstants.PERSON_COL_GENDER));
                 person.setInterests(rs.getString(DBConstants.PERSON_COL_INTERESTS));
@@ -282,7 +278,6 @@ class DBCtrlPerson {
                 Person person = new Person();
                 person.setEmail(rs.getString(DBConstants.PERSON_COL_EMAIL));
                 person.setDisplayName(rs.getString(DBConstants.PERSON_COL_DISPLAYNAME));
-                person.setIcon(rs.getString(DBConstants.PERSON_COL_ICON));
                 person.setAge(rs.getInt(DBConstants.PERSON_COL_AGE));
                 person.setGender(rs.getString(DBConstants.PERSON_COL_GENDER));
                 person.setInterests(rs.getString(DBConstants.PERSON_COL_INTERESTS));
@@ -322,7 +317,6 @@ class DBCtrlPerson {
         strUpdateSQL.append(DBConstants.TABLE_NAME_PERSON).append(" SET ");
         strUpdateSQL.append(DBConstants.PERSON_COL_USERPASSWORD).append("=\"").append(person.getUserPassword()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_DISPLAYNAME).append("=\"").append(person.getDisplayName()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_ICON).append("=\"").append(person.getIcon()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_AGE).append("=\"").append(person.getAge()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_GENDER).append("=\"").append(person.getGender()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_INTERESTS).append("=\"").append(person.getInterests()).append("\",");
@@ -353,8 +347,6 @@ class DBCtrlPerson {
             newPerson.setUserPassword(oldPerson.getUserPassword());
         if (newPerson.getDisplayName() == null)
             newPerson.setDisplayName(oldPerson.getDisplayName());
-        if (newPerson.getIcon() == null)
-            newPerson.setIcon(oldPerson.getIcon());
         if (newPerson.getAge() == null)
             newPerson.setAge(oldPerson.getAge());
         if (newPerson.getGender() == null)

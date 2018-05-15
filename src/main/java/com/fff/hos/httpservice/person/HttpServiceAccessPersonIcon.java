@@ -1,8 +1,8 @@
 package com.fff.hos.httpservice.person;
 
-import com.fff.hos.data.Person;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.gcs.CloudStorageManager;
+import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -22,16 +22,45 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
 
         String strOwnerName = getOwnerName(request);
         String strFileName = getFileName(request);
-        String strFullName = strOwnerName + "/" + strFileName;
 
-        CloudStorageManager csManager = new CloudStorageManager();
-        if(!csManager.downloadPersonIcon(strFullName, response.getOutputStream())) {
+        StringTool stringTool = new StringTool();
+
+        //invalid input...
+        if(!stringTool.checkStringNotNull(strOwnerName)) {
+            FillFailResponseAndFlush(response, "access fail, invalid email");
+
+        //take icon list...
+        } else if(!stringTool.checkStringNotNull(strFileName)) {
+            CloudStorageManager csManager = new CloudStorageManager();
+            List<String> lsIcons =  csManager.listPersonIcons(strOwnerName);
+            StringBuilder strIcons = new StringBuilder();
+
+            int iMinLength = strOwnerName.length() + 1;
+            if(lsIcons != null) {
+                for (String strIconName : lsIcons) {
+                    if(strIconName.length() > iMinLength)
+                        strIcons.append(strIconName).append(",");
+                }
+            }
+
+            if(strIcons.length() > 0)
+                strIcons.deleteCharAt(strIcons.length() - 1);
+
             response.setContentType("application/json");
             JsonObject jsonObj = new JsonObject();
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "access fail, icon is not exist");
+            jsonObj.addProperty("statuscode", 0);
+            jsonObj.addProperty("icons", strIcons.toString());
             response.getOutputStream().print(jsonObj.toString());
             response.flushBuffer();
+
+        //download icon...
+        } else {
+            String strFullName = strOwnerName + "/" + strFileName;
+
+            CloudStorageManager csManager = new CloudStorageManager();
+            if(!csManager.downloadPersonIcon(strFullName, response.getOutputStream())) {
+                FillFailResponseAndFlush(response, "access fail, icon is not exist");
+            }
         }
     }
 
@@ -51,25 +80,9 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
         if(sqlManager.checkPersonExist(strOwnerName)) {
             CloudStorageManager csManager = new CloudStorageManager();
 
-            if(csManager.uploadPersonIcon(strFullName, request.getInputStream())) {
+            if(csManager.uploadPersonIcon(strFullName, request.getInputStream()))
+                jsonObj.addProperty("statuscode", 0);
 
-                //update property "icon" in DB.
-                List<String> lsIcons = csManager.listPersonIcons(strOwnerName);
-                StringBuilder strIcons = new StringBuilder();
-
-                if(lsIcons != null) {
-                    for(String strIcon : lsIcons)
-                        strIcons.append(strIcon).append(",");
-                    strIcons.deleteCharAt(strIcons.length()-1);
-                }
-
-                Person person = new Person();
-                person.setEmail(strOwnerName);
-                person.setIcon(strIcons.toString());
-                sqlManager.updatePerson(person);
-            }
-
-            jsonObj.addProperty("statuscode", 0);
         } else {
             jsonObj.addProperty("statuscode", 1);
             jsonObj.addProperty("status", "access fail, user is not exist");
@@ -83,11 +96,26 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
     //           //         0           /       1        /       2        /    3    /
     private String getOwnerName(HttpServletRequest req) {
         String[] splits = req.getRequestURI().split("/");
+        if(splits.length < 3)
+            return null;
+
         return splits[2];
     }
 
     private String getFileName(HttpServletRequest req) {
         String[] splits = req.getRequestURI().split("/");
+        if(splits.length < 4)
+            return null;
+
         return splits[3];
+    }
+
+    private void FillFailResponseAndFlush(HttpServletResponse response, String strFailDescription) throws IOException {
+        response.setContentType("application/json");
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("statuscode", 1);
+        jsonObj.addProperty("status", strFailDescription);
+        response.getOutputStream().print(jsonObj.toString());
+        response.flushBuffer();
     }
 }

@@ -40,9 +40,6 @@ public class Activity {
     @SerializedName("status")
     private String Status;
 
-    @SerializedName("image")
-    private String Image;
-
     @SerializedName("description")
     private String Description;
 
@@ -62,7 +59,7 @@ public class Activity {
 
     }
 
-    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String image, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
+    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
         Id = id;
         PublisherEmail = publisherEmail;
         PublisherUserPassword = publisherUserPassword;
@@ -75,7 +72,6 @@ public class Activity {
         DateEnd = dateEnd;
         Location = location;
         Status = status;
-        Image = image;
         Description = description;
         Tags = tags;
         GoodActivity = goodActivity;
@@ -177,14 +173,6 @@ public class Activity {
 
     public void setStatus(String status) {
         Status = status;
-    }
-
-    public String getImage() {
-        return Image;
-    }
-
-    public void setImage(String image) {
-        Image = image;
     }
 
     public String getDescription() {

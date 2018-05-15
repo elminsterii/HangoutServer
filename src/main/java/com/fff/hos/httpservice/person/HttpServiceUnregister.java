@@ -35,7 +35,7 @@ public class HttpServiceUnregister extends HttpServlet {
 
             if (sqlManager.checkPersonValid(person)) {
                 if (sqlManager.unregister(person)) {
-                    //delete all icons belong the user after unregister success.
+                    //delete all icons obelong the user on GCS after unregister success.
                     CloudStorageManager csManager = new CloudStorageManager();
                     csManager.deletePersonIcons(person.getEmail());
 

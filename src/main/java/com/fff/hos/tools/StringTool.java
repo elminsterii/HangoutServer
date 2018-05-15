@@ -19,7 +19,9 @@ public class StringTool {
             strBuilder.append("|");
         }
 
-        strBuilder.deleteCharAt(strBuilder.length()-1);
+        if(strBuilder.length() > 0)
+            strBuilder.deleteCharAt(strBuilder.length()-1);
+
         return strBuilder.toString();
     }
 
@@ -37,7 +39,9 @@ public class StringTool {
         StringBuilder strBuilder = new StringBuilder();
         for(String str : lsString)
             strBuilder.append(str).append(',');
-        strBuilder.deleteCharAt(strBuilder.length()-1);
+
+        if(strBuilder.length() > 0)
+            strBuilder.deleteCharAt(strBuilder.length()-1);
 
         return strBuilder.toString();
     }

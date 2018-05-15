@@ -13,7 +13,6 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         JsonElement jeEmail = jsonObject.get("email");
         JsonElement jeUserPassword = jsonObject.get("userpassword");
         JsonElement jeDisplayName = jsonObject.get("displayname");
-        JsonElement jeIcon = jsonObject.get("icon");
         JsonElement jeAge = jsonObject.get("age");
         JsonElement jeInterests = jsonObject.get("interests");
         JsonElement jeDescription = jsonObject.get("description");
@@ -29,7 +28,6 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         person.setEmail(jeEmail.getAsString());
         person.setUserPassword(jeUserPassword == null ? null : jeUserPassword.getAsString());
         person.setDisplayName(jeDisplayName == null ? null : jeDisplayName.getAsString());
-        person.setIcon(jeIcon == null ? null : jeIcon.getAsString());
         person.setAge(jeAge == null ? null : jeAge.getAsInt());
         person.setInterests(jeInterests == null ? null : jeInterests.getAsString());
         person.setDescription(jeDescription == null ? null : jeDescription.getAsString());

@@ -37,7 +37,6 @@ class DBCtrlActivity {
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(" VARCHAR(32) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(" VARCHAR(128), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" CHAR(8), ");
-            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_IMAGE).append(" VARCHAR(4096), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(" VARCHAR(1024), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_TAGS).append(" VARCHAR(128), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append(" INT NOT NULL DEFAULT 0, ");
@@ -71,15 +70,14 @@ class DBCtrlActivity {
     Activity insert(Activity activity) {
         return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
                 , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
-                , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getImage()
-                , activity.getDescription(), activity.getTags(), activity.getGoodActivity(), activity.getAttention()
-                , activity.getAttendees());
+                , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getDescription()
+                , activity.getTags(), activity.getGoodActivity(), activity.getAttention(), activity.getAttendees());
     }
 
     private Activity insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
             , Integer iEarlyBird,String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
-            , String strStatus, String strImage, String strDescription, String strTags, Integer iGoodActivity
-            , Integer iAttention, String strAttendees) {
+            , String strStatus, String strDescription, String strTags, Integer iGoodActivity, Integer iAttention
+            , String strAttendees) {
 
         Activity resActivity = null;
         StringTool stringTool = new StringTool();
@@ -109,7 +107,6 @@ class DBCtrlActivity {
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_STATUS).append(",");
-        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_IMAGE).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_TAGS).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append(",");
@@ -125,7 +122,6 @@ class DBCtrlActivity {
         strCreateActivitySQL.append("\"").append(strDateEnd).append("\",");
         strCreateActivitySQL.append("\"").append(strLocation).append("\",");
         strCreateActivitySQL.append("\"").append(strStatus == null ? "" : strStatus).append("\",");
-        strCreateActivitySQL.append("\"").append(strImage == null ? "" : strImage).append("\",");
         strCreateActivitySQL.append("\"").append(strDescription == null ? "" : strDescription).append("\",");
         strCreateActivitySQL.append("\"").append(strTags == null ? "" : strTags).append("\",");
         strCreateActivitySQL.append(iGoodActivity == null ? 0 : iGoodActivity).append(",");
@@ -290,7 +286,6 @@ class DBCtrlActivity {
                 activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
                 activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
                 activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
-                activity.setImage(rs.getString(DBConstants.ACTIVITY_COL_IMAGE));
                 activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
                 activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
                 activity.setGoodActivity(rs.getInt(DBConstants.ACTIVITY_COL_GOODACTIVITY));
@@ -335,7 +330,6 @@ class DBCtrlActivity {
                 activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
                 activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
                 activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
-                activity.setImage(rs.getString(DBConstants.ACTIVITY_COL_IMAGE));
                 activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
                 activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
                 activity.setGoodActivity(rs.getInt(DBConstants.ACTIVITY_COL_GOODACTIVITY));
@@ -377,7 +371,6 @@ class DBCtrlActivity {
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append("=\"").append(activity.getDateEnd()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append("=\"").append(activity.getLocation()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_STATUS).append("=\"").append(activity.getStatus()).append("\",");
-        strUpdateSQL.append(DBConstants.ACTIVITY_COL_IMAGE).append("=\"").append(activity.getImage()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append("=\"").append(activity.getDescription()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_TAGS).append("=\"").append(activity.getTags()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_GOODACTIVITY).append("=\"").append(activity.getGoodActivity()).append("\",");
@@ -422,8 +415,6 @@ class DBCtrlActivity {
             newActivity.setLocation(oldActivity.getLocation());
         if (newActivity.getStatus() == null)
             newActivity.setStatus(oldActivity.getStatus());
-        if (newActivity.getImage() == null)
-            newActivity.setImage(oldActivity.getImage());
         if (newActivity.getDescription() == null)
             newActivity.setDescription(oldActivity.getDescription());
         if (newActivity.getTags() == null)
