@@ -21,6 +21,10 @@ public class CloudSQLManager {
         return getDBCtrlPerson().delete(person);
     }
 
+    public Person queryPerson(String strEmail) {
+        return getDBCtrlPerson().query(strEmail);
+    }
+
     public Person queryPerson(Person person) {
         return getDBCtrlPerson().query(person);
     }

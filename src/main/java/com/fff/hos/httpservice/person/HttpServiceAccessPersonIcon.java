@@ -87,10 +87,20 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
             outputChannel = gcsService.createOrReplace(fileName, instance);
 
             if(copy(request.getInputStream(), Channels.newOutputStream(outputChannel))) {
-                Person person = new Person();
-                person.setEmail(strOwnerName);
-                person.setIcon(strFileName);
-                sqlManager.updatePerson(person);
+                Person oldPerson = sqlManager.queryPerson(strOwnerName);
+                String strIcon = oldPerson.getIcon();
+
+                if(strIcon == null)
+                    strIcon = "";
+
+                if(!strIcon.contains(strFileName)) {
+                    if(strIcon.isEmpty())
+                        oldPerson.setIcon(strFileName);
+                    else
+                        oldPerson.setIcon(strIcon + "," + strFileName);
+
+                    sqlManager.updatePerson(oldPerson);
+                }
             }
 
             jsonObj.addProperty("statuscode", 0);
