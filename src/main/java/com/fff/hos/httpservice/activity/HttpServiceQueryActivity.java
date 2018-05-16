@@ -18,7 +18,7 @@ import java.util.List;
 @WebServlet(name = "HttpServiceQueryActivity", value = "/queryactivity")
 public class HttpServiceQueryActivity extends HttpServlet {
 
-    private static final String TAG_QUERY = "ids";
+    private static final String TAG_IDS = "ids";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,7 +36,7 @@ public class HttpServiceQueryActivity extends HttpServlet {
         JsonArray resJsonArray = null;
 
         if (jsonObj != null) {
-            JsonElement jsElement = jsonObj.get(TAG_QUERY);
+            JsonElement jsElement = jsonObj.get(TAG_IDS);
 
             if(jsElement != null) {
                 CloudSQLManager sqlManager = new CloudSQLManager();
@@ -59,7 +59,7 @@ public class HttpServiceQueryActivity extends HttpServlet {
                 }
             } else {
                 resJsonObj.addProperty("statuscode", 1);
-                resJsonObj.addProperty("status", "query fail, Json property wrong");
+                resJsonObj.addProperty("status", "query fail, JSON property wrong");
             }
         } else {
             resJsonObj.addProperty("statuscode", 1);

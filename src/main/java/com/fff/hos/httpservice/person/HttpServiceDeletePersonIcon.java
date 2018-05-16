@@ -16,6 +16,9 @@ import java.io.IOException;
 @WebServlet(name = "HttpServiceDeletePersonIcon", value = "/deletepersonicon")
 public class HttpServiceDeletePersonIcon extends HttpServlet {
 
+    private static final String TAG_EMAIL = "email";
+    private static final String TAG_USERPASSWORD = "userpassword";
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -36,8 +39,8 @@ public class HttpServiceDeletePersonIcon extends HttpServlet {
             jsonObj.addProperty("statuscode", 1);
             jsonObj.addProperty("status", "register fail, JSON format wrong");
         } else {
-            JsonElement jsonEmail = jsonDataObj.get("email");
-            JsonElement jsonUserPassword = jsonDataObj.get("userpassword");
+            JsonElement jsonEmail = jsonDataObj.get(TAG_EMAIL);
+            JsonElement jsonUserPassword = jsonDataObj.get(TAG_USERPASSWORD);
             if(jsonEmail == null
                     || jsonUserPassword == null
                     || !stringTool.checkStringNotNull(jsonEmail.getAsString())
