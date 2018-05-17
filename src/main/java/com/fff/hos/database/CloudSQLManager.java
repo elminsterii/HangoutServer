@@ -12,7 +12,7 @@ public class CloudSQLManager {
 
     public CloudSQLManager() { }
 
-    // ---------------------------- Person control ----------------------------
+    // --------------------------------- Person control functions ---------------------------------
     public boolean register(Person person) {
         return getDBCtrlPerson().insert(person);
     }
@@ -73,7 +73,10 @@ public class CloudSQLManager {
         return getDBCtrlPerson().checkPersonExist(strEmail);
     }
 
-    // ---------------------------- Activity control ----------------------------
+
+
+
+    // --------------------------------- Activity control functions ---------------------------------
     public Activity createActivity(Activity activity) {
         return getDBCtrlActivity().insert(activity);
     }

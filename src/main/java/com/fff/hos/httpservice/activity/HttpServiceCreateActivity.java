@@ -2,6 +2,7 @@ package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
+import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToActivity;
 import com.fff.hos.tools.StringTool;
 import com.google.gson.Gson;
@@ -38,6 +39,10 @@ public class HttpServiceCreateActivity extends HttpServlet {
                 Activity newActivity = sqlManager.createActivity(activity);
 
                 if (newActivity != null) {
+                    //create storage on GCS for store activity images.
+                    CloudStorageManager csManager = new CloudStorageManager();
+                    csManager.createActivityStorage(newActivity.getId());
+
                     StringTool stringTool = new StringTool();
 
                     jsonObj.addProperty("statuscode", 0);
