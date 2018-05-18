@@ -1,4 +1,4 @@
-package com.fff.hos.httpservice.person;
+package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.gcs.CloudStorageManager;
@@ -13,10 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "HttpServiceAccessPersonIcon", urlPatterns = {"/accesspersonicon/*"})
-public class HttpServiceAccessPersonIcon extends HttpServlet {
+@WebServlet(name = "HttpServiceAccessActivityImage", urlPatterns = {"/accessactivityimage/*"})
+public class HttpServiceAccessActivityImage extends HttpServlet {
 
-    private static final String TAG_ICONS = "icons";
+    private static final String TAG_IMAGES = "images";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -24,46 +24,46 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
         response.setContentType("image/jpg");
 
         HttpTool httpTool = new HttpTool();
-        String strOwnerName = httpTool.getOwnerName(request);
+        String strActivityId = httpTool.getOwnerName(request);
         String strFileName = httpTool.getFileName(request);
 
         StringTool stringTool = new StringTool();
 
         //invalid input...
-        if(!stringTool.checkStringNotNull(strOwnerName)) {
-            FillFailResponseAndFlush(response, "access fail, invalid email");
+        if(!stringTool.checkStringNotNull(strActivityId)) {
+            FillFailResponseAndFlush(response, "access fail, activity id is empty?");
 
-        //take icon list...
+        //take image list...
         } else if(!stringTool.checkStringNotNull(strFileName)) {
             CloudStorageManager csManager = new CloudStorageManager();
-            List<String> lsIcons =  csManager.listPersonIcons(strOwnerName);
-            StringBuilder strIcons = new StringBuilder();
+            List<String> lsImages =  csManager.listActivityImages(strActivityId);
+            StringBuilder strImages = new StringBuilder();
 
-            int iMinLength = strOwnerName.length() + 1;
-            if(lsIcons != null) {
-                for (String strIconName : lsIcons) {
-                    if(strIconName.length() > iMinLength)
-                        strIcons.append(strIconName).append(",");
+            int iMinLength = strActivityId.length() + 1;
+            if(lsImages != null) {
+                for (String strImageName : lsImages) {
+                    if(strImageName.length() > iMinLength)
+                        strImages.append(strImageName).append(",");
                 }
             }
 
-            if(strIcons.length() > 0)
-                strIcons.deleteCharAt(strIcons.length() - 1);
+            if(strImages.length() > 0)
+                strImages.deleteCharAt(strImages.length() - 1);
 
             response.setContentType("application/json");
             JsonObject jsonObj = new JsonObject();
             jsonObj.addProperty("statuscode", 0);
-            jsonObj.addProperty(TAG_ICONS, strIcons.toString());
+            jsonObj.addProperty(TAG_IMAGES, strImages.toString());
             response.getOutputStream().print(jsonObj.toString());
             response.flushBuffer();
 
-        //download icon...
+        //download image...
         } else {
-            String strFullName = strOwnerName + "/" + strFileName;
+            String strFullName = strActivityId + "/" + strFileName;
 
             CloudStorageManager csManager = new CloudStorageManager();
-            if(!csManager.downloadPersonIcon(strFullName, response.getOutputStream())) {
-                FillFailResponseAndFlush(response, "access fail, icon is not exist");
+            if(!csManager.downloadActivityImage(strFullName, response.getOutputStream())) {
+                FillFailResponseAndFlush(response, "access fail, image is not exist");
             }
         }
     }
@@ -75,22 +75,22 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
         HttpTool httpTool = new HttpTool();
 
-        String strOwnerName = httpTool.getOwnerName(request);
+        String strActivityId = httpTool.getOwnerName(request);
         String strFileName = httpTool.getFileName(request);
-        String strFullName = strOwnerName + "/" + strFileName;
+        String strFullName = strActivityId + "/" + strFileName;
 
         CloudSQLManager sqlManager = new CloudSQLManager();
 
-        //TODO - There has a concern that is no verify user password
-        if(sqlManager.checkPersonExist(strOwnerName)) {
+        //TODO - There has a concern that is no verify publisher password.
+        if(sqlManager.checkActivityExist(strActivityId)) {
             CloudStorageManager csManager = new CloudStorageManager();
 
-            if(csManager.uploadPersonIcon(strFullName, request.getInputStream()))
+            if(csManager.uploadActivityImage(strFullName, request.getInputStream()))
                 jsonObj.addProperty("statuscode", 0);
 
         } else {
             jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "access fail, user is not exist");
+            jsonObj.addProperty("status", "access fail, activity is not exist");
         }
 
         response.getWriter().print(jsonObj.toString());

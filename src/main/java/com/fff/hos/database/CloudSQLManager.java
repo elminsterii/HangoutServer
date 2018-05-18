@@ -101,6 +101,10 @@ public class CloudSQLManager {
         return getDBCtrlActivity().checkActivityExist(activity.getId());
     }
 
+    public boolean checkActivityExist(String strId) {
+        return getDBCtrlActivity().checkActivityExist(strId);
+    }
+
     private DBCtrlPerson getDBCtrlPerson() {
         if(m_dbCtrlPerson == null)
             m_dbCtrlPerson = new DBCtrlPerson();

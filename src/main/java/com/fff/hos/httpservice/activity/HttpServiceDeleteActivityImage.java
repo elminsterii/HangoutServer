@@ -1,5 +1,4 @@
-package com.fff.hos.httpservice.person;
-
+package com.fff.hos.httpservice.activity;
 import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToJsonObj;
@@ -13,12 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "HttpServiceDeletePersonIcon", value = "/deletepersonicon")
-public class HttpServiceDeletePersonIcon extends HttpServlet {
+@WebServlet(name = "HttpServiceDeleteActivityImage", value = "/deleteactivityimage")
+public class HttpServiceDeleteActivityImage extends HttpServlet {
 
     private static final String TAG_EMAIL = "email";
     private static final String TAG_USERPASSWORD = "userpassword";
-    private static final String TAG_ICONS = "icons";
+    private static final String TAG_ID = "id";
+    private static final String TAG_IMAGES = "images";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -57,33 +57,41 @@ public class HttpServiceDeletePersonIcon extends HttpServlet {
                     jsonObj.addProperty("statuscode", 1);
                     jsonObj.addProperty("status", "delete fail, invalid user");
                 } else {
-                    JsonElement jsonIcons = jsonDataObj.get(TAG_ICONS);
+                    JsonElement jsonId = jsonDataObj.get(TAG_ID);
+                    JsonElement jsonImages = jsonDataObj.get(TAG_IMAGES);
 
-                    //delete all belong the user.
-                    if(jsonIcons == null || jsonIcons.getAsString().isEmpty()) {
-                        CloudStorageManager csManager = new CloudStorageManager();
-                        csManager.deletePersonIcons(strEmail);
+                    //delete all belong the activity.
+                    if(jsonImages == null || jsonImages.getAsString().isEmpty()) {
 
-                        jsonObj.addProperty("statuscode", 0);
+                        if(jsonId == null || jsonId.getAsString().isEmpty()) {
+                            jsonObj.addProperty("statuscode", 1);
+                            jsonObj.addProperty("status", "delete fail, activity id is empty?");
+                        } else {
+                            String strId = jsonId.getAsString();
+                            CloudStorageManager csManager = new CloudStorageManager();
+                            csManager.deleteActivityImages(strId);
 
-                    //delete icons by icon name.
+                            jsonObj.addProperty("statuscode", 0);
+                        }
+
+                    //delete images by activity image name.
                     } else {
-                        String strIcons = jsonIcons.getAsString();
+                        String strImages = jsonImages.getAsString();
 
-                        if(stringTool.checkStringNotNull(strIcons)) {
-                            String[] arrIcons = strIcons.split(",");
+                        if(stringTool.checkStringNotNull(strImages)) {
+                            String[] arrImages = strImages.split(",");
 
-                            if(arrIcons.length > 0) {
+                            if(arrImages.length > 0) {
                                 CloudStorageManager csManager = new CloudStorageManager();
 
-                                for(String strIcon : arrIcons) {
-                                    csManager.deletePersonIcon(strIcon);
+                                for(String strImage : arrImages) {
+                                    csManager.deleteActivityImage(strImage);
                                 }
                             }
                             jsonObj.addProperty("statuscode", 0);
                         } else {
                             jsonObj.addProperty("statuscode", 1);
-                            jsonObj.addProperty("status", "delete fail, icons is empty?");
+                            jsonObj.addProperty("status", "delete fail, images is empty?");
                         }
                     }
                 }

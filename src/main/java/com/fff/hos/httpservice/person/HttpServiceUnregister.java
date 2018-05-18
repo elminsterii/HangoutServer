@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name = "HttpServiceUnregister", value = "/unregister")
 public class HttpServiceUnregister extends HttpServlet {
@@ -39,9 +40,17 @@ public class HttpServiceUnregister extends HttpServlet {
                     CloudStorageManager csManager = new CloudStorageManager();
                     csManager.deletePersonIcons(person.getEmail());
 
-                    //delete all activities belong the user after unregister success.
+                    //delete all images belong the activity after unregister success.
                     Activity activity = new Activity();
                     activity.setPublisherEmail(person.getEmail());
+                    List<String> lsIds =  sqlManager.queryActivity(activity);
+
+                    if(lsIds != null && !lsIds.isEmpty()) {
+                        for(String strId : lsIds)
+                            csManager.deleteActivityImages(strId);
+                    }
+
+                    //delete all activities belong the user after unregister success.
                     sqlManager.deleteActivity(activity);
 
                     jsonObj.addProperty("statuscode", 0);

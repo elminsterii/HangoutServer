@@ -2,6 +2,7 @@ package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.data.Activity;
 import com.fff.hos.database.CloudSQLManager;
+import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToActivity;
 import com.google.gson.JsonObject;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name = "HttpServiceDeleteActivity", value = "/deleteactivity")
 public class HttpServiceDeleteActivity extends HttpServlet {
@@ -32,11 +34,34 @@ public class HttpServiceDeleteActivity extends HttpServlet {
             CloudSQLManager sqlManager = new CloudSQLManager();
 
             if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                if (sqlManager.deleteActivity(activity)) {
-                    jsonObj.addProperty("statuscode", 0);
+                CloudStorageManager csManager = new CloudStorageManager();
+
+                //delete all activities by publisher email.
+                if(activity.getId() == null || activity.getId().isEmpty()) {
+                    List<String> lsIds = sqlManager.queryActivity(activity);
+
+                    if (sqlManager.deleteActivity(activity)) {
+                        if (lsIds != null && !lsIds.isEmpty()) {
+                            for (String strId : lsIds)
+                                csManager.deleteActivityImages(strId);
+                        }
+
+                        jsonObj.addProperty("statuscode", 0);
+                    } else {
+                        jsonObj.addProperty("statuscode", 1);
+                        jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
+                    }
+                //delete one activity by id.
                 } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
+                    if (sqlManager.deleteActivity(activity)) {
+                        //delete all images belong the activity after delete activity success.
+                        csManager.deleteActivityImages(activity.getId());
+
+                        jsonObj.addProperty("statuscode", 0);
+                    } else {
+                        jsonObj.addProperty("statuscode", 1);
+                        jsonObj.addProperty("status", "delete fail, activity ID wrong or you are not owner");
+                    }
                 }
             } else {
                 jsonObj.addProperty("statuscode", 1);

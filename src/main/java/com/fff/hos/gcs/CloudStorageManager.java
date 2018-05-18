@@ -67,10 +67,27 @@ public class CloudStorageManager {
         return m_csPerson;
     }
 
-
-
-
     // --------------------------------- Activity control functions ---------------------------------
+    public boolean uploadActivityImage(String strImageName, InputStream is) throws IOException {
+        return getCsActivity().uploadActivityImage(strImageName, is);
+    }
+
+    public boolean downloadActivityImage(String strImageName, OutputStream os) throws IOException {
+        return getCsActivity().downloadActivityImage(strImageName, os);
+    }
+
+    public List<String> listActivityImages(String strOwnerName) throws IOException {
+        return getCsActivity().listActivityImages(strOwnerName);
+    }
+
+    public boolean deleteActivityImage(String strImageName) throws IOException {
+        return getCsActivity().deleteActivityImage(strImageName);
+    }
+
+    public boolean deleteActivityImages(String strActivityId) throws IOException {
+        return getCsActivity().deleteActivityImages(strActivityId);
+    }
+
     public void createActivityStorage(String strId) throws IOException  {
         getCsActivity().createActivityStorage(strId);
     }
