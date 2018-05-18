@@ -1,10 +1,9 @@
 package com.fff.hos.httpservice.person;
 
-import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToJsonObj;
-import com.fff.hos.tools.StringTool;
-import com.google.gson.JsonElement;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
@@ -31,66 +30,15 @@ public class HttpServiceDeletePersonIcon extends HttpServlet {
         response.setContentType("application/json");
 
         HttpJsonToJsonObj jsonToJsonObj = new HttpJsonToJsonObj();
-        JsonObject jsonDataObj = jsonToJsonObj.parse(request);
+        JsonObject jsonSource = jsonToJsonObj.parse(request);
 
-        StringTool stringTool = new StringTool();
-        JsonObject jsonObj = new JsonObject();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-        if(jsonDataObj == null) {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "delete fail, JSON format wrong");
-        } else {
-            JsonElement jsonEmail = jsonDataObj.get(TAG_EMAIL);
-            JsonElement jsonUserPassword = jsonDataObj.get(TAG_USERPASSWORD);
-            if(jsonEmail == null
-                    || jsonUserPassword == null
-                    || !stringTool.checkStringNotNull(jsonEmail.getAsString())
-                    || !stringTool.checkStringNotNull(jsonUserPassword.getAsString())) {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "delete fail, email or password is empty?");
-            } else {
-                String strEmail = jsonEmail.getAsString();
-                String strUserPassword = jsonUserPassword.getAsString();
+        ServerResponse serverResp = serverMgr.deletePersonIcon(jsonSource);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-                CloudSQLManager sqlManager = new CloudSQLManager();
-                if(!sqlManager.checkPersonValid(strEmail, strUserPassword)) {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "delete fail, invalid user");
-                } else {
-                    JsonElement jsonIcons = jsonDataObj.get(TAG_ICONS);
-
-                    //delete all belong the user.
-                    if(jsonIcons == null || jsonIcons.getAsString().isEmpty()) {
-                        CloudStorageManager csManager = new CloudStorageManager();
-                        csManager.deletePersonIcons(strEmail);
-
-                        jsonObj.addProperty("statuscode", 0);
-
-                    //delete icons by icon name.
-                    } else {
-                        String strIcons = jsonIcons.getAsString();
-
-                        if(stringTool.checkStringNotNull(strIcons)) {
-                            String[] arrIcons = strIcons.split(",");
-
-                            if(arrIcons.length > 0) {
-                                CloudStorageManager csManager = new CloudStorageManager();
-
-                                for(String strIcon : arrIcons) {
-                                    csManager.deletePersonIcon(strIcon);
-                                }
-                            }
-                            jsonObj.addProperty("statuscode", 0);
-                        } else {
-                            jsonObj.addProperty("statuscode", 1);
-                            jsonObj.addProperty("status", "delete fail, icons is empty?");
-                        }
-                    }
-                }
-            }
-        }
-
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

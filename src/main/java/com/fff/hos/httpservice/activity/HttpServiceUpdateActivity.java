@@ -1,7 +1,7 @@
 package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.database.CloudSQLManager;
+import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.json.HttpJsonToActivity;
 import com.google.gson.JsonObject;
 
@@ -29,7 +29,7 @@ public class HttpServiceUpdateActivity extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
+            DatabaseManager sqlManager = new DatabaseManager();
 
             if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
                 if (sqlManager.checkActivityExist(activity)) {

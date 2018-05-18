@@ -1,10 +1,10 @@
 package com.fff.hos.httpservice.person;
 
 import com.fff.hos.data.Person;
-import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.gcs.CloudStorageManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.google.gson.JsonObject;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,33 +27,14 @@ public class HttpServiceRegister extends HttpServlet {
 
         HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
         Person person = jsonToPerson.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if (!sqlManager.checkPersonExist(person)) {
-                if (sqlManager.register(person)) {
+        ServerResponse serverResp = serverMgr.register(person);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-                    //create storage on GCS for store user's icons.
-                    CloudStorageManager csManager = new CloudStorageManager();
-                    csManager.createPersonStorage(person.getEmail());
-
-                    jsonObj.addProperty("statuscode", 0);
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "register fail, missing necessary data?");
-                }
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "register fail, user is exist");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "register fail, JSON format wrong");
-        }
-
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

@@ -1,12 +1,10 @@
 package com.fff.hos.httpservice.person;
 
 import com.fff.hos.data.Person;
-import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.tools.StringTool;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,28 +27,14 @@ public class HttpServiceLogin extends HttpServlet {
 
         HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
         Person person = jsonToPerson.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
-            Person resPerson = sqlManager.login(person);
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if (resPerson != null) {
-                StringTool stringTool = new StringTool();
-                resPerson.setUserPassword(null);
-                String strPersonJson = new Gson().toJson(resPerson);
-                strPersonJson = stringTool.addStatusCode(strPersonJson, 0);
-                jsonObj = new JsonParser().parse(strPersonJson).getAsJsonObject();
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "login fail, email or password wrong?");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "login fail, JSON format wrong");
-        }
+        ServerResponse serverResp = serverMgr.login(person);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

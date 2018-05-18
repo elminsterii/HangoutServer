@@ -5,12 +5,12 @@ import com.fff.hos.data.Person;
 
 import java.util.List;
 
-public class CloudSQLManager {
+public class DatabaseManager {
 
     private DBCtrlPerson m_dbCtrlPerson = null;
     private DBCtrlActivity m_dbCtrlActivity = null;
 
-    public CloudSQLManager() { }
+    public DatabaseManager() { }
 
     // --------------------------------- Person control functions ---------------------------------
     public boolean register(Person person) {
@@ -33,7 +33,7 @@ public class CloudSQLManager {
         return getDBCtrlPerson().update(person);
     }
 
-    public Person login(Person person) {
+    public boolean login(Person person) {
         DBCtrlPerson dbCtrlPerson = getDBCtrlPerson();
         Person resPerson = null;
 
@@ -42,10 +42,10 @@ public class CloudSQLManager {
             resPerson.setOnline(1);
             dbCtrlPerson.update(resPerson);
         }
-        return resPerson;
+        return resPerson != null;
     }
 
-    public Person logout(Person person) {
+    public boolean logout(Person person) {
         DBCtrlPerson dbCtrlPerson = getDBCtrlPerson();
         Person resPerson = null;
 
@@ -54,7 +54,7 @@ public class CloudSQLManager {
             resPerson.setOnline(0);
             dbCtrlPerson.update(resPerson);
         }
-        return resPerson;
+        return resPerson != null;
     }
 
     public boolean checkPersonValid(String strEmail, String strUserPassword) {

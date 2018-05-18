@@ -1,9 +1,10 @@
 package com.fff.hos.httpservice.person;
 
 import com.fff.hos.data.Person;
-import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.google.gson.JsonObject;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,24 +27,14 @@ public class HttpServiceLogout extends HttpServlet {
 
         HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
         Person person = jsonToPerson.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
-            Person resPerson = sqlManager.logout(person);
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if (resPerson != null) {
-                jsonObj.addProperty("statuscode", 0);
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "logout fail, email or password wrong?");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "login fail, JSON format wrong");
-        }
+        ServerResponse serverResp = serverMgr.logout(person);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 class DBConnection {
 
-    private static final Logger LOGGER = Logger.getLogger(CloudSQLManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DatabaseManager.class.getName());
     private static Connection conn = null;
 
     private DBConnection() {

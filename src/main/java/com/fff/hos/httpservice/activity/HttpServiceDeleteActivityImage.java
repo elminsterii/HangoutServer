@@ -1,6 +1,6 @@
 package com.fff.hos.httpservice.activity;
-import com.fff.hos.database.CloudSQLManager;
-import com.fff.hos.gcs.CloudStorageManager;
+import com.fff.hos.database.DatabaseManager;
+import com.fff.hos.gcs.StorageManager;
 import com.fff.hos.json.HttpJsonToJsonObj;
 import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonElement;
@@ -52,7 +52,7 @@ public class HttpServiceDeleteActivityImage extends HttpServlet {
                 String strEmail = jsonEmail.getAsString();
                 String strUserPassword = jsonUserPassword.getAsString();
 
-                CloudSQLManager sqlManager = new CloudSQLManager();
+                DatabaseManager sqlManager = new DatabaseManager();
                 if(!sqlManager.checkPersonValid(strEmail, strUserPassword)) {
                     jsonObj.addProperty("statuscode", 1);
                     jsonObj.addProperty("status", "delete fail, invalid user");
@@ -68,7 +68,7 @@ public class HttpServiceDeleteActivityImage extends HttpServlet {
                             jsonObj.addProperty("status", "delete fail, activity id is empty?");
                         } else {
                             String strId = jsonId.getAsString();
-                            CloudStorageManager csManager = new CloudStorageManager();
+                            StorageManager csManager = new StorageManager();
                             csManager.deleteActivityImages(strId);
 
                             jsonObj.addProperty("statuscode", 0);
@@ -82,7 +82,7 @@ public class HttpServiceDeleteActivityImage extends HttpServlet {
                             String[] arrImages = strImages.split(",");
 
                             if(arrImages.length > 0) {
-                                CloudStorageManager csManager = new CloudStorageManager();
+                                StorageManager csManager = new StorageManager();
 
                                 for(String strImage : arrImages) {
                                     csManager.deleteActivityImage(strImage);

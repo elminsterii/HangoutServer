@@ -1,10 +1,10 @@
 package com.fff.hos.httpservice.person;
 
 import com.fff.hos.data.Person;
-import com.fff.hos.database.CloudSQLManager;
 import com.fff.hos.json.HttpJsonToPerson;
-import com.fff.hos.tools.StringTool;
-import com.google.gson.JsonObject;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,33 +27,14 @@ public class HttpServiceUpdatePerson extends HttpServlet {
 
         HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
         Person person = jsonToPerson.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (person != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if (sqlManager.checkPersonValid(person)) {
-                //change password?
-                StringTool stringTool = new StringTool();
-                if(stringTool.checkStringNotNull(person.getNewUserPassword()))
-                    person.setUserPassword(person.getNewUserPassword());
+        ServerResponse serverResp = serverMgr.updatePerson(person);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-                if (sqlManager.updatePerson(person)) {
-                    jsonObj.addProperty("statuscode", 0);
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "update fail");
-                }
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "update fail, user is not exist or password wrong");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "update fail, JSON format wrong or missing email");
-        }
-
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

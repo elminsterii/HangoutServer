@@ -10,9 +10,9 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class CloudStorageManager {
+public class StorageManager {
 
-    private static final Logger LOGGER = Logger.getLogger(CloudStorageManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(StorageManager.class.getName());
 
     /**
      * This is where backoff parameters are configured. Here it is aggressively retrying with
@@ -27,7 +27,7 @@ public class CloudStorageManager {
     private CSPerson m_csPerson = null;
     private CSActivity m_csActivity = null;
 
-    public CloudStorageManager() {
+    public StorageManager() {
 
     }
 

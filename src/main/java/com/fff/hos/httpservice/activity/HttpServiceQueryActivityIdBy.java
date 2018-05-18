@@ -2,7 +2,7 @@ package com.fff.hos.httpservice.activity;
 
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.database.CloudSQLManager;
+import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.json.HttpJsonToActivity;
 import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonObject;
@@ -32,7 +32,7 @@ public class HttpServiceQueryActivityIdBy extends HttpServlet {
         JsonObject jsonObj = new JsonObject();
 
         if (activity != null) {
-            CloudSQLManager sqlManager = new CloudSQLManager();
+            DatabaseManager sqlManager = new DatabaseManager();
             List<String> lsIds = sqlManager.queryActivity(activity);
 
             if(lsIds == null || lsIds.size() <= 0) {
