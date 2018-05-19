@@ -51,7 +51,7 @@ class CSPerson {
         return m_gcsTool.copy(Channels.newInputStream(readChannel), os, PERSON_ICON_BUFFER_SIZE);
     }
 
-    List<String> listPersonIcons(String strOwnerName) throws IOException {
+    List<String> listPersonIcons(String strOwnerName, boolean bIncludeFolder) throws IOException {
         if(!m_stringTool.checkStringNotNull(strOwnerName))
             return null;
 
@@ -70,6 +70,10 @@ class CSPerson {
             if(stringTool.checkStringNotNull(strIconName))
                 lsResult.add(strIconName);
         }
+
+        if(!bIncludeFolder && !lsResult.isEmpty())
+            lsResult.remove(0);
+
         return lsResult;
     }
 
@@ -80,11 +84,11 @@ class CSPerson {
         return gcsService.delete(new GcsFilename(PERSONS_ICONS_BUCKET_NAME, strIconName));
     }
 
-    boolean deletePersonIcons(String strOwnerName) throws IOException {
+    boolean deletePersonIcons(String strOwnerName, boolean bIncludeFolder) throws IOException {
         if(!m_stringTool.checkStringNotNull(strOwnerName))
             return false;
 
-        List<String> lsIcons = listPersonIcons(strOwnerName);
+        List<String> lsIcons = listPersonIcons(strOwnerName, bIncludeFolder);
 
         boolean bRes = true;
         if(lsIcons != null) {

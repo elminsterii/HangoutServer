@@ -51,7 +51,7 @@ class CSActivity {
         return m_gcsTool.copy(Channels.newInputStream(readChannel), os, ACTIVITY_IMAGE_BUFFER_SIZE);
     }
 
-    List<String> listActivityImages(String strActivityId) throws IOException {
+    List<String> listActivityImages(String strActivityId, boolean bIncludeFolder) throws IOException {
         if(!m_stringTool.checkStringNotNull(strActivityId))
             return null;
 
@@ -70,6 +70,10 @@ class CSActivity {
             if(stringTool.checkStringNotNull(strImageName))
                 lsResult.add(strImageName);
         }
+
+        if(!bIncludeFolder && !lsResult.isEmpty())
+            lsResult.remove(0);
+
         return lsResult;
     }
 
@@ -80,11 +84,11 @@ class CSActivity {
         return gcsService.delete(new GcsFilename(ACTIVITIES_IMAGES_BUCKET_NAME, strImageName));
     }
 
-    boolean deleteActivityImages(String strActivityId) throws IOException {
+    boolean deleteActivityImages(String strActivityId, boolean bIncludeFolder) throws IOException {
         if(!m_stringTool.checkStringNotNull(strActivityId))
             return false;
 
-        List<String> lsImages = listActivityImages(strActivityId);
+        List<String> lsImages = listActivityImages(strActivityId, bIncludeFolder);
 
         boolean bRes = true;
         if(lsImages != null) {

@@ -40,16 +40,16 @@ public class StorageManager {
         return getCsPerson().downloadPersonIcon(strIconName, os);
     }
 
-    public List<String> listPersonIcons(String strOwnerName) throws IOException {
-        return getCsPerson().listPersonIcons(strOwnerName);
+    public List<String> listPersonIcons(String strOwnerName, boolean bIncludeFolder) throws IOException {
+        return getCsPerson().listPersonIcons(strOwnerName, bIncludeFolder);
     }
 
     public boolean deletePersonIcon(String strIconName) throws IOException {
         return getCsPerson().deletePersonIcon(strIconName);
     }
 
-    public boolean deletePersonIcons(String strOwnerName) throws IOException {
-        return getCsPerson().deletePersonIcons(strOwnerName);
+    public boolean deletePersonIcons(String strOwnerName, boolean bIncludeFolder) throws IOException {
+        return getCsPerson().deletePersonIcons(strOwnerName, bIncludeFolder);
     }
 
     public void createPersonStorage(String strEmail) throws IOException  {
@@ -76,16 +76,16 @@ public class StorageManager {
         return getCsActivity().downloadActivityImage(strImageName, os);
     }
 
-    public List<String> listActivityImages(String strOwnerName) throws IOException {
-        return getCsActivity().listActivityImages(strOwnerName);
+    public List<String> listActivityImages(String strActivityId, boolean bIncludeFolder) throws IOException {
+        return getCsActivity().listActivityImages(strActivityId, bIncludeFolder);
     }
 
     public boolean deleteActivityImage(String strImageName) throws IOException {
         return getCsActivity().deleteActivityImage(strImageName);
     }
 
-    public boolean deleteActivityImages(String strActivityId) throws IOException {
-        return getCsActivity().deleteActivityImages(strActivityId);
+    public boolean deleteActivityImages(String strActivityId, boolean bIncludeFolder) throws IOException {
+        return getCsActivity().deleteActivityImages(strActivityId, bIncludeFolder);
     }
 
     public void createActivityStorage(String strId) throws IOException  {

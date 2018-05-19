@@ -59,7 +59,7 @@ public class ServerManager {
                 if (dbMgr.unregister(person)) {
                     //delete all icons obelong the user on GCS after unregister success.
                     StorageManager csManager = getStorageManager();
-                    csManager.deletePersonIcons(person.getEmail());
+                    csManager.deletePersonIcons(person.getEmail(), true);
 
                     //delete all images belong the activity after unregister success.
                     Activity activity = new Activity();
@@ -68,7 +68,7 @@ public class ServerManager {
 
                     if(lsIds != null && !lsIds.isEmpty()) {
                         for(String strId : lsIds)
-                            csManager.deleteActivityImages(strId);
+                            csManager.deleteActivityImages(strId, true);
                     }
 
                     //delete all activities belong the user after unregister success.
@@ -226,7 +226,7 @@ public class ServerManager {
                     //delete all belong the user.
                     if(jsonIcons == null || jsonIcons.getAsString().isEmpty()) {
                         StorageManager csMgr = getStorageManager();
-                        csMgr.deletePersonIcons(strEmail);
+                        csMgr.deletePersonIcons(strEmail, false);
 
                     //delete icons by icon name.
                     } else {
@@ -316,10 +316,12 @@ public class ServerManager {
         ServerResponse.STATUS_CODE resCode;
 
         StorageManager csMgr = getStorageManager();
-        List<String> lsIcons =  csMgr.listPersonIcons(strOwnerName);
+        List<String> lsIcons =  csMgr.listPersonIcons(strOwnerName, false);
 
-        if(lsIcons != null) {
-            String strIcons = splitStringWithoutFirstElement(lsIcons);
+        if(lsIcons != null && !lsIcons.isEmpty()) {
+            StringTool stringTool = new StringTool();
+            String strIcons = stringTool.ListStringToString(lsIcons, ',');
+
             if(!strIcons.isEmpty()) {
                 serverResp.setContent(strIcons);
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
@@ -327,7 +329,7 @@ public class ServerManager {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
             }
         } else {
-            resCode = ServerResponse.STATUS_CODE.ST_CODE_INVALID_DATA;
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;
         }
 
         serverResp.setStatus(resCode);
@@ -384,7 +386,7 @@ public class ServerManager {
                     if (dbMgr.deleteActivity(activity)) {
                         if (lsIds != null && !lsIds.isEmpty()) {
                             for (String strId : lsIds)
-                                csMgr.deleteActivityImages(strId);
+                                csMgr.deleteActivityImages(strId, true);
                         }
 
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
@@ -394,7 +396,7 @@ public class ServerManager {
                 } else {
                     //delete one activity by id.
                     if (dbMgr.deleteActivity(activity)) {
-                        csMgr.deleteActivityImages(activity.getId());
+                        csMgr.deleteActivityImages(activity.getId(), true);
 
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                     } else {
@@ -549,7 +551,7 @@ public class ServerManager {
                         if(jsonId != null && !jsonId.getAsString().isEmpty()) {
                             String strId = jsonId.getAsString();
                             StorageManager csMgr = getStorageManager();
-                            csMgr.deleteActivityImages(strId);
+                            csMgr.deleteActivityImages(strId, false);
 
                             resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                         } else {
@@ -634,10 +636,12 @@ public class ServerManager {
 
         StorageManager csMgr = getStorageManager();
 
-        List<String> lsImages =  csMgr.listActivityImages(strActivityId);
+        List<String> lsImages =  csMgr.listActivityImages(strActivityId, false);
 
         if(lsImages != null && !lsImages.isEmpty()) {
-            String strImages = splitStringWithoutFirstElement(lsImages);
+            StringTool stringTool = new StringTool();
+            String strImages = stringTool.ListStringToString(lsImages, ',');
+
             if(!strImages.isEmpty()) {
                 serverResp.setContent(strImages);
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
@@ -662,20 +666,5 @@ public class ServerManager {
         if(m_csMgr == null)
             m_csMgr = new StorageManager();
         return m_csMgr;
-    }
-
-    private String splitStringWithoutFirstElement(List<String> lsString) {
-        String strData;
-        StringTool stringTool = new StringTool();
-        strData = stringTool.ListStringToString(lsString, ',');
-
-        if(lsString != null && !lsString.isEmpty()) {
-            int iMinLength = lsString.get(0).length();
-            strData = strData.substring(iMinLength);
-        }
-
-        if(stringTool.checkStringNotNull(strData))
-            strData = strData.substring(1);
-        return strData;
     }
 }
