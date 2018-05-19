@@ -33,7 +33,7 @@ public class DatabaseManager {
         return getDBCtrlPerson().update(person);
     }
 
-    public boolean login(Person person) {
+    public Person login(Person person) {
         DBCtrlPerson dbCtrlPerson = getDBCtrlPerson();
         Person resPerson = null;
 
@@ -42,7 +42,7 @@ public class DatabaseManager {
             resPerson.setOnline(1);
             dbCtrlPerson.update(resPerson);
         }
-        return resPerson != null;
+        return resPerson;
     }
 
     public boolean logout(Person person) {

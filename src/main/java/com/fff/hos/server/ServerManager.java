@@ -184,8 +184,10 @@ public class ServerManager {
 
         if(person != null) {
             DatabaseManager dbMgr = getDatabaseManager();
+            Person personLogin = dbMgr.login(person);
 
-            if (dbMgr.login(person)) {
+            if (personLogin != null) {
+                serverResp.setContent(personLogin);
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
             } else {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;

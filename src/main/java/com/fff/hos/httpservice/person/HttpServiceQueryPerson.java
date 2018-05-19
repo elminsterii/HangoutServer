@@ -36,22 +36,18 @@ public class HttpServiceQueryPerson extends HttpServlet {
         ErrorHandler errHandler = new ErrorHandler();
 
         ServerResponse serverResp = serverMgr.queryPerson(jsonObj);
-        String strResponse;
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
         if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
             Gson gson = new GsonBuilder().setLenient().create();
             Type listType = new TypeToken<ArrayList<Person>>() {}.getType();
             String strRes = gson.toJson(serverResp.getContent(), listType);
 
-            String resFromHandler = errHandler.handleError(serverResp.getStatus());
-
             JsonArray resJsonArray = new JsonArray();
-            resJsonArray.add(new JsonParser().parse(resFromHandler));
+            resJsonArray.add(new JsonParser().parse(strResponse));
             resJsonArray.addAll(new JsonParser().parse(strRes).getAsJsonArray());
 
             strResponse = resJsonArray.toString();
-        } else {
-            strResponse = errHandler.handleError(serverResp.getStatus());
         }
 
         response.getWriter().print(strResponse);

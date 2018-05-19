@@ -5,6 +5,9 @@ import com.fff.hos.json.HttpJsonToPerson;
 import com.fff.hos.server.ErrorHandler;
 import com.fff.hos.server.ServerManager;
 import com.fff.hos.server.ServerResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +36,19 @@ public class HttpServiceLogin extends HttpServlet {
 
         ServerResponse serverResp = serverMgr.login(person);
         String strResponse = errHandler.handleError(serverResp.getStatus());
+
+        if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+            Person personLogin = (Person)serverResp.getContent();
+            personLogin.setUserPassword(null);
+
+            String strJsonPerson = new Gson().toJson(personLogin);
+
+            JsonArray resJsonArray = new JsonArray();
+            resJsonArray.add(new JsonParser().parse(strResponse));
+            resJsonArray.add(new JsonParser().parse(strJsonPerson).getAsJsonObject());
+
+            strResponse = resJsonArray.toString();
+        }
 
         response.getWriter().print(strResponse);
         response.flushBuffer();
