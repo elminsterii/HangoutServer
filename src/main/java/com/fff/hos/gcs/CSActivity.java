@@ -51,12 +51,12 @@ class CSActivity {
         return m_gcsTool.copy(Channels.newInputStream(readChannel), os, ACTIVITY_IMAGE_BUFFER_SIZE);
     }
 
-    List<String> listActivityImages(String strOwnerName) throws IOException {
-        if(!m_stringTool.checkStringNotNull(strOwnerName))
+    List<String> listActivityImages(String strActivityId) throws IOException {
+        if(!m_stringTool.checkStringNotNull(strActivityId))
             return null;
 
         ListOptions.Builder optionBuilder = new ListOptions.Builder();
-        optionBuilder.setPrefix(strOwnerName);
+        optionBuilder.setPrefix(strActivityId);
 
         ListResult result = gcsService.list(ACTIVITIES_IMAGES_BUCKET_NAME, optionBuilder.build());
 
@@ -80,11 +80,11 @@ class CSActivity {
         return gcsService.delete(new GcsFilename(ACTIVITIES_IMAGES_BUCKET_NAME, strImageName));
     }
 
-    boolean deleteActivityImages(String strOwnerName) throws IOException {
-        if(!m_stringTool.checkStringNotNull(strOwnerName))
+    boolean deleteActivityImages(String strActivityId) throws IOException {
+        if(!m_stringTool.checkStringNotNull(strActivityId))
             return false;
 
-        List<String> lsImages = listActivityImages(strOwnerName);
+        List<String> lsImages = listActivityImages(strActivityId);
 
         boolean bRes = true;
         if(lsImages != null) {

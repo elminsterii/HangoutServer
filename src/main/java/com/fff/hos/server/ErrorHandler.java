@@ -42,7 +42,7 @@ public class ErrorHandler {
             case ST_CODE_ACTIVITY_NOT_FOUND :
                 jsonObj = new JsonObject();
                 jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
-                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, activity was not found");
+                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, activity was not found or you are not owner");
                 strResponse = jsonObj.toString();
                 break;
 

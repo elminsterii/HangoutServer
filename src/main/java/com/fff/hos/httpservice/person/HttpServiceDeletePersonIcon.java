@@ -15,10 +15,6 @@ import java.io.IOException;
 @WebServlet(name = "HttpServiceDeletePersonIcon", value = "/deletepersonicon")
 public class HttpServiceDeletePersonIcon extends HttpServlet {
 
-    private static final String TAG_EMAIL = "email";
-    private static final String TAG_USERPASSWORD = "userpassword";
-    private static final String TAG_ICONS = "icons";
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

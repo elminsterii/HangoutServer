@@ -74,10 +74,8 @@ public class DatabaseManager {
     }
 
 
-
-
     // --------------------------------- Activity control functions ---------------------------------
-    public Activity createActivity(Activity activity) {
+    public String createActivity(Activity activity) {
         return getDBCtrlActivity().insert(activity);
     }
 

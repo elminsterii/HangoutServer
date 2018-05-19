@@ -46,12 +46,11 @@ public class HttpServiceAccessPersonIcon extends HttpServlet {
             //take icon list...
             response.setContentType("application/json");
 
-            final String TAG_ICONS = "icons";
-
             ServerResponse serverResp = serverMgr.listPersonIcons(strOwnerName);
             strResponse = errHandler.handleError(serverResp.getStatus());
 
             if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+                final String TAG_ICONS = "icons";
                 String strIcons = (String)serverResp.getContent();
 
                 JsonObject jsonIcons = new JsonObject();

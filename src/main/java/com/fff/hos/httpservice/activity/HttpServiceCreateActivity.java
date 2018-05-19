@@ -1,11 +1,11 @@
 package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.database.DatabaseManager;
-import com.fff.hos.gcs.StorageManager;
 import com.fff.hos.json.HttpJsonToActivity;
-import com.fff.hos.tools.StringTool;
-import com.google.gson.Gson;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -30,39 +30,27 @@ public class HttpServiceCreateActivity extends HttpServlet {
 
         HttpJsonToActivity jsonToActivity = new HttpJsonToActivity();
         Activity activity = jsonToActivity.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (activity != null) {
-            DatabaseManager sqlManager = new DatabaseManager();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                Activity newActivity = sqlManager.createActivity(activity);
+        ServerResponse serverResp = serverMgr.createActivity(activity);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-                if (newActivity != null) {
-                    //create storage on GCS for store activity images.
-                    StorageManager csManager = new StorageManager();
-                    csManager.createActivityStorage(newActivity.getId());
+        if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+            final String TAG_ID = "id";
+            String strNewId = (String)serverResp.getContent();
+            JsonObject jsonNewId = new JsonObject();
+            jsonNewId.addProperty(TAG_ID, strNewId);
 
-                    StringTool stringTool = new StringTool();
+            JsonArray resJsonArray = new JsonArray();
+            resJsonArray.add(new JsonParser().parse(strResponse));
+            resJsonArray.add(jsonNewId);
 
-                    jsonObj.addProperty("statuscode", 0);
-                    String strNewActivityJson = new Gson().toJson(newActivity);
-                    strNewActivityJson = stringTool.addStatusCode(strNewActivityJson, 0);
-                    jsonObj = new JsonParser().parse(strNewActivityJson).getAsJsonObject();
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "create fail, missing necessary data?");
-                }
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "create fail, invalid user");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "create fail, JSON format wrong");
+            strResponse = resJsonArray.toString();
         }
 
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

@@ -67,19 +67,19 @@ class DBCtrlActivity {
         return bIsExist;
     }
 
-    Activity insert(Activity activity) {
+    String insert(Activity activity) {
         return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
                 , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
                 , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getDescription()
                 , activity.getTags(), activity.getGoodActivity(), activity.getAttention(), activity.getAttendees());
     }
 
-    private Activity insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
+    private String insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
             , Integer iEarlyBird,String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
             , String strStatus, String strDescription, String strTags, Integer iGoodActivity, Integer iAttention
             , String strAttendees) {
 
-        Activity resActivity = null;
+        String strResId = null;
         StringTool stringTool = new StringTool();
 
         if (!stringTool.checkStringNotNull(strPublisherEmail)
@@ -139,15 +139,14 @@ class DBCtrlActivity {
                 if(rs.next())
                     strNewActivityID = rs.getString(1);
 
-                resActivity = new Activity();
-                resActivity.setId(strNewActivityID);
+                strResId = strNewActivityID;
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
         }
 
         LOGGER.info("insert time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-        return resActivity;
+        return strResId;
     }
 
     boolean delete(Activity activity) {

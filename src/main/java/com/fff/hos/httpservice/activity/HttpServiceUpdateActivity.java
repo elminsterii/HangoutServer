@@ -1,9 +1,10 @@
 package com.fff.hos.httpservice.activity;
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.json.HttpJsonToActivity;
-import com.google.gson.JsonObject;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,33 +27,14 @@ public class HttpServiceUpdateActivity extends HttpServlet {
 
         HttpJsonToActivity jsonToActivity = new HttpJsonToActivity();
         Activity activity = jsonToActivity.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (activity != null) {
-            DatabaseManager sqlManager = new DatabaseManager();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if(sqlManager.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                if (sqlManager.checkActivityExist(activity)) {
-                    if (sqlManager.updateActivity(activity)) {
-                        jsonObj.addProperty("statuscode", 0);
-                    } else {
-                        jsonObj.addProperty("statuscode", 1);
-                        jsonObj.addProperty("status", "update fail, activity ID wrong or you are not owner");
-                    }
-                } else {
-                    jsonObj.addProperty("statuscode", 1);
-                    jsonObj.addProperty("status", "update fail, activity is not exist");
-                }
-            } else {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "update fail, invalid user");
-            }
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "update fail, JSON format wrong or missing email");
-        }
+        ServerResponse serverResp = serverMgr.updateActivity(activity);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

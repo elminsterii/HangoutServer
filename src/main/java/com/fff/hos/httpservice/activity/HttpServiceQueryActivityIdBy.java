@@ -2,17 +2,19 @@ package com.fff.hos.httpservice.activity;
 
 
 import com.fff.hos.data.Activity;
-import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.json.HttpJsonToActivity;
-import com.fff.hos.tools.StringTool;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "HttpServiceQueryActivityIdBy", value = "/queryactivityidby")
 public class HttpServiceQueryActivityIdBy extends HttpServlet {
@@ -29,28 +31,27 @@ public class HttpServiceQueryActivityIdBy extends HttpServlet {
 
         HttpJsonToActivity jsonToActivity = new HttpJsonToActivity();
         Activity activity = jsonToActivity.parse(request);
-        JsonObject jsonObj = new JsonObject();
 
-        if (activity != null) {
-            DatabaseManager sqlManager = new DatabaseManager();
-            List<String> lsIds = sqlManager.queryActivity(activity);
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-            if(lsIds == null || lsIds.size() <= 0) {
-                jsonObj.addProperty("statuscode", 1);
-                jsonObj.addProperty("status", "query fail, no any activities found");
-            } else {
-                StringTool stringTool = new StringTool();
-                jsonObj.addProperty("statuscode", 0);
-                String strIds = stringTool.strListToJsonString(lsIds);
-                jsonObj.addProperty("ids", strIds);
-            }
+        ServerResponse serverResp = serverMgr.queryActivityIdBy(activity);
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "delete fail, JSON format wrong");
+        if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+            final String TAG_IDS = "ids";
+            String strIds = (String)serverResp.getContent();
+
+            JsonObject jsonIcons = new JsonObject();
+            jsonIcons.addProperty(TAG_IDS, strIds);
+
+            JsonArray resJsonArray = new JsonArray();
+            resJsonArray.add(new JsonParser().parse(strResponse));
+            resJsonArray.add(jsonIcons);
+            strResponse = resJsonArray.toString();
         }
 
-        response.getWriter().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }

@@ -32,13 +32,13 @@ public class StringTool {
         return bRes;
     }
 
-    public String strListToJsonString(List<String> lsString) {
+    public String ListStringToString(List<String> lsString, char splitChar) {
         if(lsString == null || lsString.isEmpty())
             return "";
 
         StringBuilder strBuilder = new StringBuilder();
         for(String str : lsString)
-            strBuilder.append(str).append(',');
+            strBuilder.append(str).append(splitChar);
 
         if(strBuilder.length() > 0)
             strBuilder.deleteCharAt(strBuilder.length()-1);

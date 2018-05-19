@@ -1,22 +1,22 @@
 package com.fff.hos.httpservice.activity;
 
-import com.fff.hos.database.DatabaseManager;
-import com.fff.hos.gcs.StorageManager;
+import com.fff.hos.server.ErrorHandler;
+import com.fff.hos.server.ServerManager;
+import com.fff.hos.server.ServerResponse;
 import com.fff.hos.tools.HttpTool;
 import com.fff.hos.tools.StringTool;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "HttpServiceAccessActivityImage", urlPatterns = {"/accessactivityimage/*"})
 public class HttpServiceAccessActivityImage extends HttpServlet {
-
-    private static final String TAG_IMAGES = "images";
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,43 +28,44 @@ public class HttpServiceAccessActivityImage extends HttpServlet {
         String strFileName = httpTool.getFileName(request);
 
         StringTool stringTool = new StringTool();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-        //invalid input...
-        if(!stringTool.checkStringNotNull(strActivityId)) {
-            FillFailResponseAndFlush(response, "access fail, activity id is empty?");
+        String strResponse;
 
-        //take image list...
-        } else if(!stringTool.checkStringNotNull(strFileName)) {
-            StorageManager csManager = new StorageManager();
-            List<String> lsImages =  csManager.listActivityImages(strActivityId);
-            StringBuilder strImages = new StringBuilder();
+        if(stringTool.checkStringNotNull(strFileName)) {
+            //download image...
+            response.setContentType("image/jpg");
+            ServerResponse serverResp = serverMgr.downloadActivityImage(strActivityId, strFileName, response.getOutputStream());
 
-            int iMinLength = strActivityId.length() + 1;
-            if(lsImages != null) {
-                for (String strImageName : lsImages) {
-                    if(strImageName.length() > iMinLength)
-                        strImages.append(strImageName).append(",");
-                }
+            if(serverResp.getStatus() != ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+                strResponse = errHandler.handleError(serverResp.getStatus());
+                response.getOutputStream().print(strResponse);
+                response.flushBuffer();
             }
-
-            if(strImages.length() > 0)
-                strImages.deleteCharAt(strImages.length() - 1);
-
-            response.setContentType("application/json");
-            JsonObject jsonObj = new JsonObject();
-            jsonObj.addProperty("statuscode", 0);
-            jsonObj.addProperty(TAG_IMAGES, strImages.toString());
-            response.getOutputStream().print(jsonObj.toString());
-            response.flushBuffer();
-
-        //download image...
         } else {
-            String strFullName = strActivityId + "/" + strFileName;
+            //take image list...
+            response.setContentType("application/json");
 
-            StorageManager csManager = new StorageManager();
-            if(!csManager.downloadActivityImage(strFullName, response.getOutputStream())) {
-                FillFailResponseAndFlush(response, "access fail, image is not exist");
+            ServerResponse serverResp = serverMgr.listActivityImage(strActivityId);
+            strResponse = errHandler.handleError(serverResp.getStatus());
+
+            if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
+                final String TAG_IMAGES = "images";
+                String strImages = (String)serverResp.getContent();
+
+                JsonObject jsonImages = new JsonObject();
+                jsonImages.addProperty(TAG_IMAGES, strImages);
+
+                JsonArray resJsonArray = new JsonArray();
+                resJsonArray.add(new JsonParser().parse(strResponse));
+                resJsonArray.add(jsonImages);
+
+                strResponse = resJsonArray.toString();
             }
+
+            response.getOutputStream().print(strResponse);
+            response.flushBuffer();
         }
     }
 
@@ -72,37 +73,19 @@ public class HttpServiceAccessActivityImage extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        JsonObject jsonObj = new JsonObject();
         HttpTool httpTool = new HttpTool();
 
         String strActivityId = httpTool.getOwnerName(request);
         String strFileName = httpTool.getFileName(request);
         String strFullName = strActivityId + "/" + strFileName;
 
-        DatabaseManager sqlManager = new DatabaseManager();
+        ServerManager serverMgr = new ServerManager();
+        ErrorHandler errHandler = new ErrorHandler();
 
-        //TODO - There has a concern that is no verify publisher password.
-        if(sqlManager.checkActivityExist(strActivityId)) {
-            StorageManager csManager = new StorageManager();
+        ServerResponse serverResp = serverMgr.uploadActivityImage(strActivityId, strFullName, request.getInputStream());
+        String strResponse = errHandler.handleError(serverResp.getStatus());
 
-            if(csManager.uploadActivityImage(strFullName, request.getInputStream()))
-                jsonObj.addProperty("statuscode", 0);
-
-        } else {
-            jsonObj.addProperty("statuscode", 1);
-            jsonObj.addProperty("status", "access fail, activity is not exist");
-        }
-
-        response.getWriter().print(jsonObj.toString());
-        response.flushBuffer();
-    }
-
-    private void FillFailResponseAndFlush(HttpServletResponse response, String strFailDescription) throws IOException {
-        response.setContentType("application/json");
-        JsonObject jsonObj = new JsonObject();
-        jsonObj.addProperty("statuscode", 1);
-        jsonObj.addProperty("status", strFailDescription);
-        response.getOutputStream().print(jsonObj.toString());
+        response.getWriter().print(strResponse);
         response.flushBuffer();
     }
 }
