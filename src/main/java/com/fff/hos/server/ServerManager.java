@@ -311,6 +311,7 @@ public class ServerManager {
         return serverResp;
     }
 
+    @SuppressWarnings("Duplicates")
     public ServerResponse listPersonIcons(String strOwnerName) throws IOException {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
@@ -329,7 +330,7 @@ public class ServerManager {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
             }
         } else {
-            resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
         }
 
         serverResp.setStatus(resCode);
@@ -630,6 +631,7 @@ public class ServerManager {
         return serverResp;
     }
 
+    @SuppressWarnings("Duplicates")
     public ServerResponse listActivityImage(String strActivityId) throws IOException {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
@@ -649,7 +651,7 @@ public class ServerManager {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
             }
         } else {
-            resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
         }
 
         serverResp.setStatus(resCode);
