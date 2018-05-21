@@ -39,4 +39,13 @@ class DBConstants {
     static final String ACTIVITY_COL_GOODACTIVITY = "goodactivity";
     static final String ACTIVITY_COL_ATTENTION = "attention";
     static final String ACTIVITY_COL_ATTENDEES = "attendees";
+
+    //Comment constants
+    static final String TABLE_NAME_COMMENT = "comments";
+    static final String COMMENT_COL_ID = "id";
+    static final String COMMENT_COL_TS = "ts";
+    static final String COMMENT_COL_PUBLISHEREMAIL = "publisheremail";
+    static final String COMMENT_COL_DISPLAYNAME = "displayname";
+    static final String COMMENT_COL_ACTIVITYID = "activityid";
+    static final String COMMENT_COL_CONTENT = "content";
 }

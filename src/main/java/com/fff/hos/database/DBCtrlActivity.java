@@ -74,8 +74,9 @@ class DBCtrlActivity {
                 , activity.getTags(), activity.getGoodActivity(), activity.getAttention(), activity.getAttendees());
     }
 
+    @SuppressWarnings("Duplicates")
     private String insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
-            , Integer iEarlyBird,String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
+            , Integer iEarlyBird, String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
             , String strStatus, String strDescription, String strTags, Integer iGoodActivity, Integer iAttention
             , String strAttendees) {
 

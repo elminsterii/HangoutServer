@@ -1,6 +1,7 @@
 package com.fff.hos.database;
 
 import com.fff.hos.data.Activity;
+import com.fff.hos.data.Comment;
 import com.fff.hos.data.Person;
 
 import java.util.List;
@@ -9,6 +10,7 @@ public class DatabaseManager {
 
     private DBCtrlPerson m_dbCtrlPerson = null;
     private DBCtrlActivity m_dbCtrlActivity = null;
+    private DBCtrlComment m_dbCtrlComment = null;
 
     public DatabaseManager() { }
 
@@ -103,6 +105,30 @@ public class DatabaseManager {
         return getDBCtrlActivity().checkActivityExist(strId);
     }
 
+
+    // --------------------------------- Comment control functions ---------------------------------
+    public String createComment(Comment comment) {
+        return getDBCtrlComment().insert(comment);
+    }
+
+    public boolean deleteComment(Comment comment) {
+        return getDBCtrlComment().delete(comment);
+    }
+
+    public List<Comment> queryCommentByIds(String strIds) {
+        return getDBCtrlComment().queryByIds(strIds);
+    }
+
+    public List<String> queryComment(Comment comment) {
+        return getDBCtrlComment().query(comment);
+    }
+
+    public boolean updateComment(Comment comment) {
+        return getDBCtrlComment().update(comment);
+    }
+
+
+    // ---------------------------- Database Controller getter functions ----------------------------
     private DBCtrlPerson getDBCtrlPerson() {
         if(m_dbCtrlPerson == null)
             m_dbCtrlPerson = new DBCtrlPerson();
@@ -113,5 +139,11 @@ public class DatabaseManager {
         if(m_dbCtrlActivity == null)
             m_dbCtrlActivity = new DBCtrlActivity();
         return m_dbCtrlActivity;
+    }
+
+    private DBCtrlComment getDBCtrlComment() {
+        if(m_dbCtrlComment == null)
+            m_dbCtrlComment = new DBCtrlComment();
+        return m_dbCtrlComment;
     }
 }

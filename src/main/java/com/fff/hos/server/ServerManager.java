@@ -1,6 +1,7 @@
 package com.fff.hos.server;
 
 import com.fff.hos.data.Activity;
+import com.fff.hos.data.Comment;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.gcs.StorageManager;
@@ -18,6 +19,7 @@ public class ServerManager {
 
     private DatabaseManager m_dbMgr = null;
     private StorageManager m_csMgr = null;
+
 
     // --------------------------------- Person control functions ---------------------------------
     public ServerResponse register(Person person) throws IOException {
@@ -339,6 +341,7 @@ public class ServerManager {
         return serverResp;
     }
 
+
     // --------------------------------- Activity control functions ---------------------------------
     public ServerResponse createActivity(Activity activity) throws IOException {
         ServerResponse serverResp = new ServerResponse();
@@ -659,6 +662,41 @@ public class ServerManager {
         serverResp.setStatus(resCode);
         return serverResp;
     }
+
+
+    // --------------------------------- Comment control functions ---------------------------------
+    public ServerResponse createComment(Comment comment) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if(comment != null) {
+            DatabaseManager dbMgr = getDatabaseManager();
+
+            if(dbMgr.checkPersonExist(comment.getPublisherEmail())) {
+                if(dbMgr.checkActivityExist(comment.getActivityId())) {
+                    String strResId = dbMgr.createComment(comment);
+
+                    StringTool stringTool = new StringTool();
+                    if (stringTool.checkStringNotNull(strResId)) {
+                        serverResp.setContent(strResId);
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    }
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
 
     private DatabaseManager getDatabaseManager() {
         if(m_dbMgr == null)

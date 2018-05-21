@@ -31,7 +31,7 @@ public class ServerResponse {
         return m_cdStatus;
     }
 
-    public void setStatus(STATUS_CODE m_cdStatus) {
+    void setStatus(STATUS_CODE m_cdStatus) {
         this.m_cdStatus = m_cdStatus;
     }
 
@@ -39,7 +39,7 @@ public class ServerResponse {
         return m_objContent;
     }
 
-    public void setContent(Object m_objContent) {
+    void setContent(Object m_objContent) {
         this.m_objContent = m_objContent;
     }
 }
