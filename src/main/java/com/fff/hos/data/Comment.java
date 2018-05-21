@@ -84,6 +84,7 @@ public class Comment {
 
     public boolean checkMembersStillHaveValue() {
         return (PublisherEmail != null && !PublisherEmail.isEmpty())
-                || (ActivityId != null && !ActivityId.isEmpty());
+                || (ActivityId != null && !ActivityId.isEmpty())
+                || (Id != null && !Id.isEmpty());
     }
 }

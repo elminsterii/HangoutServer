@@ -107,30 +107,36 @@ class DBCtrlComment {
     }
 
     boolean delete(Comment comment) {
-        return delete(comment.getId(), comment.getActivityId());
-    }
-
-    private boolean delete(String strId, String strActivityId) {
         boolean bRes = false;
         StringTool stringTool = new StringTool();
 
-        if (!stringTool.checkStringNotNull(strId)
-                && !stringTool.checkStringNotNull(strActivityId))
+        if (!stringTool.checkStringNotNull(comment.getId())
+                && !stringTool.checkStringNotNull(comment.getActivityId())
+                && !stringTool.checkStringNotNull(comment.getPublisherEmail()))
             return false;
 
         Connection conn = DBConnection.getConnection();
         StringBuilder strDeleteCommentSQL = new StringBuilder("DELETE FROM ");
         strDeleteCommentSQL.append(DBConstants.TABLE_NAME_COMMENT).append(" WHERE ");
 
-        if(stringTool.checkStringNotNull(strId)) {
-            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ID).append("=\"").append(strId);
+        if(stringTool.checkStringNotNull(comment.getId())) {
+            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ID).append("=\"").append(comment.getId());
+            comment.setId(null);
 
-            if(stringTool.checkStringNotNull(strActivityId))
+            if(comment.checkMembersStillHaveValue())
                 strDeleteCommentSQL.append("\" AND ");
         }
 
-        if(stringTool.checkStringNotNull(strActivityId))
-            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(strActivityId);
+        if(stringTool.checkStringNotNull(comment.getActivityId())) {
+            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(comment.getActivityId());
+            comment.setActivityId(null);
+
+            if(comment.checkMembersStillHaveValue())
+                strDeleteCommentSQL.append("\" AND ");
+        }
+
+        if(stringTool.checkStringNotNull(comment.getPublisherEmail()))
+            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_PUBLISHEREMAIL).append("=\"").append(comment.getPublisherEmail());
 
         strDeleteCommentSQL.append("\";");
 

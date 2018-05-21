@@ -76,6 +76,11 @@ public class ServerManager {
                     //delete all activities belong the user after unregister success.
                     dbMgr.deleteActivity(activity);
 
+                    //delete all comments belong the user after unregister success.
+                    Comment comment = new Comment();
+                    comment.setPublisherEmail(person.getEmail());
+                    dbMgr.deleteComment(comment);
+
                     resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                 } else {
                     resCode = ServerResponse.STATUS_CODE.ST_CODE_INVALID_DATA;
@@ -395,6 +400,11 @@ public class ServerManager {
                                 csMgr.deleteActivityImages(strId, true);
                         }
 
+                        //delete all comments belong the activity after deleteActivity.
+                        Comment comment = new Comment();
+                        comment.setActivityId(activity.getId());
+                        dbMgr.deleteComment(comment);
+
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                     } else {
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
@@ -403,6 +413,11 @@ public class ServerManager {
                     //delete one activity by id.
                     if (dbMgr.deleteActivity(activity)) {
                         csMgr.deleteActivityImages(activity.getId(), true);
+
+                        //delete all comments belong the activity after deleteActivity.
+                        Comment comment = new Comment();
+                        comment.setActivityId(activity.getId());
+                        dbMgr.deleteComment(comment);
 
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                     } else {
@@ -673,14 +688,18 @@ public class ServerManager {
             DatabaseManager dbMgr = getDatabaseManager();
 
             if(dbMgr.checkPersonExist(comment.getPublisherEmail())) {
-                String strResId = dbMgr.createComment(comment);
+                if(dbMgr.checkActivityExist(comment.getActivityId())) {
+                    String strResId = dbMgr.createComment(comment);
 
-                StringTool stringTool = new StringTool();
-                if (stringTool.checkStringNotNull(strResId)) {
-                    serverResp.setContent(strResId);
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    StringTool stringTool = new StringTool();
+                    if (stringTool.checkStringNotNull(strResId)) {
+                        serverResp.setContent(strResId);
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    }
                 } else {
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
                 }
             } else {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
