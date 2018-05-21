@@ -13,7 +13,7 @@ import java.util.List;
 
 class CSActivity {
 
-    private static final String ACTIVITIES_IMAGES_BUCKET_NAME = "activities_images";
+    private static final String ACTIVITIES_IMAGES_BUCKET_NAME = System.getProperty("cs_activity_images");
     private static final int ACTIVITY_IMAGE_BUFFER_SIZE = 5 * 1024 * 1024;
 
     private GcsService gcsService;

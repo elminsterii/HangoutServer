@@ -16,6 +16,9 @@
         <property name="sqlUserName" value="root"/>
         <property name="sqlUserPassword" value="22032201g"/>
 
+        <property name="cs_person_icons" value="persons_icons"/>
+        <property name="cs_activity_images" value="activities_images"/>
+
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     </system-properties>
 </appengine-web-app>

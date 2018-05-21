@@ -13,7 +13,7 @@ import java.util.List;
 
 class CSPerson {
 
-    private static final String PERSONS_ICONS_BUCKET_NAME = "persons_icons";
+    private static final String PERSONS_ICONS_BUCKET_NAME = System.getProperty("cs_person_icons");
     private static final int PERSON_ICON_BUFFER_SIZE = 2 * 1024 * 1024;
 
     private GcsService gcsService;
