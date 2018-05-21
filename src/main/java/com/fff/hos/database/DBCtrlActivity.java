@@ -169,11 +169,17 @@ class DBCtrlActivity {
         StringBuilder strDeleteActivitySQL = new StringBuilder("DELETE FROM ");
         strDeleteActivitySQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
 
-        if(stringTool.checkStringNotNull(strId))
-            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId).append("\" AND ");
+        if(stringTool.checkStringNotNull(strId)) {
+            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strId);
+
+            if(stringTool.checkStringNotNull(strPublisherEmail))
+                strDeleteActivitySQL.append("\" AND ");
+        }
 
         if(stringTool.checkStringNotNull(strPublisherEmail))
-            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(strPublisherEmail).append("\";");
+            strDeleteActivitySQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(strPublisherEmail);
+
+        strDeleteActivitySQL.append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementDeleteActivity = conn.prepareStatement(strDeleteActivitySQL.toString())) {
@@ -222,21 +228,41 @@ class DBCtrlActivity {
         StringBuilder strSelectSQL = new StringBuilder();
         strSelectSQL.append("SELECT * FROM ").append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
 
-        if(stringTool.checkStringNotNull(activity.getPublisherEmail()))
-            strSelectSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL ).append("=\"").append(activity.getPublisherEmail()).append("\"");
+        if(stringTool.checkStringNotNull(activity.getPublisherEmail())) {
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(activity.getPublisherEmail()).append("\"");
+            activity.setPublisherEmail(null);
 
-        if(activity.getLargeActivity() != null)
-            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=").append(activity.getLargeActivity());
+            if(activity.checkMembersStillHaveValue())
+                strSelectSQL.append(" AND ");
+        }
 
-        if(activity.getEarlyBird() != null)
-            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=").append(activity.getEarlyBird());
+        if(activity.getLargeActivity() != null) {
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=").append(activity.getLargeActivity());
+            activity.setLargeActivity(null);
 
-        if(stringTool.checkStringNotNull(activity.getDisplayName()))
-            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\"");
+            if(activity.checkMembersStillHaveValue())
+                strSelectSQL.append(" AND ");
+        }
+
+        if(activity.getEarlyBird() != null) {
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=").append(activity.getEarlyBird());
+            activity.setEarlyBird(null);
+
+            if(activity.checkMembersStillHaveValue())
+                strSelectSQL.append(" AND ");
+        }
+
+        if(stringTool.checkStringNotNull(activity.getDisplayName())) {
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\"");
+            activity.setDisplayName(null);
+
+            if(activity.checkMembersStillHaveValue())
+                strSelectSQL.append(" AND ");
+        }
 
         if(stringTool.checkStringNotNull(activity.getTags())) {
             String strRegExp = stringTool.strTagsToRegExp(activity.getTags());
-            strSelectSQL.append(" AND ").append(DBConstants.ACTIVITY_COL_TAGS).append(" REGEXP \'").append(strRegExp).append("\'");
+            strSelectSQL.append(DBConstants.ACTIVITY_COL_TAGS).append(" REGEXP \'").append(strRegExp).append("\'");
         }
 
         strSelectSQL.append(";");

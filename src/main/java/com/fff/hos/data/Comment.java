@@ -81,4 +81,9 @@ public class Comment {
     public void setContent(String content) {
         Content = content;
     }
+
+    public boolean checkMembersStillHaveValue() {
+        return (PublisherEmail != null && !PublisherEmail.isEmpty())
+                || (ActivityId != null && !ActivityId.isEmpty());
+    }
 }

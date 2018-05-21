@@ -16,6 +16,7 @@ public class ServerResponse {
         , ST_CODE_INVALID_DATA
         , ST_CODE_FILE_IO_ERROR
         , ST_CODE_FILE_NOT_FOUND
+        , ST_CODE_COMMENT_NOT_FOUND
     }
 
     public ServerResponse() {

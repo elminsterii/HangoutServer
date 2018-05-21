@@ -673,18 +673,118 @@ public class ServerManager {
             DatabaseManager dbMgr = getDatabaseManager();
 
             if(dbMgr.checkPersonExist(comment.getPublisherEmail())) {
-                if(dbMgr.checkActivityExist(comment.getActivityId())) {
-                    String strResId = dbMgr.createComment(comment);
+                String strResId = dbMgr.createComment(comment);
 
-                    StringTool stringTool = new StringTool();
-                    if (stringTool.checkStringNotNull(strResId)) {
-                        serverResp.setContent(strResId);
-                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
-                    } else {
-                        resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
-                    }
+                StringTool stringTool = new StringTool();
+                if (stringTool.checkStringNotNull(strResId)) {
+                    serverResp.setContent(strResId);
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                 } else {
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
+    public ServerResponse deleteComment(Comment comment) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if(comment != null) {
+            DatabaseManager dbMgr = getDatabaseManager();
+
+            if(dbMgr.checkPersonExist(comment.getPublisherEmail())) {
+                if (dbMgr.deleteComment(comment)) {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_COMMENT_NOT_FOUND;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
+    public ServerResponse queryComment(JsonObject jsonSource) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if (jsonSource != null) {
+            final String TAG_IDS = "ids";
+            JsonElement jsElement = jsonSource.get(TAG_IDS);
+
+            if (jsElement != null) {
+                DatabaseManager dbMgr = getDatabaseManager();
+
+                String strIDs = jsElement.getAsString();
+                List<Comment> lsComments = dbMgr.queryCommentByIds(strIDs);
+
+                if(lsComments != null && lsComments.size() > 0) {
+                    serverResp.setContent(lsComments);
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_COMMENT_NOT_FOUND;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
+    public ServerResponse queryCommentIdBy(Comment comment) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if (comment != null) {
+            DatabaseManager dbMgr = getDatabaseManager();
+            List<String> lsIds = dbMgr.queryComment(comment);
+
+            if(lsIds != null && lsIds.size() > 0) {
+                StringTool stringTool = new StringTool();
+                String strIds = stringTool.ListStringToString(lsIds, ',');
+
+                serverResp.setContent(strIds);
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_COMMENT_NOT_FOUND;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
+    public ServerResponse updateComment(Comment comment) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if (comment != null) {
+            DatabaseManager dbMgr = getDatabaseManager();
+
+            if(dbMgr.checkPersonExist(comment.getPublisherEmail())) {
+                if (dbMgr.updateComment(comment)) {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_COMMENT_NOT_FOUND;
                 }
             } else {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
@@ -698,6 +798,7 @@ public class ServerManager {
     }
 
 
+    // --------------------------------- Manager getter functions ---------------------------------
     private DatabaseManager getDatabaseManager() {
         if(m_dbMgr == null)
             m_dbMgr = new DatabaseManager();

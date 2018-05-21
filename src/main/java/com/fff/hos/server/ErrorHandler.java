@@ -81,6 +81,13 @@ public class ErrorHandler {
                 strResponse = jsonObj.toString();
                 break;
 
+            case ST_CODE_COMMENT_NOT_FOUND :
+                jsonObj = new JsonObject();
+                jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
+                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, comment was not found");
+                strResponse = jsonObj.toString();
+                break;
+
             default:
                 jsonObj = new JsonObject();
                 jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());

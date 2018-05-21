@@ -122,11 +122,17 @@ class DBCtrlComment {
         StringBuilder strDeleteCommentSQL = new StringBuilder("DELETE FROM ");
         strDeleteCommentSQL.append(DBConstants.TABLE_NAME_COMMENT).append(" WHERE ");
 
-        if(stringTool.checkStringNotNull(strId))
-            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ID).append("=\"").append(strId).append("\" AND ");
+        if(stringTool.checkStringNotNull(strId)) {
+            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ID).append("=\"").append(strId);
+
+            if(stringTool.checkStringNotNull(strActivityId))
+                strDeleteCommentSQL.append("\" AND ");
+        }
 
         if(stringTool.checkStringNotNull(strActivityId))
-            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(strActivityId).append("\";");
+            strDeleteCommentSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(strActivityId);
+
+        strDeleteCommentSQL.append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementDeleteComment = conn.prepareStatement(strDeleteCommentSQL.toString())) {
@@ -152,11 +158,16 @@ class DBCtrlComment {
         StringBuilder strSelectSQL = new StringBuilder();
         strSelectSQL.append("SELECT * FROM ").append(DBConstants.TABLE_NAME_COMMENT).append(" WHERE ");
 
-        if(stringTool.checkStringNotNull(comment.getPublisherEmail()))
-            strSelectSQL.append(DBConstants.COMMENT_COL_PUBLISHEREMAIL ).append("=\"").append(comment.getPublisherEmail()).append("\"");
+        if(stringTool.checkStringNotNull(comment.getPublisherEmail())) {
+            strSelectSQL.append(DBConstants.COMMENT_COL_PUBLISHEREMAIL).append("=\"").append(comment.getPublisherEmail()).append("\"");
+            comment.setPublisherEmail(null);
+
+            if(comment.checkMembersStillHaveValue())
+                strSelectSQL.append(" AND ");
+        }
 
         if(stringTool.checkStringNotNull(comment.getActivityId()))
-            strSelectSQL.append(" AND ").append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(comment.getActivityId()).append("\"");
+            strSelectSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(comment.getActivityId()).append("\"");
 
         strSelectSQL.append(";");
 
@@ -260,17 +271,13 @@ class DBCtrlComment {
         Connection conn = DBConnection.getConnection();
         StringBuilder strUpdateSQL = new StringBuilder("UPDATE ");
         strUpdateSQL.append(DBConstants.TABLE_NAME_COMMENT).append(" SET ");
-        strUpdateSQL.append(DBConstants.COMMENT_COL_PUBLISHEREMAIL).append("=\"").append(comment.getPublisherEmail()).append("\",");
-        strUpdateSQL.append(DBConstants.COMMENT_COL_DISPLAYNAME).append("=\"").append(comment.getDisplayName()).append("\",");
-        strUpdateSQL.append(DBConstants.COMMENT_COL_ACTIVITYID).append("=\"").append(comment.getActivityId()).append("\",");
+        strUpdateSQL.append(DBConstants.COMMENT_COL_TS).append("=\"").append(new Timestamp(new Date().getTime()).toString()).append("\",");
         strUpdateSQL.append(DBConstants.COMMENT_COL_CONTENT).append("=\"").append(comment.getContent()).append("\"");
         strUpdateSQL.append(" WHERE ").append(DBConstants.COMMENT_COL_ID).append("=\"").append(comment.getId());
-        strUpdateSQL.append("\" AND ").append(DBConstants.COMMENT_COL_PUBLISHEREMAIL).append("=\"").append(comment.getPublisherEmail());
         strUpdateSQL.append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementUpdateComment = conn.prepareStatement(strUpdateSQL.toString())) {
-            statementUpdateComment.setTimestamp(1, new Timestamp(new Date().getTime()));
             bRes = statementUpdateComment.executeUpdate() > 0;
 
         } catch (SQLException e) {

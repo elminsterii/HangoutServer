@@ -214,4 +214,12 @@ public class Activity {
     public void setAttendees(String attendees) {
         Attendees = attendees;
     }
+
+    public boolean checkMembersStillHaveValue() {
+        return (PublisherEmail != null && !PublisherEmail.isEmpty())
+                || (LargeActivity != null)
+                || (EarlyBird != null)
+                || (DisplayName != null && !DisplayName.isEmpty())
+                || (Tags != null && !Tags.isEmpty());
+    }
 }
