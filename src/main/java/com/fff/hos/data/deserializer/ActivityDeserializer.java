@@ -24,7 +24,8 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         JsonElement jeStatus = jsonObject.get("status");
         JsonElement jeDescription = jsonObject.get("description");
         JsonElement jeTags = jsonObject.get("tags");
-        JsonElement jeGoodActivity = jsonObject.get("goodactivity");
+        JsonElement jeGood = jsonObject.get("good");
+        JsonElement jeNoGood = jsonObject.get("nogood");
         JsonElement jeAttention = jsonObject.get("attention");
         JsonElement jeAttendees = jsonObject.get("attendees");
 
@@ -43,7 +44,8 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         activity.setStatus(jeStatus == null ? null : jeStatus.getAsString());
         activity.setDescription(jeDescription == null ? null : jeDescription.getAsString());
         activity.setTags(jeTags == null ? null : jeTags.getAsString());
-        activity.setGoodActivity(jeGoodActivity == null ? null : jeGoodActivity.getAsInt());
+        activity.setGood(jeGood == null ? null : jeGood.getAsInt());
+        activity.setNoGood(jeNoGood == null ? null : jeNoGood.getAsInt());
         activity.setAttention(jeAttention == null ? null : jeAttention.getAsInt());
         activity.setAttendees(jeAttendees == null ? null : jeAttendees.getAsString());
 

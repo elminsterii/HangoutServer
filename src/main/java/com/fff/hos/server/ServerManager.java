@@ -137,6 +137,7 @@ public class ServerManager {
             JsonElement jsEmails = jsonSource.get(TAG_EMAILS);
 
             if (jsEmails != null) {
+                //query persons by emails
                 String strEmails = jsEmails.getAsString();
                 StringTool stringTool = new StringTool();
 
@@ -160,6 +161,7 @@ public class ServerManager {
                     resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
                 }
             } else if (jsIds != null) {
+                //query persons by ids
                 String strIds = jsIds.getAsString();
                 StringTool stringTool = new StringTool();
 

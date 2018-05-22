@@ -36,7 +36,8 @@ class DBConstants {
     static final String ACTIVITY_COL_STATUS = "status";
     static final String ACTIVITY_COL_DESCRIPTION = "description";
     static final String ACTIVITY_COL_TAGS = "tags";
-    static final String ACTIVITY_COL_GOODACTIVITY = "goodactivity";
+    static final String ACTIVITY_COL_GOOD = "good";
+    static final String ACTIVITY_COL_NOGOOD = "nogood";
     static final String ACTIVITY_COL_ATTENTION = "attention";
     static final String ACTIVITY_COL_ATTENDEES = "attendees";
 

@@ -46,8 +46,11 @@ public class Activity {
     @SerializedName("tags")
     private String Tags;
 
-    @SerializedName("goodactivity")
-    private Integer GoodActivity;
+    @SerializedName("good")
+    private Integer Good;
+
+    @SerializedName("nogood")
+    private Integer NoGood;
 
     @SerializedName("attention")
     private Integer Attention;
@@ -59,7 +62,7 @@ public class Activity {
 
     }
 
-    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String description, String tags, Integer goodActivity, Integer attention, String attendees) {
+    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String description, String tags, Integer good, Integer noGood, Integer attention, String attendees) {
         Id = id;
         PublisherEmail = publisherEmail;
         PublisherUserPassword = publisherUserPassword;
@@ -74,7 +77,8 @@ public class Activity {
         Status = status;
         Description = description;
         Tags = tags;
-        GoodActivity = goodActivity;
+        Good = good;
+        NoGood = noGood;
         Attention = attention;
         Attendees = attendees;
     }
@@ -191,12 +195,20 @@ public class Activity {
         Tags = tags;
     }
 
-    public Integer getGoodActivity() {
-        return GoodActivity;
+    public Integer getGood() {
+        return Good;
     }
 
-    public void setGoodActivity(Integer goodActivity) {
-        GoodActivity = goodActivity;
+    public void setGood(Integer good) {
+        Good = good;
+    }
+
+    public Integer getNoGood() {
+        return NoGood;
+    }
+
+    public void setNoGood(Integer noGood) {
+        NoGood = noGood;
     }
 
     public Integer getAttention() {
