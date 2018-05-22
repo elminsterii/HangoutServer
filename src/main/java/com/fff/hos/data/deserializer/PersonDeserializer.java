@@ -10,6 +10,7 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
     public Person deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = (JsonObject) jsonElement;
 
+        JsonElement jeId = jsonObject.get("id");
         JsonElement jeEmail = jsonObject.get("email");
         JsonElement jeUserPassword = jsonObject.get("userpassword");
         JsonElement jeDisplayName = jsonObject.get("displayname");
@@ -17,14 +18,15 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         JsonElement jeInterests = jsonObject.get("interests");
         JsonElement jeDescription = jsonObject.get("description");
         JsonElement jeLocation = jsonObject.get("location");
-        JsonElement jeJoinActivities = jsonObject.get("joinactivities");
-        JsonElement jeHoldActivities = jsonObject.get("holdactivities");
-        JsonElement jeGoodMember = jsonObject.get("goodmember");
-        JsonElement jeGoodLeader = jsonObject.get("goodleader");
+        JsonElement jeSaveActivities = jsonObject.get("saveactivities");
+        JsonElement jeGood = jsonObject.get("good");
+        JsonElement jeNoGood = jsonObject.get("nogood");
         JsonElement jeOnline = jsonObject.get("online");
+        JsonElement jeAnonymous = jsonObject.get("anonymous");
         JsonElement jeNewUserPassword = jsonObject.get("newuserpassword");
 
         Person person = new Person();
+        person.setId(jeId == null ? null : jeId.getAsString());
         person.setEmail(jeEmail.getAsString());
         person.setUserPassword(jeUserPassword == null ? null : jeUserPassword.getAsString());
         person.setDisplayName(jeDisplayName == null ? null : jeDisplayName.getAsString());
@@ -32,11 +34,11 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         person.setInterests(jeInterests == null ? null : jeInterests.getAsString());
         person.setDescription(jeDescription == null ? null : jeDescription.getAsString());
         person.setLocation(jeLocation == null ? null : jeLocation.getAsString());
-        person.setJoinActivities(jeJoinActivities == null ? null : jeJoinActivities.getAsString());
-        person.setHoldActivities(jeHoldActivities == null ? null : jeHoldActivities.getAsString());
-        person.setGoodMember(jeGoodMember == null ? null : jeGoodMember.getAsInt());
-        person.setGoodLeader(jeGoodLeader == null ? null : jeGoodLeader.getAsInt());
+        person.setSaveActivities(jeSaveActivities == null ? null : jeSaveActivities.getAsString());
+        person.setGood(jeGood == null ? null : jeGood.getAsInt());
+        person.setNoGood(jeNoGood == null ? null : jeNoGood.getAsInt());
         person.setOnline(jeOnline == null ? null : jeOnline.getAsInt());
+        person.setAnonymous(jeAnonymous == null ? null : jeAnonymous.getAsInt());
         person.setUserPassword(jeNewUserPassword == null ? null : jeNewUserPassword.getAsString());
 
         return person;

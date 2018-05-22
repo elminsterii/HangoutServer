@@ -35,11 +35,11 @@ class DBCtrlPerson {
             strCreateTableSQL.append(DBConstants.PERSON_COL_INTERESTS).append(" VARCHAR(512), ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_DESCRIPTION).append(" VARCHAR(1024), ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_LOCATION).append(" VARCHAR(128), ");
-            strCreateTableSQL.append(DBConstants.PERSON_COL_JOINACTIVITIES).append(" VARCHAR(1024), ");
-            strCreateTableSQL.append(DBConstants.PERSON_COL_HOLDACTIVITIES).append(" VARCHAR(1024), ");
-            strCreateTableSQL.append(DBConstants.PERSON_COL_GOODMEMBER).append(" INT NOT NULL DEFAULT 0, ");
-            strCreateTableSQL.append(DBConstants.PERSON_COL_GOODLEADER).append(" INT NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.PERSON_COL_SAVEACTIVITIES).append(" VARCHAR(1024), ");
+            strCreateTableSQL.append(DBConstants.PERSON_COL_GOOD).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.PERSON_COL_NOGOOD).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
             strCreateTableSQL.append(DBConstants.PERSON_COL_ONLINE).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0, ");
+            strCreateTableSQL.append(DBConstants.PERSON_COL_ANONYMOUS).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0, ");
             strCreateTableSQL.append("PRIMARY KEY (").append(DBConstants.PERSON_COL_EMAIL).append(") );");
 
             try {
@@ -70,13 +70,13 @@ class DBCtrlPerson {
             return false;
 
         return insert(person.getEmail(), person.getUserPassword(), person.getDisplayName(), person.getAge(), person.getGender()
-                , person.getInterests(), person.getDescription(), person.getLocation(), person.getJoinActivities()
-                , person.getHoldActivities(), person.getGoodMember(), person.getGoodLeader(), person.getOnline());
+                , person.getInterests(), person.getDescription(), person.getLocation(), person.getSaveActivities()
+                , person.getGood(), person.getNoGood(), person.getOnline(), person.getAnonymous());
     }
 
     private boolean insert(String strEmail, String strUserPassword, String strDisplayName, Integer iAge, String strGender, String strInterests
-            , String strDescription, String strLocation, String strJoinActivities, String strHoldActivities
-            , Integer iGoodMember, Integer iGoodLeader, Integer bOnline) {
+            , String strDescription, String strLocation, String strSaveActivities
+            , Integer iGood, Integer iNoGood, Integer bOnline, Integer bAnonymous) {
 
         boolean bRes = false;
         StringTool stringTool = new StringTool();
@@ -100,11 +100,11 @@ class DBCtrlPerson {
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_INTERESTS);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_DESCRIPTION);
         strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_LOCATION);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_JOINACTIVITIES);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_HOLDACTIVITIES);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_GOODMEMBER);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_GOODLEADER);
-        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_ONLINE).append(") ");
+        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_SAVEACTIVITIES);
+        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_GOOD);
+        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_NOGOOD);
+        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_ONLINE);
+        strCreatePersonSQL.append(",").append(DBConstants.PERSON_COL_ANONYMOUS).append(") ");
         strCreatePersonSQL.append("VALUES (?");
         strCreatePersonSQL.append(",\"").append(strEmail).append("\"");
         strCreatePersonSQL.append(",\"").append(strUserPassword).append("\"");
@@ -114,11 +114,11 @@ class DBCtrlPerson {
         strCreatePersonSQL.append(",\"").append(strInterests == null ? "" : strInterests).append("\"");
         strCreatePersonSQL.append(",\"").append(strDescription == null ? "" : strDescription).append("\"");
         strCreatePersonSQL.append(",\"").append(strLocation == null ? "" : strLocation).append("\"");
-        strCreatePersonSQL.append(",\"").append(strJoinActivities == null ? "" : strJoinActivities).append("\"");
-        strCreatePersonSQL.append(",\"").append(strHoldActivities == null ? "" : strHoldActivities).append("\"");
-        strCreatePersonSQL.append(",\"").append(iGoodMember == null ? 0 : iGoodMember).append("\"");
-        strCreatePersonSQL.append(",\"").append(iGoodLeader == null ? 0 : iGoodLeader).append("\"");
+        strCreatePersonSQL.append(",\"").append(strSaveActivities == null ? "" : strSaveActivities).append("\"");
+        strCreatePersonSQL.append(",\"").append(iGood == null ? 0 : iGood).append("\"");
+        strCreatePersonSQL.append(",\"").append(iNoGood == null ? 0 : iNoGood).append("\"");
         strCreatePersonSQL.append(",\"").append(bOnline == null ? 0 : bOnline).append("\"");
+        strCreatePersonSQL.append(",\"").append(bAnonymous == null ? 0 : bAnonymous).append("\"");
         strCreatePersonSQL.append( ");");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -218,20 +218,27 @@ class DBCtrlPerson {
 
 
     Person query(Person person) {
-        return query(person.getEmail());
+        return query(person.getId(), person.getEmail());
     }
 
-    Person query(String strEmail) {
+    Person query(String strId, String strEmail) {
         Person person = null;
         StringTool stringTool = new StringTool();
 
-        if (!stringTool.checkStringNotNull(strEmail))
+        if ((!stringTool.checkStringNotNull(strEmail)
+                && !stringTool.checkStringNotNull(strId))
+                || (stringTool.checkStringNotNull(strEmail)
+                && stringTool.checkStringNotNull(strId)))
             return null;
 
         Connection conn = DBConnection.getConnection();
         StringBuilder strSelectSQL = new StringBuilder("SELECT * FROM ");
         strSelectSQL.append(DBConstants.TABLE_NAME_PERSON).append(" WHERE ");
-        strSelectSQL.append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(strEmail).append("\";");
+
+        if (stringTool.checkStringNotNull(strId))
+            strSelectSQL.append(DBConstants.PERSON_COL_ID).append("=\"").append(strId).append("\";");
+        else
+            strSelectSQL.append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(strEmail).append("\";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
@@ -239,6 +246,7 @@ class DBCtrlPerson {
 
             while (rs.next()) {
                 person = new Person();
+                person.setId(rs.getString(DBConstants.PERSON_COL_ID));
                 person.setEmail(rs.getString(DBConstants.PERSON_COL_EMAIL));
                 person.setUserPassword(rs.getString(DBConstants.PERSON_COL_USERPASSWORD));
                 person.setDisplayName(rs.getString(DBConstants.PERSON_COL_DISPLAYNAME));
@@ -247,11 +255,11 @@ class DBCtrlPerson {
                 person.setInterests(rs.getString(DBConstants.PERSON_COL_INTERESTS));
                 person.setDescription(rs.getString(DBConstants.PERSON_COL_DESCRIPTION));
                 person.setLocation(rs.getString(DBConstants.PERSON_COL_LOCATION));
-                person.setJoinActivities(rs.getString(DBConstants.PERSON_COL_JOINACTIVITIES));
-                person.setHoldActivities(rs.getString(DBConstants.PERSON_COL_HOLDACTIVITIES));
-                person.setGoodMember(rs.getInt(DBConstants.PERSON_COL_GOODMEMBER));
-                person.setGoodLeader(rs.getInt(DBConstants.PERSON_COL_GOODLEADER));
+                person.setSaveActivities(rs.getString(DBConstants.PERSON_COL_SAVEACTIVITIES));
+                person.setGood(rs.getInt(DBConstants.PERSON_COL_GOOD));
+                person.setNoGood(rs.getInt(DBConstants.PERSON_COL_NOGOOD));
                 person.setOnline(rs.getInt(DBConstants.PERSON_COL_ONLINE));
+                person.setAnonymous(rs.getInt(DBConstants.PERSON_COL_ANONYMOUS));
             }
         } catch (SQLException e) {
             LOGGER.warning("SQL erro, " + e.getMessage());
@@ -276,6 +284,7 @@ class DBCtrlPerson {
 
             while (rs.next()) {
                 Person person = new Person();
+                person.setId(rs.getString(DBConstants.PERSON_COL_ID));
                 person.setEmail(rs.getString(DBConstants.PERSON_COL_EMAIL));
                 person.setDisplayName(rs.getString(DBConstants.PERSON_COL_DISPLAYNAME));
                 person.setAge(rs.getInt(DBConstants.PERSON_COL_AGE));
@@ -283,11 +292,11 @@ class DBCtrlPerson {
                 person.setInterests(rs.getString(DBConstants.PERSON_COL_INTERESTS));
                 person.setDescription(rs.getString(DBConstants.PERSON_COL_DESCRIPTION));
                 person.setLocation(rs.getString(DBConstants.PERSON_COL_LOCATION));
-                person.setJoinActivities(rs.getString(DBConstants.PERSON_COL_JOINACTIVITIES));
-                person.setHoldActivities(rs.getString(DBConstants.PERSON_COL_HOLDACTIVITIES));
-                person.setGoodMember(rs.getInt(DBConstants.PERSON_COL_GOODMEMBER));
-                person.setGoodLeader(rs.getInt(DBConstants.PERSON_COL_GOODLEADER));
+                person.setSaveActivities(rs.getString(DBConstants.PERSON_COL_SAVEACTIVITIES));
+                person.setGood(rs.getInt(DBConstants.PERSON_COL_GOOD));
+                person.setNoGood(rs.getInt(DBConstants.PERSON_COL_NOGOOD));
                 person.setOnline(rs.getInt(DBConstants.PERSON_COL_ONLINE));
+                person.setAnonymous(rs.getInt(DBConstants.PERSON_COL_ANONYMOUS));
                 lsPersons.add(person);
             }
         } catch (SQLException e) {
@@ -305,7 +314,7 @@ class DBCtrlPerson {
         if (!stringTool.checkStringNotNull(person.getEmail()))
             return false;
 
-        Person oldPerson = query(person.getEmail());
+        Person oldPerson = query(null, person.getEmail());
 
         if (oldPerson == null)
             return false;
@@ -322,11 +331,11 @@ class DBCtrlPerson {
         strUpdateSQL.append(DBConstants.PERSON_COL_INTERESTS).append("=\"").append(person.getInterests()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_DESCRIPTION).append("=\"").append(person.getDescription()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_LOCATION).append("=\"").append(person.getLocation()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_JOINACTIVITIES).append("=\"").append(person.getJoinActivities()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_HOLDACTIVITIES).append("=\"").append(person.getHoldActivities()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_GOODMEMBER).append("=\"").append(person.getGoodMember()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_GOODLEADER).append("=\"").append(person.getGoodLeader()).append("\",");
+        strUpdateSQL.append(DBConstants.PERSON_COL_SAVEACTIVITIES).append("=\"").append(person.getSaveActivities()).append("\",");
+        strUpdateSQL.append(DBConstants.PERSON_COL_GOOD).append("=\"").append(person.getGood()).append("\",");
+        strUpdateSQL.append(DBConstants.PERSON_COL_NOGOOD).append("=\"").append(person.getNoGood()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_ONLINE).append("=\"").append(person.getOnline()).append("\",");
+        strUpdateSQL.append(DBConstants.PERSON_COL_ANONYMOUS).append("=\"").append(person.getAnonymous()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_USERPASSWORD).append("=\"").append(person.getUserPassword()).append("\"");
         strUpdateSQL.append(" WHERE ").append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(person.getEmail()).append("\" ");
 
@@ -343,6 +352,8 @@ class DBCtrlPerson {
     }
 
     private void fillUpdatePersonIfNull(Person oldPerson, Person newPerson) {
+        if (newPerson.getId() == null)
+            newPerson.setId(oldPerson.getId());
         if (newPerson.getUserPassword() == null)
             newPerson.setUserPassword(oldPerson.getUserPassword());
         if (newPerson.getDisplayName() == null)
@@ -357,15 +368,15 @@ class DBCtrlPerson {
             newPerson.setDescription(oldPerson.getDescription());
         if (newPerson.getLocation() == null)
             newPerson.setLocation(oldPerson.getLocation());
-        if (newPerson.getJoinActivities() == null)
-            newPerson.setJoinActivities(oldPerson.getJoinActivities());
-        if (newPerson.getHoldActivities() == null)
-            newPerson.setHoldActivities(oldPerson.getHoldActivities());
-        if (newPerson.getGoodMember() == null)
-            newPerson.setGoodMember(oldPerson.getGoodMember());
-        if (newPerson.getGoodLeader() == null)
-            newPerson.setGoodLeader(oldPerson.getGoodLeader());
+        if (newPerson.getSaveActivities() == null)
+            newPerson.setSaveActivities(oldPerson.getSaveActivities());
+        if (newPerson.getGood() == null)
+            newPerson.setGood(oldPerson.getGood());
+        if (newPerson.getNoGood() == null)
+            newPerson.setNoGood(oldPerson.getNoGood());
         if (newPerson.getOnline() == null)
             newPerson.setOnline(oldPerson.getOnline());
+        if (newPerson.getAnonymous() == null)
+            newPerson.setAnonymous(oldPerson.getAnonymous());
     }
 }

@@ -125,16 +125,19 @@ public class ServerManager {
         return serverResp;
     }
 
+    @SuppressWarnings("Duplicates")
     public ServerResponse queryPerson(JsonObject jsonSource) {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
 
         if (jsonSource != null) {
             final String TAG_EMAILS = "emails";
-            JsonElement jsElement = jsonSource.get(TAG_EMAILS);
+            final String TAG_IDS = "ids";
+            JsonElement jsIds = jsonSource.get(TAG_IDS);
+            JsonElement jsEmails = jsonSource.get(TAG_EMAILS);
 
-            if (jsElement != null) {
-                String strEmails = jsElement.getAsString();
+            if (jsEmails != null) {
+                String strEmails = jsEmails.getAsString();
                 StringTool stringTool = new StringTool();
 
                 if(stringTool.checkStringNotNull(strEmails)) {
@@ -144,9 +147,34 @@ public class ServerManager {
                     List<Person> lsPerson = new ArrayList<>();
 
                     for(String strEmail : arrEmails) {
-                        Person person = dbMgr.queryPerson(strEmail);
-                        if(person != null)
+                        Person person = dbMgr.queryPerson(null, strEmail);
+                        if(person != null) {
+                            person.setUserPassword(null);
                             lsPerson.add(person);
+                        }
+                    }
+
+                    serverResp.setContent(lsPerson);
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                }
+            } else if (jsIds != null) {
+                String strIds = jsIds.getAsString();
+                StringTool stringTool = new StringTool();
+
+                if(stringTool.checkStringNotNull(strIds)) {
+                    String[] arrIds = strIds.split(",");
+
+                    DatabaseManager dbMgr = getDatabaseManager();
+                    List<Person> lsPerson = new ArrayList<>();
+
+                    for(String strId : arrIds) {
+                        Person person = dbMgr.queryPerson(strId, null);
+                        if(person != null) {
+                            person.setUserPassword(null);
+                            lsPerson.add(person);
+                        }
                     }
 
                     serverResp.setContent(lsPerson);

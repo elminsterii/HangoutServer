@@ -14,11 +14,11 @@ class DBConstants {
     static final String PERSON_COL_INTERESTS = "interests";
     static final String PERSON_COL_DESCRIPTION = "description";
     static final String PERSON_COL_LOCATION = "location";
-    static final String PERSON_COL_JOINACTIVITIES = "joinactivities";
-    static final String PERSON_COL_HOLDACTIVITIES = "holdactivities";
-    static final String PERSON_COL_GOODMEMBER = "goodmember";
-    static final String PERSON_COL_GOODLEADER = "goodleader";
+    static final String PERSON_COL_SAVEACTIVITIES = "saveactivities";
+    static final String PERSON_COL_GOOD = "good";
+    static final String PERSON_COL_NOGOOD = "nogood";
     static final String PERSON_COL_ONLINE = "online";
+    static final String PERSON_COL_ANONYMOUS = "anonymous";
 
     //Activity constants
     static final String TABLE_NAME_ACTIVITY = "activities";

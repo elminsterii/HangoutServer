@@ -23,8 +23,8 @@ public class DatabaseManager {
         return getDBCtrlPerson().delete(person);
     }
 
-    public Person queryPerson(String strEmail) {
-        return getDBCtrlPerson().query(strEmail);
+    public Person queryPerson(String strId, String strEmail) {
+        return getDBCtrlPerson().query(strId, strEmail);
     }
 
     public Person queryPerson(Person person) {
@@ -40,9 +40,10 @@ public class DatabaseManager {
         Person resPerson = null;
 
         if (dbCtrlPerson.checkPersonValid(person.getEmail(), person.getUserPassword())) {
-            resPerson = dbCtrlPerson.query(person.getEmail());
+            resPerson = dbCtrlPerson.query(null, person.getEmail());
             resPerson.setOnline(1);
             dbCtrlPerson.update(resPerson);
+            resPerson.setUserPassword(null);
         }
         return resPerson;
     }
@@ -52,7 +53,7 @@ public class DatabaseManager {
         Person resPerson = null;
 
         if (dbCtrlPerson.checkPersonValid(person.getEmail(), person.getUserPassword())) {
-            resPerson = dbCtrlPerson.query(person.getEmail());
+            resPerson = dbCtrlPerson.query(null, person.getEmail());
             resPerson.setOnline(0);
             dbCtrlPerson.update(resPerson);
         }

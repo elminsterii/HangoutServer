@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Person {
 
+    @SerializedName("id")
+    private String Id;
+
     @SerializedName("email")
     private String Email;
 
@@ -28,20 +31,20 @@ public class Person {
     @SerializedName("location")
     private String Location;
 
-    @SerializedName("joinactivities")
-    private String JoinActivities;
+    @SerializedName("saveactivities")
+    private String SaveActivities;
 
-    @SerializedName("holdactivities")
-    private String HoldActivities;
+    @SerializedName("good")
+    private Integer Good;
 
-    @SerializedName("goodmember")
-    private Integer GoodMember;
-
-    @SerializedName("goodleader")
-    private Integer GoodLeader;
+    @SerializedName("nogood")
+    private Integer NoGood;
 
     @SerializedName("online")
     private Integer Online;
+
+    @SerializedName("anonymous")
+    private Integer Anonymous;
 
     @SerializedName("newuserpassword")
     private String NewUserPassword;
@@ -50,7 +53,8 @@ public class Person {
 
     }
 
-    public Person(String email, String userPassword, String displayName, Integer age, String gender, String interests, String description, String location, String joinActivities, String holdActivities, Integer goodMember, Integer goodLeader, Integer online, String newUserPassword) {
+    public Person(String id, String email, String userPassword, String displayName, Integer age, String gender, String interests, String description, String location, String saveActivities, Integer good, Integer noGood, Integer online, Integer anonymous, String newUserPassword) {
+        Id = id;
         Email = email;
         UserPassword = userPassword;
         DisplayName = displayName;
@@ -59,12 +63,20 @@ public class Person {
         Interests = interests;
         Description = description;
         Location = location;
-        JoinActivities = joinActivities;
-        HoldActivities = holdActivities;
-        GoodMember = goodMember;
-        GoodLeader = goodLeader;
+        SaveActivities = saveActivities;
+        Good = good;
+        NoGood = noGood;
         Online = online;
+        Anonymous = anonymous;
         NewUserPassword = newUserPassword;
+    }
+
+    public String getId() {
+        return Id;
+    }
+
+    public void setId(String id) {
+        Id = id;
     }
 
     public String getEmail() {
@@ -131,36 +143,28 @@ public class Person {
         Location = location;
     }
 
-    public String getJoinActivities() {
-        return JoinActivities;
+    public String getSaveActivities() {
+        return SaveActivities;
     }
 
-    public void setJoinActivities(String joinActivities) {
-        JoinActivities = joinActivities;
+    public void setSaveActivities(String saveActivities) {
+        SaveActivities = saveActivities;
     }
 
-    public String getHoldActivities() {
-        return HoldActivities;
+    public Integer getGood() {
+        return Good;
     }
 
-    public void setHoldActivities(String holdActivities) {
-        HoldActivities = holdActivities;
+    public void setGood(Integer good) {
+        Good = good;
     }
 
-    public Integer getGoodMember() {
-        return GoodMember;
+    public Integer getNoGood() {
+        return NoGood;
     }
 
-    public void setGoodMember(Integer goodMember) {
-        GoodMember = goodMember;
-    }
-
-    public Integer getGoodLeader() {
-        return GoodLeader;
-    }
-
-    public void setGoodLeader(Integer goodLeader) {
-        GoodLeader = goodLeader;
+    public void setNoGood(Integer noGood) {
+        NoGood = noGood;
     }
 
     public Integer getOnline() {
@@ -169,6 +173,14 @@ public class Person {
 
     public void setOnline(Integer online) {
         Online = online;
+    }
+
+    public Integer getAnonymous() {
+        return Anonymous;
+    }
+
+    public void setAnonymous(Integer anonymous) {
+        Anonymous = anonymous;
     }
 
     public String getNewUserPassword() {
