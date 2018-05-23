@@ -4,6 +4,7 @@ import com.fff.hos.data.Activity;
 import com.fff.hos.data.Comment;
 import com.fff.hos.data.Person;
 import com.fff.hos.database.DatabaseManager;
+import com.fff.hos.email.VerifyEmailSender;
 import com.fff.hos.gcs.StorageManager;
 import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonElement;
@@ -25,6 +26,9 @@ public class ServerManager {
     public ServerResponse register(Person person) throws IOException {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
+
+        VerifyEmailSender sender = new VerifyEmailSender();
+        String strVerify = sender.sendVerifyMail("elminsterii2@gmail.com");
 
         if(person != null) {
             DatabaseManager dbMgr = getDatabaseManager();

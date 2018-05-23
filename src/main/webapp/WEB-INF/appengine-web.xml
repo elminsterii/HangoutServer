@@ -19,6 +19,11 @@
         <property name="cs_person_icons" value="persons_icons"/>
         <property name="cs_activity_images" value="activities_images"/>
 
+        <property name="email_sender_address" value="elminsterii2@gmail.com"/>
+        <property name="email_sender_title" value="545-noreply"/>
+        <property name="email_verify_title" value="Ingood verification"/>
+        <property name="email_verify_content" value="Hi, Welcome to Ingood world, Your verify code is "/>
+
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
     </system-properties>
 </appengine-web-app>
