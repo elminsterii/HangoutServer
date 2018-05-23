@@ -331,11 +331,6 @@ class DBCtrlPerson {
         strUpdateSQL.append(DBConstants.PERSON_COL_INTERESTS).append("=\"").append(person.getInterests()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_DESCRIPTION).append("=\"").append(person.getDescription()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_LOCATION).append("=\"").append(person.getLocation()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_SAVEACTIVITIES).append("=\"").append(person.getSaveActivities()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_GOOD).append("=\"").append(person.getGood()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_NOGOOD).append("=\"").append(person.getNoGood()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_ONLINE).append("=\"").append(person.getOnline()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_ANONYMOUS).append("=\"").append(person.getAnonymous()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_USERPASSWORD).append("=\"").append(person.getUserPassword()).append("\"");
         strUpdateSQL.append(" WHERE ").append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(person.getEmail()).append("\" ");
 
