@@ -346,6 +346,45 @@ class DBCtrlPerson {
         return bRes;
     }
 
+    boolean deem(String strEmail, Integer iDeem, Integer iDeemRb) {
+        boolean bRes = false;
+        StringTool stringTool = new StringTool();
+
+        if (!stringTool.checkStringNotNull(strEmail)
+                || iDeem == null)
+            return false;
+
+        final int INT_DEEM_GOOD = 1;
+        final int INT_DEEM_DO_ROLLBACK = 1;
+
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strUpdateSQL = new StringBuilder("UPDATE ");
+        strUpdateSQL.append(DBConstants.TABLE_NAME_PERSON).append(" SET ");
+
+        if(iDeem == INT_DEEM_GOOD) {
+            strUpdateSQL.append(DBConstants.PERSON_COL_GOOD).append("=");
+            strUpdateSQL.append(DBConstants.PERSON_COL_GOOD).append(iDeemRb == INT_DEEM_DO_ROLLBACK ? "-1" : "+1");
+        }
+        else {
+            strUpdateSQL.append(DBConstants.PERSON_COL_NOGOOD).append("=");
+            strUpdateSQL.append(DBConstants.PERSON_COL_NOGOOD).append(iDeemRb == INT_DEEM_DO_ROLLBACK ? "-1" : "+1");
+        }
+
+        strUpdateSQL.append(" WHERE ").append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(strEmail);
+        strUpdateSQL.append("\";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (PreparedStatement statementUpdatePerson = conn.prepareStatement(strUpdateSQL.toString())) {
+            bRes = statementUpdatePerson.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("update time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return bRes;
+    }
+
     private void fillUpdatePersonIfNull(Person oldPerson, Person newPerson) {
         if (newPerson.getId() == null)
             newPerson.setId(oldPerson.getId());

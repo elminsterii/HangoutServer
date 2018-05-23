@@ -35,6 +35,10 @@ public class DatabaseManager {
         return getDBCtrlPerson().update(person);
     }
 
+    public boolean deemPerson(String strEmail, Integer iDeem, Integer iDeemRb) {
+        return getDBCtrlPerson().deem(strEmail, iDeem, iDeemRb);
+    }
+
     public Person login(Person person) {
         DBCtrlPerson dbCtrlPerson = getDBCtrlPerson();
         Person resPerson = null;
@@ -100,6 +104,10 @@ public class DatabaseManager {
 
     public boolean attendActivity(String strActivityId, Integer iAttend, String strPersonId) {
         return getDBCtrlActivity().attend(strActivityId, iAttend, strPersonId);
+    }
+
+    public boolean deemActivity(String strActivityId, Integer iDeem, Integer iDeemRb) {
+        return getDBCtrlActivity().deem(strActivityId, iDeem, iDeemRb);
     }
 
     public boolean checkActivityExist(Activity activity) {

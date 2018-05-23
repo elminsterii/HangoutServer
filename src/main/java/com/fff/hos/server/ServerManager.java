@@ -681,6 +681,33 @@ public class ServerManager {
         return serverResp;
     }
 
+    @SuppressWarnings("Duplicates")
+    public ServerResponse listActivityImage(String strActivityId) throws IOException {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        StorageManager csMgr = getStorageManager();
+
+        List<String> lsImages =  csMgr.listActivityImages(strActivityId, false);
+
+        if(lsImages != null && !lsImages.isEmpty()) {
+            StringTool stringTool = new StringTool();
+            String strImages = stringTool.listStringToString(lsImages, ',');
+
+            if(!strImages.isEmpty()) {
+                serverResp.setContent(strImages);
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
     public ServerResponse attendActivity(JsonObject jsonSource) {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
@@ -735,34 +762,75 @@ public class ServerManager {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
             }
         }else {
-                resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
         }
 
         serverResp.setStatus(resCode);
         return serverResp;
     }
 
-    @SuppressWarnings("Duplicates")
-    public ServerResponse listActivityImage(String strActivityId) throws IOException {
+    public ServerResponse deemActivity(JsonObject jsonSource) {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
 
-        StorageManager csMgr = getStorageManager();
+        if(jsonSource != null) {
+            final String TAG_EMAIL = "email";
+            final String TAG_USERPASSWORD = "userpassword";
+            final String TAG_ACTIVITYID = "activityid";
+            final String TAG_DEEM = "deem";
+            final String TAG_DEEMRB = "deemrb";
 
-        List<String> lsImages =  csMgr.listActivityImages(strActivityId, false);
+            JsonElement jsonEmail = jsonSource.get(TAG_EMAIL);
+            JsonElement jsonUserPassword = jsonSource.get(TAG_USERPASSWORD);
+            JsonElement jsonActivityId = jsonSource.get(TAG_ACTIVITYID);
+            JsonElement jsonDeem = jsonSource.get(TAG_DEEM);
+            JsonElement jsonDeemRb = jsonSource.get(TAG_DEEMRB);
 
-        if(lsImages != null && !lsImages.isEmpty()) {
             StringTool stringTool = new StringTool();
-            String strImages = stringTool.listStringToString(lsImages, ',');
 
-            if(!strImages.isEmpty()) {
-                serverResp.setContent(strImages);
-                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+            if (jsonEmail != null
+                    && jsonUserPassword != null
+                    && jsonActivityId != null
+                    && jsonDeem != null
+                    && jsonDeemRb != null
+                    && stringTool.checkStringNotNull(jsonEmail.getAsString())
+                    && stringTool.checkStringNotNull(jsonUserPassword.getAsString())
+                    && stringTool.checkStringNotNull(jsonActivityId.getAsString())) {
+
+                String strEmail = jsonEmail.getAsString();
+                String strUserPassword = jsonUserPassword.getAsString();
+                String strActivityId = jsonActivityId.getAsString();
+                Integer iDeem = jsonDeem.getAsInt();
+                Integer iDeemRb = jsonDeemRb.getAsInt();
+
+                DatabaseManager dbMgr = getDatabaseManager();
+
+                if (dbMgr.checkPersonValid(strEmail, strUserPassword)) {
+                    if (dbMgr.checkActivityExist(strActivityId)) {
+                        if (dbMgr.deemActivity(strActivityId, iDeem, iDeemRb)) {
+                            //deem activity
+                            List<Activity> lsActivity = dbMgr.queryActivityByIds(strActivityId);
+                            String strPublisherEmail = lsActivity.get(0).getPublisherEmail();
+
+                            if (dbMgr.deemPerson(strPublisherEmail, iDeem, iDeemRb))
+                                //deem person
+                                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                             else
+                                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_NOT_FOUND;
+                        } else {
+                            resCode = ServerResponse.STATUS_CODE.ST_CODE_INVALID_DATA;
+                        }
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+                    }
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;
+                }
             } else {
-                resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
             }
-        } else {
-            resCode = ServerResponse.STATUS_CODE.ST_CODE_FILE_NOT_FOUND;
+        }else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
         }
 
         serverResp.setStatus(resCode);
