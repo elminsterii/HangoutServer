@@ -723,7 +723,7 @@ public class ServerManager {
                         if (dbMgr.attendActivity(strActivityId, iAttend, strId)) {
                             resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                         } else {
-                            resCode = ServerResponse.STATUS_CODE.ST_CODE_DUPLICATE_ATTEND;
+                            resCode = ServerResponse.STATUS_CODE.ST_CODE_FAIL_ATTEND_OR_FAIL_CANCEL;
                         }
                     } else {
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;

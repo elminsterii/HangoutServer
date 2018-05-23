@@ -457,7 +457,8 @@ class DBCtrlActivity {
                     }
                 }
                 strNewAttendees = stringTool.arrayStringToString(arrAttendees, ',');
-            }
+            } else
+                return false;
         }
 
         Connection conn = DBConnection.getConnection();

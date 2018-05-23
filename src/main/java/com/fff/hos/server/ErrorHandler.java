@@ -88,10 +88,10 @@ public class ErrorHandler {
                 strResponse = jsonObj.toString();
                 break;
 
-            case ST_CODE_DUPLICATE_ATTEND :
+            case ST_CODE_FAIL_ATTEND_OR_FAIL_CANCEL:
                 jsonObj = new JsonObject();
                 jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
-                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, you were already attend the activity");
+                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, already attend or cancel fail?");
                 strResponse = jsonObj.toString();
                 break;
 
