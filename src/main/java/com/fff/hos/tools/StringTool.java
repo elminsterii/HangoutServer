@@ -32,13 +32,31 @@ public class StringTool {
         return bRes;
     }
 
-    public String ListStringToString(List<String> lsString, char splitChar) {
+    public String listStringToString(List<String> lsString, char splitChar) {
         if(lsString == null || lsString.isEmpty())
             return "";
 
         StringBuilder strBuilder = new StringBuilder();
-        for(String str : lsString)
-            strBuilder.append(str).append(splitChar);
+        for(String str : lsString) {
+            if(checkStringNotNull(str))
+                strBuilder.append(str).append(splitChar);
+        }
+
+        if(strBuilder.length() > 0)
+            strBuilder.deleteCharAt(strBuilder.length()-1);
+
+        return strBuilder.toString();
+    }
+
+    public String arrayStringToString(String[] arrString, char splitChar) {
+        if(arrString == null || arrString.length <= 0)
+            return "";
+
+        StringBuilder strBuilder = new StringBuilder();
+        for(String str : arrString) {
+            if(checkStringNotNull(str))
+                strBuilder.append(str).append(splitChar);
+        }
 
         if(strBuilder.length() > 0)
             strBuilder.deleteCharAt(strBuilder.length()-1);

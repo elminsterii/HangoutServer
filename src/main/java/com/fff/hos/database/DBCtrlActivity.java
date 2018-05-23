@@ -422,6 +422,95 @@ class DBCtrlActivity {
         return bRes;
     }
 
+    boolean attend(String strActivityId, Integer iAttend, String strPersonId) {
+        boolean bRes = false;
+        StringTool stringTool = new StringTool();
+
+        if (!stringTool.checkStringNotNull(strActivityId)
+                || iAttend == null
+                || !stringTool.checkStringNotNull(strPersonId))
+            return false;
+
+        final int INT_ATTENDED = 1;
+
+        String strNewAttendees = queryAttendees(strActivityId);
+
+        //handle attendees string.
+        if(iAttend == INT_ATTENDED) {
+            if(stringTool.checkStringNotNull(strNewAttendees)) {
+                String[] arrAttendees = strNewAttendees.split(",");
+                for (String strAttendee : arrAttendees) {
+                    if (strAttendee.equals(strPersonId))
+                        return false;
+                }
+                strNewAttendees = strNewAttendees + "," + strPersonId;
+            }
+            else
+                strNewAttendees = strPersonId;
+        } else {
+            if(stringTool.checkStringNotNull(strNewAttendees)) {
+                String[] arrAttendees = strNewAttendees.split(",");
+                for(int i=0; i< arrAttendees.length; i++) {
+                    if(arrAttendees[i].equals(strPersonId)) {
+                        arrAttendees[i] = null;
+                        break;
+                    }
+                }
+                strNewAttendees = stringTool.arrayStringToString(arrAttendees, ',');
+            }
+        }
+
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strUpdateSQL = new StringBuilder("UPDATE ");
+        strUpdateSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" SET ");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append("=").append(DBConstants.ACTIVITY_COL_ATTENTION);
+        strUpdateSQL.append(iAttend == INT_ATTENDED ? "+1," : "-1,");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append("=\"").append(strNewAttendees).append("\"");
+        strUpdateSQL.append(" WHERE ").append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strActivityId);
+        strUpdateSQL.append("\";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (PreparedStatement statementUpdateActivity = conn.prepareStatement(strUpdateSQL.toString())) {
+            bRes = statementUpdateActivity.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("update time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return bRes;
+    }
+
+    private String queryAttendees(String strActivityId) {
+        String strAttendees = "";
+
+        StringTool stringTool = new StringTool();
+
+        if (!stringTool.checkStringNotNull(strActivityId))
+            return null;
+
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder("SELECT ");
+        strSelectSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(" FROM ");
+        strSelectSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(" WHERE ");
+        strSelectSQL.append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(strActivityId).append("\";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
+            stopwatch.stop();
+
+            while (rs.next()) {
+                strAttendees = rs.getString(DBConstants.ACTIVITY_COL_ATTENDEES);
+            }
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        return strAttendees;
+    }
+
     private void fillUpdateActivityIfNull(Activity oldActivity, Activity newActivity) {
         if (newActivity.getId() == null)
             newActivity.setId(oldActivity.getId());

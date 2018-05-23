@@ -98,6 +98,10 @@ public class DatabaseManager {
         return getDBCtrlActivity().update(activity);
     }
 
+    public boolean attendActivity(String strActivityId, Integer iAttend, String strPersonId) {
+        return getDBCtrlActivity().attend(strActivityId, iAttend, strPersonId);
+    }
+
     public boolean checkActivityExist(Activity activity) {
         return getDBCtrlActivity().checkActivityExist(activity.getId());
     }

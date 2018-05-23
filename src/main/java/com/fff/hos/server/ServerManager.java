@@ -360,7 +360,7 @@ public class ServerManager {
 
         if(lsIcons != null && !lsIcons.isEmpty()) {
             StringTool stringTool = new StringTool();
-            String strIcons = stringTool.ListStringToString(lsIcons, ',');
+            String strIcons = stringTool.listStringToString(lsIcons, ',');
 
             if(!strIcons.isEmpty()) {
                 serverResp.setContent(strIcons);
@@ -506,7 +506,7 @@ public class ServerManager {
 
             if(lsIds != null && lsIds.size() > 0) {
                 StringTool stringTool = new StringTool();
-                String strIds = stringTool.ListStringToString(lsIds, ',');
+                String strIds = stringTool.listStringToString(lsIds, ',');
 
                 serverResp.setContent(strIds);
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
@@ -681,6 +681,67 @@ public class ServerManager {
         return serverResp;
     }
 
+    public ServerResponse attendActivity(JsonObject jsonSource) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if(jsonSource != null) {
+            final String TAG_ID = "id";
+            final String TAG_EMAIL = "email";
+            final String TAG_USERPASSWORD = "userpassword";
+            final String TAG_ACTIVITYID = "activityid";
+            final String TAG_ATTEND = "attend";
+
+            JsonElement jsonId = jsonSource.get(TAG_ID);
+            JsonElement jsonEmail = jsonSource.get(TAG_EMAIL);
+            JsonElement jsonUserPassword = jsonSource.get(TAG_USERPASSWORD);
+            JsonElement jsonActivityId = jsonSource.get(TAG_ACTIVITYID);
+            JsonElement jsonAttend = jsonSource.get(TAG_ATTEND);
+
+            StringTool stringTool = new StringTool();
+
+            if (jsonId != null
+                    && jsonEmail != null
+                    && jsonUserPassword != null
+                    && jsonActivityId != null
+                    && jsonAttend != null
+                    && stringTool.checkStringNotNull(jsonId.getAsString())
+                    && stringTool.checkStringNotNull(jsonEmail.getAsString())
+                    && stringTool.checkStringNotNull(jsonUserPassword.getAsString())
+                    && stringTool.checkStringNotNull(jsonActivityId.getAsString())) {
+
+                String strId = jsonId.getAsString();
+                String strEmail = jsonEmail.getAsString();
+                String strUserPassword = jsonUserPassword.getAsString();
+                String strActivityId = jsonActivityId.getAsString();
+                Integer iAttend = jsonAttend.getAsInt();
+
+                DatabaseManager dbMgr = getDatabaseManager();
+
+                if (dbMgr.checkPersonValid(strEmail, strUserPassword)) {
+                    if (dbMgr.checkActivityExist(strActivityId)) {
+                        if (dbMgr.attendActivity(strActivityId, iAttend, strId)) {
+                            resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                        } else {
+                            resCode = ServerResponse.STATUS_CODE.ST_CODE_DUPLICATE_ATTEND;
+                        }
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+                    }
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+            }
+        }else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
     @SuppressWarnings("Duplicates")
     public ServerResponse listActivityImage(String strActivityId) throws IOException {
         ServerResponse serverResp = new ServerResponse();
@@ -692,7 +753,7 @@ public class ServerManager {
 
         if(lsImages != null && !lsImages.isEmpty()) {
             StringTool stringTool = new StringTool();
-            String strImages = stringTool.ListStringToString(lsImages, ',');
+            String strImages = stringTool.listStringToString(lsImages, ',');
 
             if(!strImages.isEmpty()) {
                 serverResp.setContent(strImages);
@@ -807,7 +868,7 @@ public class ServerManager {
 
             if(lsIds != null && lsIds.size() > 0) {
                 StringTool stringTool = new StringTool();
-                String strIds = stringTool.ListStringToString(lsIds, ',');
+                String strIds = stringTool.listStringToString(lsIds, ',');
 
                 serverResp.setContent(strIds);
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
