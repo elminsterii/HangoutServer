@@ -49,11 +49,14 @@ public class Person {
     @SerializedName("newuserpassword")
     private String NewUserPassword;
 
+    @SerializedName("verifycode")
+    private String VerifyCode;
+
     public Person() {
 
     }
 
-    public Person(String id, String email, String userPassword, String displayName, Integer age, String gender, String interests, String description, String location, String saveActivities, Integer good, Integer noGood, Integer online, Integer anonymous, String newUserPassword) {
+    public Person(String id, String email, String userPassword, String displayName, Integer age, String gender, String interests, String description, String location, String saveActivities, Integer good, Integer noGood, Integer online, Integer anonymous, String newUserPassword, String verifyCode) {
         Id = id;
         Email = email;
         UserPassword = userPassword;
@@ -69,6 +72,7 @@ public class Person {
         Online = online;
         Anonymous = anonymous;
         NewUserPassword = newUserPassword;
+        VerifyCode = verifyCode;
     }
 
     public String getId() {
@@ -189,5 +193,13 @@ public class Person {
 
     public void setNewUserPassword(String newUserPassword) {
         NewUserPassword = newUserPassword;
+    }
+
+    public String getVerifyCode() {
+        return VerifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        VerifyCode = verifyCode;
     }
 }

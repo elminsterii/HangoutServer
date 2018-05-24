@@ -49,4 +49,9 @@ class DBConstants {
     static final String COMMENT_COL_DISPLAYNAME = "displayname";
     static final String COMMENT_COL_ACTIVITYID = "activityid";
     static final String COMMENT_COL_CONTENT = "content";
+
+    //VerifyEmail constants
+    static final String TABLE_NAME_VERIFYEMAIL = "verifyemails";
+    static final String VERIFYEMAIL_COL_EMAIL = "email";
+    static final String VERIFYEMAIL_COL_CODE = "code";
 }

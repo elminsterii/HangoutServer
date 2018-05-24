@@ -18,6 +18,7 @@ public class ServerResponse {
         , ST_CODE_FILE_NOT_FOUND
         , ST_CODE_COMMENT_NOT_FOUND
         , ST_CODE_FAIL_ATTEND_OR_FAIL_CANCEL
+        , ST_CODE_FAIL_VERIFY_CODE_WRONG
     }
 
     public ServerResponse() {

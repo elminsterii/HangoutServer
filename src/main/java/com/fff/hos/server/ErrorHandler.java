@@ -88,10 +88,17 @@ public class ErrorHandler {
                 strResponse = jsonObj.toString();
                 break;
 
-            case ST_CODE_FAIL_ATTEND_OR_FAIL_CANCEL:
+            case ST_CODE_FAIL_ATTEND_OR_FAIL_CANCEL :
                 jsonObj = new JsonObject();
                 jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
                 jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, already attend or cancel fail?");
+                strResponse = jsonObj.toString();
+                break;
+
+            case ST_CODE_FAIL_VERIFY_CODE_WRONG :
+                jsonObj = new JsonObject();
+                jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
+                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, input verify code wrong");
                 strResponse = jsonObj.toString();
                 break;
 

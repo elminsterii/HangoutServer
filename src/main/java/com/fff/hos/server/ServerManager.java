@@ -27,21 +27,25 @@ public class ServerManager {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
 
-        VerifyEmailSender sender = new VerifyEmailSender();
-        String strVerify = sender.sendVerifyMail("elminsterii2@gmail.com");
-
         if(person != null) {
             DatabaseManager dbMgr = getDatabaseManager();
 
             if (!dbMgr.checkPersonExist(person)) {
-                if (dbMgr.register(person)) {
-                    //create storage on GCS for store user's icons.
-                    StorageManager csMgr = getStorageManager();
-                    csMgr.createPersonStorage(person.getEmail());
+                if (dbMgr.verifyEmail(person.getEmail(), person.getVerifyCode())) {
+                    if (dbMgr.register(person)) {
+                        //create storage on GCS for store user's icons.
+                        StorageManager csMgr = getStorageManager();
+                        csMgr.createPersonStorage(person.getEmail());
 
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                        //delete verify email after register success.
+                        dbMgr.deleteVerifyEmail(person.getEmail());
+
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    }
                 } else {
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_FAIL_VERIFY_CODE_WRONG;
                 }
             } else {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_EXIST;
@@ -979,6 +983,45 @@ public class ServerManager {
         return serverResp;
     }
 
+
+    // ------------------------------- Verify email control functions -------------------------------
+    public ServerResponse verifyEmail(JsonObject jsonSource) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if (jsonSource != null) {
+            final String TAG_EMAIL = "email";
+            JsonElement jsEmail = jsonSource.get(TAG_EMAIL);
+
+            if (jsEmail != null && !jsEmail.getAsString().isEmpty()) {
+                String strEmail = jsEmail.getAsString();
+
+                VerifyEmailSender sender = new VerifyEmailSender();
+                String strVerify = sender.sendVerifyMail(strEmail);
+
+                boolean bRes;
+                DatabaseManager dbMgr = getDatabaseManager();
+                if(dbMgr.isVerifyEmailExist(strEmail))
+                    bRes = dbMgr.updateVerifyEmail(strEmail, strVerify);
+                else
+                    bRes = dbMgr.createVerifyEmail(strEmail, strVerify);
+
+                if(bRes) {
+                    serverResp.setContent(strVerify);
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_INVALID_DATA;
+                }
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
 
     // --------------------------------- Manager getter functions ---------------------------------
     private DatabaseManager getDatabaseManager() {

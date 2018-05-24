@@ -11,6 +11,7 @@ public class DatabaseManager {
     private DBCtrlPerson m_dbCtrlPerson = null;
     private DBCtrlActivity m_dbCtrlActivity = null;
     private DBCtrlComment m_dbCtrlComment = null;
+    private DBCtrlVerifyEmail m_dbCtrlVerifyEmail = null;
 
     public DatabaseManager() { }
 
@@ -141,6 +142,28 @@ public class DatabaseManager {
     }
 
 
+    // --------------------------------- Comment control functions ---------------------------------
+    public boolean createVerifyEmail(String strEmail, String strCode) {
+        return getDBCtrlVerifyEmail().insert(strEmail, strCode);
+    }
+
+    public boolean deleteVerifyEmail(String strEmail) {
+        return getDBCtrlVerifyEmail().delete(strEmail);
+    }
+
+    public boolean isVerifyEmailExist(String strEmail) {
+        return getDBCtrlVerifyEmail().isEmailExist(strEmail);
+    }
+
+    public boolean updateVerifyEmail(String strEmail, String strCode) {
+        return getDBCtrlVerifyEmail().update(strEmail, strCode);
+    }
+
+    public boolean verifyEmail(String strEmail, String strCode) {
+        return getDBCtrlVerifyEmail().verify(strEmail, strCode);
+    }
+
+
     // ---------------------------- Database Controller getter functions ----------------------------
     private DBCtrlPerson getDBCtrlPerson() {
         if(m_dbCtrlPerson == null)
@@ -158,5 +181,11 @@ public class DatabaseManager {
         if(m_dbCtrlComment == null)
             m_dbCtrlComment = new DBCtrlComment();
         return m_dbCtrlComment;
+    }
+
+    private DBCtrlVerifyEmail getDBCtrlVerifyEmail() {
+        if(m_dbCtrlVerifyEmail == null)
+            m_dbCtrlVerifyEmail = new DBCtrlVerifyEmail();
+        return m_dbCtrlVerifyEmail;
     }
 }

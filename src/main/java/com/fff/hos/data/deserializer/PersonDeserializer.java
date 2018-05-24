@@ -24,6 +24,7 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         JsonElement jeOnline = jsonObject.get("online");
         JsonElement jeAnonymous = jsonObject.get("anonymous");
         JsonElement jeNewUserPassword = jsonObject.get("newuserpassword");
+        JsonElement jeVerifyCode = jsonObject.get("verifycode");
 
         Person person = new Person();
         person.setId(jeId == null ? null : jeId.getAsString());
@@ -40,6 +41,7 @@ public class PersonDeserializer implements JsonDeserializer<Person> {
         person.setOnline(jeOnline == null ? null : jeOnline.getAsInt());
         person.setAnonymous(jeAnonymous == null ? null : jeAnonymous.getAsInt());
         person.setUserPassword(jeNewUserPassword == null ? null : jeNewUserPassword.getAsString());
+        person.setVerifyCode(jeVerifyCode == null ? null : jeVerifyCode.getAsString());
 
         return person;
     }
