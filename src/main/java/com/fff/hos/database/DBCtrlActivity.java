@@ -36,7 +36,7 @@ class DBCtrlActivity {
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append(" VARCHAR(32) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(" VARCHAR(32) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(" VARCHAR(128), ");
-            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0 ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(" VARCHAR(1024), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_TAGS).append(" VARCHAR(128), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_GOOD).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
@@ -389,7 +389,7 @@ class DBCtrlActivity {
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL).append("=\"").append(activity.getPublisherEmail()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHBEGIN).append("=\"").append(activity.getPublishBegin()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEND).append("=\"").append(activity.getPublishEnd()).append("\",");
-        strUpdateSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=\"").append(activity.getLargeActivity()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=").append(activity.getLargeActivity()).append(",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=").append(activity.getEarlyBird()).append(",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append("=\"").append(activity.getDateBegin()).append("\",");
