@@ -4,6 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class Activity {
 
+    public enum ACTIVITY_STATUS {
+        ST_ACTIVITY_NOT_START
+        ,ST_ACTIVITY_READY_START
+        ,ST_ACTIVITY_STARTING
+        ,ST_ACTIVITY_DONE
+    }
+
     @SerializedName("id")
     private String Id;
 
@@ -38,7 +45,7 @@ public class Activity {
     private String Location;
 
     @SerializedName("status")
-    private String Status;
+    private Integer Status;
 
     @SerializedName("description")
     private String Description;
@@ -62,7 +69,7 @@ public class Activity {
 
     }
 
-    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, String status, String description, String tags, Integer good, Integer noGood, Integer attention, String attendees) {
+    public Activity(String id, String publisherEmail, String publisherUserPassword, String publishBegin, String publishEnd, Integer largeActivity, Integer earlyBird, String displayName, String dateBegin, String dateEnd, String location, Integer status, String description, String tags, Integer good, Integer noGood, Integer attention, String attendees) {
         Id = id;
         PublisherEmail = publisherEmail;
         PublisherUserPassword = publisherUserPassword;
@@ -171,11 +178,11 @@ public class Activity {
         Location = location;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return Status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         Status = status;
     }
 

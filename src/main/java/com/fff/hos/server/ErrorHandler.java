@@ -102,6 +102,13 @@ public class ErrorHandler {
                 strResponse = jsonObj.toString();
                 break;
 
+            case ST_CODE_TIME_FORMAT_WRONG :
+                jsonObj = new JsonObject();
+                jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());
+                jsonObj.addProperty(FAIL_PROPERTY_CONTENT, "Fail, time format wrong");
+                strResponse = jsonObj.toString();
+                break;
+
             default:
                 jsonObj = new JsonObject();
                 jsonObj.addProperty(FAIL_PROPERTY_TITLE, stCode.ordinal());

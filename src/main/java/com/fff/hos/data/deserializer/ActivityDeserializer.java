@@ -41,7 +41,7 @@ public class ActivityDeserializer implements JsonDeserializer<Activity> {
         activity.setDateBegin(jeDateBegin == null ? null : jeDateBegin.getAsString());
         activity.setDateEnd(jeDateEnd == null ? null : jeDateEnd.getAsString());
         activity.setLocation(jeLocation == null ? null : jeLocation.getAsString());
-        activity.setStatus(jeStatus == null ? null : jeStatus.getAsString());
+        activity.setStatus(jeStatus == null ? null : jeStatus.getAsInt());
         activity.setDescription(jeDescription == null ? null : jeDescription.getAsString());
         activity.setTags(jeTags == null ? null : jeTags.getAsString());
         activity.setGood(jeGood == null ? null : jeGood.getAsInt());

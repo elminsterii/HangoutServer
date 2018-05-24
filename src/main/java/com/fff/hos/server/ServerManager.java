@@ -6,6 +6,7 @@ import com.fff.hos.data.Person;
 import com.fff.hos.database.DatabaseManager;
 import com.fff.hos.email.VerifyEmailSender;
 import com.fff.hos.gcs.StorageManager;
+import com.fff.hos.maintainer.ActivityMaintainer;
 import com.fff.hos.tools.StringTool;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -394,18 +395,23 @@ public class ServerManager {
             DatabaseManager dbMgr = getDatabaseManager();
 
             if(dbMgr.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
-                String strResId = dbMgr.createActivity(activity);
+                ActivityMaintainer am = new ActivityMaintainer();
+                if(am.maintain(activity)) {
+                    String strResId = dbMgr.createActivity(activity);
 
-                StringTool stringTool = new StringTool();
-                if (stringTool.checkStringNotNull(strResId)) {
-                    //create storage on GCS for store activity images.
-                    StorageManager csMgr = getStorageManager();
-                    csMgr.createActivityStorage(strResId);
+                    StringTool stringTool = new StringTool();
+                    if (stringTool.checkStringNotNull(strResId)) {
+                        //create storage on GCS for store activity images.
+                        StorageManager csMgr = getStorageManager();
+                        csMgr.createActivityStorage(strResId);
 
-                    serverResp.setContent(strResId);
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                        serverResp.setContent(strResId);
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    }
                 } else {
-                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_TIME_FORMAT_WRONG;
                 }
             } else {
                 resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_INVALID;
@@ -538,6 +544,9 @@ public class ServerManager {
 
             if(dbMgr.checkPersonValid(activity.getPublisherEmail(), activity.getPublisherUserPassword())) {
                 if (dbMgr.checkActivityExist(activity)) {
+                    ActivityMaintainer am = new ActivityMaintainer();
+                    am.maintain(activity);
+
                     if (dbMgr.updateActivity(activity)) {
                         resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
                     } else {

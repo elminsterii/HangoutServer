@@ -36,13 +36,13 @@ class DBCtrlActivity {
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append(" VARCHAR(32) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append(" VARCHAR(32) NOT NULL, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(" VARCHAR(128), ");
-            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" CHAR(8), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_STATUS).append(" TINYINT UNSIGNED NOT NULL DEFAULT 0 ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(" VARCHAR(1024), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_TAGS).append(" VARCHAR(128), ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_GOOD).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_NOGOOD).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
             strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append(" INT UNSIGNED NOT NULL DEFAULT 0, ");
-            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(" VARCHAR(1024), ");
+            strCreateTableSQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(" VARCHAR(1024) DEFAULT \'\', ");
             strCreateTableSQL.append("PRIMARY KEY (").append(DBConstants.ACTIVITY_COL_ID).append(") );");
 
             try {
@@ -72,14 +72,13 @@ class DBCtrlActivity {
         return insert(activity.getPublisherEmail(), activity.getPublishBegin(), activity.getPublishEnd()
                 , activity.getLargeActivity(), activity.getEarlyBird(), activity.getDisplayName(), activity.getDateBegin()
                 , activity.getDateEnd(), activity.getLocation(), activity.getStatus(), activity.getDescription()
-                , activity.getTags(), activity.getGood(), activity.getNoGood(), activity.getAttention(), activity.getAttendees());
+                , activity.getTags());
     }
 
     @SuppressWarnings("Duplicates")
     private String insert(String strPublisherEmail, String strPublishBegin, String strPublishEnd, Integer iLargeActivity
             , Integer iEarlyBird, String strDisplayName, String strDateBegin, String strDateEnd, String strLocation
-            , String strStatus, String strDescription, String strTags, Integer iGood, Integer iNoGood, Integer iAttention
-            , String strAttendees) {
+            , Integer iStatus, String strDescription, String strTags) {
 
         String strResId = null;
         StringTool stringTool = new StringTool();
@@ -92,7 +91,8 @@ class DBCtrlActivity {
                 || !stringTool.checkStringNotNull(strDisplayName)
                 || !stringTool.checkStringNotNull(strDateBegin)
                 || !stringTool.checkStringNotNull(strDateEnd)
-                || !stringTool.checkStringNotNull(strLocation))
+                || !stringTool.checkStringNotNull(strLocation)
+                || (iStatus == null))
             return null;
 
         Connection conn = DBConnection.getConnection();
@@ -110,10 +110,8 @@ class DBCtrlActivity {
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_LOCATION).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_STATUS).append(",");
         strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append(",");
-        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_TAGS).append(",");
-        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_GOOD).append(",");
-        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_ATTENTION).append(",");
-        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_ATTENDEES).append(") VALUES (?,");
+        strCreateActivitySQL.append(DBConstants.ACTIVITY_COL_TAGS);
+        strCreateActivitySQL.append(") VALUES (?,");
         strCreateActivitySQL.append("\"").append(strPublisherEmail).append("\",");
         strCreateActivitySQL.append("\"").append(strPublishBegin).append("\",");
         strCreateActivitySQL.append("\"").append(strPublishEnd).append("\",");
@@ -123,12 +121,10 @@ class DBCtrlActivity {
         strCreateActivitySQL.append("\"").append(strDateBegin).append("\",");
         strCreateActivitySQL.append("\"").append(strDateEnd).append("\",");
         strCreateActivitySQL.append("\"").append(strLocation).append("\",");
-        strCreateActivitySQL.append("\"").append(strStatus == null ? "" : strStatus).append("\",");
+        strCreateActivitySQL.append(iStatus).append(",");
         strCreateActivitySQL.append("\"").append(strDescription == null ? "" : strDescription).append("\",");
-        strCreateActivitySQL.append("\"").append(strTags == null ? "" : strTags).append("\",");
-        strCreateActivitySQL.append(iGood == null ? 0 : iGood).append(",");
-        strCreateActivitySQL.append(iAttention == null ? 0 : iAttention).append(",");
-        strCreateActivitySQL.append("\"").append(strAttendees == null ? "" : strAttendees).append("\");");
+        strCreateActivitySQL.append("\"").append(strTags == null ? "" : strTags).append("\"");
+        strCreateActivitySQL.append(");");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementCreateActivity = conn.prepareStatement(strCreateActivitySQL.toString()
@@ -312,7 +308,7 @@ class DBCtrlActivity {
                 activity.setDateBegin(rs.getString(DBConstants.ACTIVITY_COL_DATEBEGIN));
                 activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
                 activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
-                activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
+                activity.setStatus(rs.getInt(DBConstants.ACTIVITY_COL_STATUS));
                 activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
                 activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
                 activity.setGood(rs.getInt(DBConstants.ACTIVITY_COL_GOOD));
@@ -357,7 +353,7 @@ class DBCtrlActivity {
                 activity.setDateBegin(rs.getString(DBConstants.ACTIVITY_COL_DATEBEGIN));
                 activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
                 activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
-                activity.setStatus(rs.getString(DBConstants.ACTIVITY_COL_STATUS));
+                activity.setStatus(rs.getInt(DBConstants.ACTIVITY_COL_STATUS));
                 activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
                 activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
                 activity.setGood(rs.getInt(DBConstants.ACTIVITY_COL_GOOD));
@@ -394,12 +390,12 @@ class DBCtrlActivity {
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHBEGIN).append("=\"").append(activity.getPublishBegin()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_PUBLISHEND).append("=\"").append(activity.getPublishEnd()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_LARGEACTIVITY).append("=\"").append(activity.getLargeActivity()).append("\",");
-        strUpdateSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=\"").append(activity.getEarlyBird()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_EARLYBIRD).append("=").append(activity.getEarlyBird()).append(",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DISPLAYNAME).append("=\"").append(activity.getDisplayName()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEBEGIN).append("=\"").append(activity.getDateBegin()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DATEEND).append("=\"").append(activity.getDateEnd()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_LOCATION).append("=\"").append(activity.getLocation()).append("\",");
-        strUpdateSQL.append(DBConstants.ACTIVITY_COL_STATUS).append("=\"").append(activity.getStatus()).append("\",");
+        strUpdateSQL.append(DBConstants.ACTIVITY_COL_STATUS).append("=").append(activity.getStatus()).append(",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_DESCRIPTION).append("=\"").append(activity.getDescription()).append("\",");
         strUpdateSQL.append(DBConstants.ACTIVITY_COL_TAGS).append("=\"").append(activity.getTags()).append("\",");
         strUpdateSQL.append(" WHERE ").append(DBConstants.ACTIVITY_COL_ID).append("=\"").append(activity.getId());
