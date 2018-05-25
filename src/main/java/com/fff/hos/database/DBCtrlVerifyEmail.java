@@ -108,7 +108,7 @@ class DBCtrlVerifyEmail {
         Connection conn = DBConnection.getConnection();
         StringBuilder strDeleteVerifyEmailSQL = new StringBuilder("DELETE FROM ");
         strDeleteVerifyEmailSQL.append(DBConstants.TABLE_NAME_VERIFYEMAIL);
-        strDeleteVerifyEmailSQL.append("\";");
+        strDeleteVerifyEmailSQL.append(";");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (PreparedStatement statementDeleteVerifyEmail = conn.prepareStatement(strDeleteVerifyEmailSQL.toString())) {
