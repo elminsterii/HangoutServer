@@ -95,6 +95,10 @@ public class DatabaseManager {
         return getDBCtrlActivity().queryByIds(strIds);
     }
 
+    public List<Activity> queryAll() {
+        return getDBCtrlActivity().queryAll();
+    }
+
     public List<String> queryActivity(Activity activity) {
         return getDBCtrlActivity().query(activity);
     }
@@ -149,6 +153,10 @@ public class DatabaseManager {
 
     public boolean deleteVerifyEmail(String strEmail) {
         return getDBCtrlVerifyEmail().delete(strEmail);
+    }
+
+    public boolean clearVerifyEmails() {
+        return getDBCtrlVerifyEmail().deleteAll();
     }
 
     public boolean isVerifyEmailExist(String strEmail) {

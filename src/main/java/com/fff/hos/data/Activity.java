@@ -2,7 +2,7 @@ package com.fff.hos.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Activity {
+public class Activity implements Cloneable {
 
     public enum ACTIVITY_STATUS {
         ST_ACTIVITY_NOT_START
@@ -240,5 +240,23 @@ public class Activity {
                 || (EarlyBird != null)
                 || (DisplayName != null && !DisplayName.isEmpty())
                 || (Tags != null && !Tags.isEmpty());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean bIsEqual = true;
+
+        Activity actTarget = (Activity)obj;
+        if(!this.EarlyBird.equals(actTarget.getEarlyBird()))
+            bIsEqual = false;
+        if(!this.Status.equals(actTarget.getStatus()))
+            bIsEqual = false;
+
+        return bIsEqual;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

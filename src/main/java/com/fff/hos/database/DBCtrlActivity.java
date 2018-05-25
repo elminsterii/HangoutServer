@@ -325,6 +325,48 @@ class DBCtrlActivity {
         return lsActivities;
     }
 
+
+    @SuppressWarnings("Duplicates")
+    List<Activity> queryAll() {
+        List<Activity> lsActivities = new ArrayList<>();
+
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strSelectSQL = new StringBuilder("SELECT * FROM ");
+        strSelectSQL.append(DBConstants.TABLE_NAME_ACTIVITY).append(";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (ResultSet rs = conn.prepareStatement(strSelectSQL.toString()).executeQuery()) {
+            stopwatch.stop();
+
+            while (rs.next()) {
+                Activity activity = new Activity();
+                activity.setId(rs.getString(DBConstants.ACTIVITY_COL_ID));
+                activity.setPublisherEmail(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEREMAIL));
+                activity.setPublishBegin(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHBEGIN));
+                activity.setPublishEnd(rs.getString(DBConstants.ACTIVITY_COL_PUBLISHEND));
+                activity.setLargeActivity(rs.getInt(DBConstants.ACTIVITY_COL_LARGEACTIVITY));
+                activity.setEarlyBird(rs.getInt(DBConstants.ACTIVITY_COL_EARLYBIRD));
+                activity.setDisplayName(rs.getString(DBConstants.ACTIVITY_COL_DISPLAYNAME));
+                activity.setDateBegin(rs.getString(DBConstants.ACTIVITY_COL_DATEBEGIN));
+                activity.setDateEnd(rs.getString(DBConstants.ACTIVITY_COL_DATEEND));
+                activity.setLocation(rs.getString(DBConstants.ACTIVITY_COL_LOCATION));
+                activity.setStatus(rs.getInt(DBConstants.ACTIVITY_COL_STATUS));
+                activity.setDescription(rs.getString(DBConstants.ACTIVITY_COL_DESCRIPTION));
+                activity.setTags(rs.getString(DBConstants.ACTIVITY_COL_TAGS));
+                activity.setGood(rs.getInt(DBConstants.ACTIVITY_COL_GOOD));
+                activity.setNoGood(rs.getInt(DBConstants.ACTIVITY_COL_NOGOOD));
+                activity.setAttention(rs.getInt(DBConstants.ACTIVITY_COL_ATTENTION));
+                activity.setAttendees(rs.getString(DBConstants.ACTIVITY_COL_ATTENDEES));
+                lsActivities.add(activity);
+            }
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("query time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return lsActivities;
+    }
+
     private Activity queryById(String strId) {
         Activity activity = null;
         StringTool stringTool = new StringTool();

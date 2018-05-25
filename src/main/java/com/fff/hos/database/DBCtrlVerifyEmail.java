@@ -102,6 +102,26 @@ class DBCtrlVerifyEmail {
         return bRes;
     }
 
+    boolean deleteAll() {
+        boolean bRes = false;
+
+        Connection conn = DBConnection.getConnection();
+        StringBuilder strDeleteVerifyEmailSQL = new StringBuilder("DELETE FROM ");
+        strDeleteVerifyEmailSQL.append(DBConstants.TABLE_NAME_VERIFYEMAIL);
+        strDeleteVerifyEmailSQL.append("\";");
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try (PreparedStatement statementDeleteVerifyEmail = conn.prepareStatement(strDeleteVerifyEmailSQL.toString())) {
+            bRes = statementDeleteVerifyEmail.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            LOGGER.warning("SQL erro, " + e.getMessage());
+        }
+
+        LOGGER.info("delete time (ms):" + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return bRes;
+    }
+
     boolean isEmailExist(String strEmail) {
         StringTool stringTool = new StringTool();
 

@@ -510,6 +510,25 @@ public class ServerManager {
         return serverResp;
     }
 
+    public ServerResponse queryAll() {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        DatabaseManager dbMgr = getDatabaseManager();
+
+        List<Activity> lsActicities = dbMgr.queryAll();
+
+        if(lsActicities != null && lsActicities.size() > 0) {
+            serverResp.setContent(lsActicities);
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_ACTIVITY_NOT_FOUND;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
     public ServerResponse queryActivityIdBy(Activity activity) {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
@@ -1031,6 +1050,25 @@ public class ServerManager {
         serverResp.setStatus(resCode);
         return serverResp;
     }
+
+    public ServerResponse clearVerifyEmails() {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        boolean bRes;
+        DatabaseManager dbMgr = getDatabaseManager();
+        bRes = dbMgr.clearVerifyEmails();
+
+        if(bRes) {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_INVALID_DATA;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
 
     // --------------------------------- Manager getter functions ---------------------------------
     private DatabaseManager getDatabaseManager() {
