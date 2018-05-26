@@ -331,7 +331,7 @@ class DBCtrlPerson {
         strUpdateSQL.append(DBConstants.PERSON_COL_INTERESTS).append("=\"").append(person.getInterests()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_DESCRIPTION).append("=\"").append(person.getDescription()).append("\",");
         strUpdateSQL.append(DBConstants.PERSON_COL_LOCATION).append("=\"").append(person.getLocation()).append("\",");
-        strUpdateSQL.append(DBConstants.PERSON_COL_USERPASSWORD).append("=\"").append(person.getUserPassword()).append("\"");
+        strUpdateSQL.append(DBConstants.PERSON_COL_ONLINE).append("=\"").append(person.getOnline()).append("\"");
         strUpdateSQL.append(" WHERE ").append(DBConstants.PERSON_COL_EMAIL).append("=\"").append(person.getEmail()).append("\" ");
 
         Stopwatch stopwatch = Stopwatch.createStarted();
