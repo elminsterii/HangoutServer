@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
-@WebServlet(name = "HttpServiceClearVerifyEmails", value = "/maintainactivities")
+@WebServlet(name = "HttpServiceMaintainActivities", value = "/maintainactivities")
 public class HttpServiceMaintainActivities extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpServiceClearVerifyEmails.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpServiceMaintainActivities.class.getName());
 
     @SuppressWarnings("unchecked")
     @Override
