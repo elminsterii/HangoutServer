@@ -12,17 +12,19 @@ public class HttpJsonToPerson {
     private static final Logger LOGGER = Logger.getLogger(HttpJsonToPerson.class.getName());
 
     public Person parse(HttpServletRequest request) {
-        Person person;
+        Person person = null;
         String strBody = "";
 
         HttpTool httpTool = new HttpTool();
         try {
             strBody = httpTool.getBody(request);
+            person = new Gson().fromJson(strBody, Person.class);
+        } catch (IllegalStateException e) {
+            LOGGER.warning(e.getMessage());
+            LOGGER.warning("Illegal data : " + strBody);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
-
-        person = new Gson().fromJson(strBody, Person.class);
 
         return person;
     }

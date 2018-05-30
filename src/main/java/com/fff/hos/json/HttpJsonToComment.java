@@ -12,17 +12,19 @@ public class HttpJsonToComment {
     private static final Logger LOGGER = Logger.getLogger(HttpJsonToComment.class.getName());
 
     public Comment parse(HttpServletRequest request) {
-        Comment comment;
+        Comment comment = null;
         String strBody = "";
 
         HttpTool httpTool = new HttpTool();
         try {
             strBody = httpTool.getBody(request);
+            comment = new Gson().fromJson(strBody, Comment.class);
+        } catch (IllegalStateException e) {
+            LOGGER.warning(e.getMessage());
+            LOGGER.warning("Illegal data : " + strBody);
         } catch (IOException e) {
             LOGGER.warning(e.getMessage());
         }
-
-        comment = new Gson().fromJson(strBody, Comment.class);
 
         return comment;
     }
