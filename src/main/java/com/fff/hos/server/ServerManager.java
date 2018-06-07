@@ -24,17 +24,30 @@ public class ServerManager {
 
 
     // --------------------------------- Person control functions ---------------------------------
-    public ServerResponse checkPersonExist(Person person) {
+    public ServerResponse checkPersonExist(JsonObject jsonSource) {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
 
-        if(person != null) {
-            DatabaseManager dbMgr = getDatabaseManager();
+        if (jsonSource != null) {
+            final String TAG_EMAILS = "email";
+            JsonElement jsEmail = jsonSource.get(TAG_EMAILS);
 
-            if (!dbMgr.checkPersonExist(person)) {
-                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+            if(jsEmail != null) {
+                String strEmails = jsEmail.getAsString();
+                StringTool stringTool = new StringTool();
+
+                if(stringTool.checkStringNotNull(strEmails)) {
+                    DatabaseManager dbMgr = getDatabaseManager();
+                    if (!dbMgr.checkPersonExist(strEmails)) {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+                    } else {
+                        resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_EXIST;
+                    }
+                } else {
+                    resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
+                }
             } else {
-                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_EXIST;
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_MISSING_NECESSARY;
             }
         } else {
             resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
@@ -165,7 +178,7 @@ public class ServerManager {
             JsonElement jsIds = jsonSource.get(TAG_IDS);
             JsonElement jsEmails = jsonSource.get(TAG_EMAILS);
 
-            if (jsEmails != null) {
+                if (jsEmails != null) {
                 //query persons by emails
                 String strEmails = jsEmails.getAsString();
                 StringTool stringTool = new StringTool();

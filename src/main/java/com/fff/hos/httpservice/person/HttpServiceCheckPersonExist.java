@@ -1,10 +1,10 @@
 package com.fff.hos.httpservice.person;
 
-import com.fff.hos.data.Person;
-import com.fff.hos.json.HttpJsonToPerson;
+import com.fff.hos.json.HttpJsonToJsonObj;
 import com.fff.hos.server.ErrorHandler;
 import com.fff.hos.server.ServerManager;
 import com.fff.hos.server.ServerResponse;
+import com.google.gson.JsonObject;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "HttpServiceRegister", value = "/checkpersonexist")
+@WebServlet(name = "HttpServiceCheckPersonExist", value = "/checkpersonexist")
 public class HttpServiceCheckPersonExist extends HttpServlet {
 
     @Override
@@ -25,13 +25,13 @@ public class HttpServiceCheckPersonExist extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        HttpJsonToPerson jsonToPerson = new HttpJsonToPerson();
-        Person person = jsonToPerson.parse(request);
+        HttpJsonToJsonObj jsonToJsonObj = new HttpJsonToJsonObj();
+        JsonObject jsonObj = jsonToJsonObj.parse(request);
 
         ServerManager serverMgr = new ServerManager();
         ErrorHandler errHandler = new ErrorHandler();
 
-        ServerResponse serverResp = serverMgr.checkPersonExist(person);
+        ServerResponse serverResp = serverMgr.checkPersonExist(jsonObj);
         String strResponse = errHandler.handleError(serverResp.getStatus());
 
         response.getWriter().print(strResponse);
