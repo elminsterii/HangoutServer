@@ -24,6 +24,26 @@ public class ServerManager {
 
 
     // --------------------------------- Person control functions ---------------------------------
+    public ServerResponse checkPersonExist(Person person) {
+        ServerResponse serverResp = new ServerResponse();
+        ServerResponse.STATUS_CODE resCode;
+
+        if(person != null) {
+            DatabaseManager dbMgr = getDatabaseManager();
+
+            if (!dbMgr.checkPersonExist(person)) {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_SUCCESS;
+            } else {
+                resCode = ServerResponse.STATUS_CODE.ST_CODE_USER_EXIST;
+            }
+        } else {
+            resCode = ServerResponse.STATUS_CODE.ST_CODE_JSON_FORMAT_WRONG;
+        }
+
+        serverResp.setStatus(resCode);
+        return serverResp;
+    }
+
     public ServerResponse register(Person person) throws IOException {
         ServerResponse serverResp = new ServerResponse();
         ServerResponse.STATUS_CODE resCode;
