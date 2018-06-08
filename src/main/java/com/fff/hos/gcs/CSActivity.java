@@ -56,7 +56,7 @@ class CSActivity {
             return null;
 
         ListOptions.Builder optionBuilder = new ListOptions.Builder();
-        optionBuilder.setPrefix(strActivityId);
+        optionBuilder.setPrefix(strActivityId + "/");
 
         ListResult result = gcsService.list(ACTIVITIES_IMAGES_BUCKET_NAME, optionBuilder.build());
 
