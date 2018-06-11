@@ -39,7 +39,6 @@ public class HttpServiceLogin extends HttpServlet {
 
         if(serverResp.getStatus() == ServerResponse.STATUS_CODE.ST_CODE_SUCCESS) {
             Person personLogin = (Person)serverResp.getContent();
-            personLogin.setUserPassword(null);
 
             String strJsonPerson = new Gson().toJson(personLogin);
 

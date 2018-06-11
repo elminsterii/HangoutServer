@@ -48,7 +48,6 @@ public class DatabaseManager {
             resPerson = dbCtrlPerson.query(null, person.getEmail());
             resPerson.setOnline(1);
             dbCtrlPerson.update(resPerson);
-            resPerson.setUserPassword(null);
         }
         return resPerson;
     }
