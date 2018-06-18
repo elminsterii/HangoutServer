@@ -26,9 +26,14 @@ public class StorageManager {
 
     private CSPerson m_csPerson = null;
     private CSActivity m_csActivity = null;
+    private CSSystem m_csSystem = null;
 
     public StorageManager() {
 
+    }
+
+    public void initialize() {
+        getCsSystem().initialize();
     }
 
     // --------------------------------- Person control functions ---------------------------------
@@ -101,5 +106,21 @@ public class StorageManager {
             }
         }
         return m_csActivity;
+    }
+
+    // --------------------------------- System control functions ---------------------------------
+    public InputStream getEmailTitleImage(String strFullPath) throws IOException {
+        return getCsSystem().getEmailTitleImage(strFullPath);
+    }
+
+    private CSSystem getCsSystem(){
+        if(m_csSystem == null) {
+            try {
+                m_csSystem = new CSSystem(gcsService);
+            } catch (GcsServiceNullException e) {
+                LOGGER.warning(e.getMessage());
+            }
+        }
+        return m_csSystem;
     }
 }
